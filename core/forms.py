@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 from .models import CustomUser, SiteSettings
 from .utils import BootstrapFormMixin
 
@@ -19,7 +20,7 @@ class SiteSettingsForm(BootstrapFormMixin, forms.ModelForm):
 
 
 class UserCreateForm(BootstrapFormMixin, forms.ModelForm):
-    password = forms.CharField(widget=forms.PasswordInput(), label='Passwort')
+    password = forms.CharField(widget=forms.PasswordInput(), label=_('Passwort'))
 
     class Meta:
         model = CustomUser
@@ -35,14 +36,14 @@ class UserCreateForm(BootstrapFormMixin, forms.ModelForm):
 
 class UserEditForm(BootstrapFormMixin, forms.ModelForm):
     password = forms.CharField(
-        widget=forms.PasswordInput(), label='Neues Passwort', required=False,
-        help_text='Leer lassen, um das Passwort nicht zu ändern.',
+        widget=forms.PasswordInput(), label=_('Neues Passwort'), required=False,
+        help_text=_('Leer lassen, um das Passwort nicht zu ändern.'),
     )
 
     class Meta:
         model = CustomUser
         fields = ['username', 'first_name', 'last_name', 'role', 'is_active']
-        labels = {'is_active': 'Aktiv'}
+        labels = {'is_active': _('Aktiv')}
 
     def save(self, commit=True):
         user = super().save(commit=False)

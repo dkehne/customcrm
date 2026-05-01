@@ -10,6 +10,7 @@ from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.text import get_valid_filename
+from django.utils.translation import gettext as _
 
 from campaigns.forms import AccountCampaignForm
 from campaigns.models import Campaign, AccountCampaign, CampaignContact
@@ -130,7 +131,7 @@ def accounts_to_campaign(request):
 
     campaign_id = request.POST.get('campaign_id', '').strip()
     if not campaign_id:
-        messages.error(request, 'Bitte eine Kampagne auswählen.')
+        messages.error(request, _('Bitte eine Kampagne auswählen.'))
         return redirect('accounts:account_list')
 
     campaign = get_object_or_404(Campaign, pk=campaign_id, is_archived=False)
@@ -198,7 +199,7 @@ def accounts_to_campaign(request):
             if created:
                 added += 1
 
-    messages.success(request, f'{added} Kontakt(e) zur Kampagne „{campaign.name}" hinzugefügt.')
+    messages.success(request, _(f'{added} Kontakt(e) zur Kampagne „{campaign.name}" hinzugefügt.'))
     return redirect('campaigns:campaign_detail', pk=campaign.pk)
 
 
@@ -208,7 +209,7 @@ def account_create(request):
         form = AccountForm(request.POST)
         if form.is_valid():
             account = form.save()
-            messages.success(request, f'Account "{account.name}" erstellt.')
+            messages.success(request, _(f'Account "{account.name}" erstellt.'))
             return redirect('accounts:account_detail', pk=account.pk)
     else:
         form = AccountForm()
@@ -222,7 +223,7 @@ def account_edit(request, pk):
         form = AccountForm(request.POST, instance=account)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Account aktualisiert.')
+            messages.success(request, _('Account aktualisiert.'))
             return redirect('accounts:account_detail', pk=pk)
     else:
         form = AccountForm(instance=account)
@@ -251,7 +252,7 @@ def account_detail(request, pk):
         account_form = AccountForm(request.POST, instance=account)
         if account_form.is_valid():
             account_form.save()
-            messages.success(request, 'Stammdaten aktualisiert.')
+            messages.success(request, _('Stammdaten aktualisiert.'))
             redirect_url = f"{reverse('accounts:account_detail', args=[pk])}"
             if back_url:
                 redirect_url += f'?back={back_url}'
@@ -302,7 +303,7 @@ def account_assign_owner(request, pk):
     account = get_object_or_404(Account, pk=pk)
     account.owner = request.user
     account.save()
-    messages.success(request, f'Account "{account.name}" Ihnen zugewiesen.')
+    messages.success(request, _(f'Account "{account.name}" Ihnen zugewiesen.'))
     return redirect('accounts:account_detail', pk=pk)
 
 
@@ -335,7 +336,7 @@ def contact_add(request, account_pk):
                         pk__in=ap_ids, account=account, is_archived=False,
                     )
                     contact.primary_for_products.set(valid_aps)
-            messages.success(request, f'Kontakt "{contact.name}" hinzugefügt.')
+            messages.success(request, _(f'Kontakt "{contact.name}" hinzugefügt.'))
     return redirect('accounts:account_detail', pk=account_pk)
 
 
@@ -357,7 +358,7 @@ def contact_edit(request, pk):
                 contact.primary_for_products.set(valid_aps)
             else:
                 contact.primary_for_products.clear()
-            messages.success(request, 'Kontakt aktualisiert.')
+            messages.success(request, _('Kontakt aktualisiert.'))
             return redirect('accounts:account_detail', pk=contact.account_id)
     else:
         form = ContactForm(instance=contact)
@@ -397,14 +398,16 @@ def account_product_add(request, account_pk):
                 messages.error(
                     request,
                     format_html(
-                        'Produkt "{}" existiert bereits als archivierter Eintrag. '
-                        '<a href="{}">Jetzt reaktivieren</a>.',
+                        _(
+                            'Produkt "{}" existiert bereits als archivierter Eintrag. '
+                            '<a href="{}">Jetzt reaktivieren</a>.'
+                        ),
                         ap.product.name,
                         reactivate_url,
                     ),
                 )
             elif existing:
-                messages.error(request, f'Produkt "{ap.product.name}" ist bereits diesem Account zugeordnet.')
+                messages.error(request, _(f'Produkt "{ap.product.name}" ist bereits diesem Account zugeordnet.'))
             else:
                 try:
                     with transaction.atomic():
@@ -415,9 +418,9 @@ def account_product_add(request, account_pk):
                         ap.save()
                         for field in ap.product.fields.filter(is_archived=False):
                             AccountProductFieldValue.objects.get_or_create(account_product=ap, field=field)
-                    messages.success(request, f'Produkt "{ap.product.name}" zugeordnet.')
+                    messages.success(request, _(f'Produkt "{ap.product.name}" zugeordnet.'))
                 except IntegrityError:
-                    messages.error(request, f'Produkt "{ap.product.name}" ist bereits diesem Account zugeordnet.')
+                    messages.error(request, _(f'Produkt "{ap.product.name}" ist bereits diesem Account zugeordnet.'))
     return redirect('accounts:account_detail', pk=account_pk)
 
 
@@ -466,7 +469,7 @@ def account_product_edit(request, pk):
                     else:
                         messages.error(
                             request,
-                            'Phase „Beendet" ist nur aus der Phase „Aktiv" heraus wählbar.',
+                            _('Phase „Beendet" ist nur aus der Phase „Aktiv" heraus wählbar.'),
                         )
                         return redirect('accounts:account_detail', pk=ap.account_id)
                 else:
@@ -504,7 +507,7 @@ def account_product_edit(request, pk):
                     fv.value_bool = post_key in request.POST
                 fv.save()
 
-        messages.success(request, 'Produkt-Zuordnung aktualisiert.')
+        messages.success(request, _('Produkt-Zuordnung aktualisiert.'))
         return redirect('accounts:account_detail', pk=ap.account_id)
 
     return render(request, 'accounts/account_product_edit.html', {
@@ -545,7 +548,7 @@ def contract_add(request, account_pk):
                 if f.name.lower().endswith('.pdf'):
                     f.name = get_valid_filename(f.name)[:100]
                     ContractDocument.objects.create(contract=contract, file=f)
-            messages.success(request, 'Vertrag erstellt.')
+            messages.success(request, _('Vertrag erstellt.'))
     return redirect('accounts:account_detail', pk=account_pk)
 
 
@@ -562,7 +565,7 @@ def contract_edit(request, pk):
                 if f.name.lower().endswith('.pdf'):
                     f.name = get_valid_filename(f.name)[:100]
                     ContractDocument.objects.create(contract=contract, file=f)
-            messages.success(request, 'Vertrag aktualisiert.')
+            messages.success(request, _('Vertrag aktualisiert.'))
             return redirect('accounts:account_detail', pk=contract.account_id)
     else:
         form = ContractForm(instance=contract, account=contract.account)
@@ -589,7 +592,7 @@ def contract_document_delete(request, pk):
     contract = doc.contract
     doc.file.delete()
     doc.delete()
-    messages.success(request, 'Dokument gelöscht.')
+    messages.success(request, _('Dokument gelöscht.'))
     return redirect('accounts:contract_edit', pk=contract.pk)
 
 
@@ -604,7 +607,7 @@ def activity_add(request, account_pk):
             activity.account = account
             activity.created_by = request.user
             activity.save()
-            messages.success(request, 'Aktivität hinzugefügt.')
+            messages.success(request, _('Aktivität hinzugefügt.'))
     return redirect('accounts:account_detail', pk=account_pk)
 
 
@@ -627,7 +630,7 @@ def todo_add(request, account_pk):
             if not todo.assigned_to_id:
                 todo.assigned_to = request.user
             todo.save()
-            messages.success(request, 'Aufgabe hinzugefügt.')
+            messages.success(request, _('Aufgabe hinzugefügt.'))
     return redirect('accounts:account_detail', pk=account_pk)
 
 
@@ -638,7 +641,7 @@ def todo_edit(request, pk):
         form = TodoForm(request.POST, request.FILES, instance=todo)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Aufgabe aktualisiert.')
+            messages.success(request, _('Aufgabe aktualisiert.'))
             return redirect('accounts:account_detail', pk=todo.account_id)
     else:
         form = TodoForm(instance=todo)
@@ -652,7 +655,7 @@ def todo_complete(request, pk):
         todo.is_completed = True
         todo.completed_at = timezone.now()
         todo.save()
-        messages.success(request, f'Aufgabe "{todo.title}" als erledigt markiert.')
+        messages.success(request, _(f'Aufgabe "{todo.title}" als erledigt markiert.'))
     return redirect('accounts:account_detail', pk=todo.account_id)
 
 
@@ -672,7 +675,7 @@ def account_campaign_add(request, account_pk):
             ac = form.save(commit=False)
             ac.account = account
             ac.save()
-            messages.success(request, f'Kampagne "{ac.name}" hinzugefügt.')
+            messages.success(request, _(f'Kampagne "{ac.name}" hinzugefügt.'))
     return redirect('accounts:account_detail', pk=account_pk)
 
 
@@ -680,13 +683,13 @@ def account_campaign_add(request, account_pk):
 def account_campaign_edit(request, pk):
     ac = get_object_or_404(AccountCampaign, pk=pk)
     if not ac.is_external:
-        messages.error(request, 'Nur externe Kampagnen können bearbeitet werden.')
+        messages.error(request, _('Nur externe Kampagnen können bearbeitet werden.'))
         return redirect('accounts:account_detail', pk=ac.account_id)
     if request.method == 'POST':
         form = AccountCampaignForm(request.POST, request.FILES, instance=ac)
         if form.is_valid():
             form.save()
-            messages.success(request, f'Kampagne "{ac.name}" aktualisiert.')
+            messages.success(request, _(f'Kampagne "{ac.name}" aktualisiert.'))
     return redirect('accounts:account_detail', pk=ac.account_id)
 
 
@@ -705,7 +708,7 @@ def account_campaign_delete(request, pk):
     account_pk = ac.account_id
     if request.method == 'POST' and ac.is_external:
         ac.delete()
-        messages.success(request, 'Kampagne gelöscht.')
+        messages.success(request, _('Kampagne gelöscht.'))
     return redirect('accounts:account_detail', pk=account_pk)
 
 

@@ -1,15 +1,16 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=200, verbose_name='Name')
-    is_archived = models.BooleanField(default=False, verbose_name='Archiviert')
+    name = models.CharField(max_length=200, verbose_name=_('Name'))
+    is_archived = models.BooleanField(default=False, verbose_name=_('Archiviert'))
 
     class Meta:
-        verbose_name = 'Produkt'
-        verbose_name_plural = 'Produkte'
+        verbose_name = _('Produkt')
+        verbose_name_plural = _('Produkte')
         ordering = ['name']
 
     def __str__(self):
@@ -19,17 +20,17 @@ class Product(models.Model):
 class ProductPhase(models.Model):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name='phases',
-        verbose_name='Produkt',
+        verbose_name=_('Produkt'),
     )
-    name = models.CharField(max_length=200, verbose_name='Name')
-    order = models.PositiveIntegerField(default=0, verbose_name='Reihenfolge')
+    name = models.CharField(max_length=200, verbose_name=_('Name'))
+    order = models.PositiveIntegerField(default=0, verbose_name=_('Reihenfolge'))
     is_final_phase = models.BooleanField(
-        default=False, verbose_name='Endphase (Aktiv/Verloren/Beendet)',
+        default=False, verbose_name=_('Endphase (Aktiv/Verloren/Beendet)'),
     )
 
     class Meta:
-        verbose_name = 'Produktphase'
-        verbose_name_plural = 'Produktphasen'
+        verbose_name = _('Produktphase')
+        verbose_name_plural = _('Produktphasen')
         ordering = ['product', 'order']
 
     def __str__(self):
@@ -38,24 +39,24 @@ class ProductPhase(models.Model):
 
 class ProductField(models.Model):
     class FieldType(models.TextChoices):
-        DATE = 'date', 'Datum'
-        INTEGER = 'integer', 'Ganzzahl'
-        BOOLEAN = 'boolean', 'Ja/Nein'
+        DATE = 'date', _('Datum')
+        INTEGER = 'integer', _('Ganzzahl')
+        BOOLEAN = 'boolean', _('Ja/Nein')
 
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name='fields',
-        verbose_name='Produkt',
+        verbose_name=_('Produkt'),
     )
-    name = models.CharField(max_length=200, verbose_name='Name')
+    name = models.CharField(max_length=200, verbose_name=_('Name'))
     field_type = models.CharField(
-        max_length=10, choices=FieldType.choices, verbose_name='Feldtyp',
+        max_length=10, choices=FieldType.choices, verbose_name=_('Feldtyp'),
     )
-    is_archived = models.BooleanField(default=False, verbose_name='Archiviert')
-    show_on_dashboard = models.BooleanField(default=True, verbose_name='Im Dashboard anzeigen')
+    is_archived = models.BooleanField(default=False, verbose_name=_('Archiviert'))
+    show_on_dashboard = models.BooleanField(default=True, verbose_name=_('Im Dashboard anzeigen'))
 
     class Meta:
-        verbose_name = 'Produktfeld'
-        verbose_name_plural = 'Produktfelder'
+        verbose_name = _('Produktfeld')
+        verbose_name_plural = _('Produktfelder')
         ordering = ['product', 'name']
 
     def __str__(self):
@@ -64,50 +65,50 @@ class ProductField(models.Model):
 
 class AccountProduct(models.Model):
     class EndedReason(models.TextChoices):
-        PRICE = 'price', 'Preis'
-        COMPETITOR = 'competitor', 'Wechsel zu Wettbewerber'
-        PERFORMANCE = 'performance', 'Leistung nicht gepasst'
-        INTERNAL = 'internal', 'Interner Grund beim Partner'
-        OTHER = 'other', 'Sonstiges (bitte Notiz schreiben)'
+        PRICE = 'price', _('Preis')
+        COMPETITOR = 'competitor', _('Wechsel zu Wettbewerber')
+        PERFORMANCE = 'performance', _('Leistung nicht gepasst')
+        INTERNAL = 'internal', _('Interner Grund beim Partner')
+        OTHER = 'other', _('Sonstiges (bitte Notiz schreiben)')
 
     account = models.ForeignKey(
         'accounts.Account', on_delete=models.CASCADE,
-        related_name='account_products', verbose_name='Account',
+        related_name='account_products', verbose_name=_('Account'),
     )
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE,
-        related_name='account_products', verbose_name='Produkt',
+        related_name='account_products', verbose_name=_('Produkt'),
     )
     current_phase = models.ForeignKey(
         ProductPhase, on_delete=models.SET_NULL, null=True, blank=True,
-        verbose_name='Aktuelle Phase',
+        verbose_name=_('Aktuelle Phase'),
     )
     responsible = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
-        null=True, blank=True, verbose_name='Verantwortlicher',
+        null=True, blank=True, verbose_name=_('Verantwortlicher'),
         related_name='responsible_products',
     )
     lead_account_product = models.ForeignKey(
         'self', on_delete=models.SET_NULL,
         null=True, blank=True,
-        verbose_name='Leit-Account-Produkt (Produktverbund)',
+        verbose_name=_('Leit-Account-Produkt (Produktverbund)'),
         related_name='partner_products',
     )
     primary_contacts = models.ManyToManyField(
-        'accounts.Contact', blank=True, verbose_name='Hauptansprechpersonen',
+        'accounts.Contact', blank=True, verbose_name=_('Hauptansprechpersonen'),
         related_name='primary_for_products',
     )
-    ended_at = models.DateField(null=True, blank=True, verbose_name='Beendet zum')
+    ended_at = models.DateField(null=True, blank=True, verbose_name=_('Beendet zum'))
     ended_reason = models.CharField(
         max_length=20, choices=EndedReason.choices,
-        null=True, blank=True, verbose_name='Beendigungsgrund',
+        null=True, blank=True, verbose_name=_('Beendigungsgrund'),
     )
-    is_archived = models.BooleanField(default=False, verbose_name='Archiviert')
+    is_archived = models.BooleanField(default=False, verbose_name=_('Archiviert'))
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = 'Account-Produkt'
-        verbose_name_plural = 'Account-Produkte'
+        verbose_name = _('Account-Produkt')
+        verbose_name_plural = _('Account-Produkte')
         unique_together = [('account', 'product')]
 
     def clean(self):
@@ -116,7 +117,7 @@ class AccountProduct(models.Model):
         # Prevent self-reference
         if self.pk and self.lead_account_product_id == self.pk:
             raise ValidationError(
-                {'lead_account_product': 'Ein Produkt kann nicht sich selbst als Leit-Produkt haben.'}
+                {'lead_account_product': _('Ein Produkt kann nicht sich selbst als Leit-Produkt haben.')}
             )
         # Detect cycles by traversing the chain
         visited = {self.pk} if self.pk else set()
@@ -124,7 +125,7 @@ class AccountProduct(models.Model):
         while lead is not None:
             if lead.pk in visited:
                 raise ValidationError(
-                    {'lead_account_product': 'Kreisreferenz im Produktverbund nicht erlaubt.'}
+                    {'lead_account_product': _('Kreisreferenz im Produktverbund nicht erlaubt.')}
                 )
             visited.add(lead.pk)
             lead = lead.lead_account_product
@@ -150,10 +151,10 @@ class AccountProduct(models.Model):
 class AccountProductFieldValue(models.Model):
     account_product = models.ForeignKey(
         AccountProduct, on_delete=models.CASCADE,
-        related_name='field_values', verbose_name='Account-Produkt',
+        related_name='field_values', verbose_name=_('Account-Produkt'),
     )
     field = models.ForeignKey(
-        ProductField, on_delete=models.CASCADE, verbose_name='Feld',
+        ProductField, on_delete=models.CASCADE, verbose_name=_('Feld'),
     )
     value_text = models.CharField(max_length=500, blank=True, default='')
     value_int = models.IntegerField(null=True, blank=True)
@@ -161,8 +162,8 @@ class AccountProductFieldValue(models.Model):
     value_date = models.DateField(null=True, blank=True)
 
     class Meta:
-        verbose_name = 'Feldwert'
-        verbose_name_plural = 'Feldwerte'
+        verbose_name = _('Feldwert')
+        verbose_name_plural = _('Feldwerte')
         unique_together = ['account_product', 'field']
 
     def get_value(self):

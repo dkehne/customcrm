@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import gettext as _
 
 from accounts.models import Activity
 from products.models import Product
@@ -32,13 +33,13 @@ def set_default_product(request):
                 product = Product.objects.get(pk=product_id, is_archived=False)
                 request.user.default_dashboard_product = product
                 request.user.save()
-                messages.success(request, f'Standard-Produkt auf "{product.name}" gesetzt.')
+                messages.success(request, _(f'Standard-Produkt auf "{product.name}" gesetzt.'))
             except Product.DoesNotExist:
-                messages.error(request, 'Ungültiges Produkt.')
+                messages.error(request, _('Ungültiges Produkt.'))
         else:
             request.user.default_dashboard_product = None
             request.user.save()
-            messages.success(request, 'Standard-Produkt entfernt.')
+            messages.success(request, _('Standard-Produkt entfernt.'))
     return redirect('emails:profile_overview')
 
 
@@ -51,9 +52,9 @@ def email_address_add(request):
             obj.user = request.user
             try:
                 obj.save()
-                messages.success(request, f'E-Mail-Adresse "{obj.email}" hinzugefügt.')
+                messages.success(request, _(f'E-Mail-Adresse "{obj.email}" hinzugefügt.'))
             except IntegrityError:
-                messages.error(request, 'Diese E-Mail-Adresse ist bereits registriert.')
+                messages.error(request, _('Diese E-Mail-Adresse ist bereits registriert.'))
     return redirect('emails:profile_overview')
 
 
@@ -63,7 +64,7 @@ def email_address_delete(request, pk):
         obj = get_object_or_404(UserEmailAddress, pk=pk, user=request.user)
         email = obj.email
         obj.delete()
-        messages.success(request, f'E-Mail-Adresse "{email}" entfernt.')
+        messages.success(request, _(f'E-Mail-Adresse "{email}" entfernt.'))
     return redirect('emails:profile_overview')
 
 
@@ -86,11 +87,11 @@ def delete_email(request, pk):
     email_obj = get_object_or_404(InboundEmail, pk=pk, user=request.user, status='unresolved')
     if request.method == 'POST':
         if request.POST.get('confirm_username') != request.user.username:
-            messages.error(request, 'Benutzername stimmt nicht überein.')
+            messages.error(request, _('Benutzername stimmt nicht überein.'))
             return redirect('emails:unresolved_emails')
-        subject = email_obj.subject or '(Kein Betreff)'
+        subject = email_obj.subject or _('(Kein Betreff)')
         email_obj.delete()
-        messages.success(request, f'E-Mail "{subject}" gelöscht.')
+        messages.success(request, _(f'E-Mail "{subject}" gelöscht.'))
     return redirect('emails:unresolved_emails')
 
 
@@ -107,11 +108,11 @@ def assign_email(request, pk):
             Activity.objects.create(
                 account=account,
                 activity_type='email',
-                subject=email_obj.subject or '(Kein Betreff)',
+                subject=email_obj.subject or _('(Kein Betreff)'),
                 description=f'Von: {email_obj.sender_email}',
                 date=email_obj.received_at,
                 created_by=request.user,
                 inbound_email=email_obj,
             )
-            messages.success(request, f'E-Mail "{email_obj.subject}" dem Account "{account.name}" zugewiesen.')
+            messages.success(request, _(f'E-Mail "{email_obj.subject}" dem Account "{account.name}" zugewiesen.'))
     return redirect('emails:unresolved_emails')

@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 from core.utils import BootstrapFormMixin
 from .models import Contract, ContractDocument, ContractType
 
@@ -32,11 +33,11 @@ class ContractForm(BootstrapFormMixin, forms.ModelForm):
         cleaned_data = super().clean()
         duration = cleaned_data.get('duration_months')
         if duration is not None and duration <= 0:
-            self.add_error('duration_months', 'Laufzeit muss mindestens 1 Monat betragen.')
+            self.add_error('duration_months', _('Laufzeit muss mindestens 1 Monat betragen.'))
         if cleaned_data.get('is_self_cancelling') and cleaned_data.get('renewal_interval_months'):
             self.add_error(
                 'renewal_interval_months',
-                'Bei festem Enddatum ist kein Verlängerungsintervall möglich.',
+                _('Bei festem Enddatum ist kein Verlängerungsintervall möglich.'),
             )
         return cleaned_data
 

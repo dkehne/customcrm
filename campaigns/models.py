@@ -1,29 +1,30 @@
 from django.conf import settings
 from django.core.validators import FileExtensionValidator
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from accounts.models import Account, Contact
 
 
 class Campaign(models.Model):
-    name = models.CharField(max_length=300, verbose_name='Name')
-    start_date = models.DateField(verbose_name='Startdatum')
-    end_date = models.DateField(verbose_name='Enddatum')
+    name = models.CharField(max_length=300, verbose_name=_('Name'))
+    start_date = models.DateField(verbose_name=_('Startdatum'))
+    end_date = models.DateField(verbose_name=_('Enddatum'))
     product = models.ForeignKey(
         'products.Product', on_delete=models.SET_NULL,
-        null=True, blank=True, verbose_name='Produkt',
+        null=True, blank=True, verbose_name=_('Produkt'),
         related_name='campaigns',
     )
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,
-        verbose_name='Erstellt von',
+        verbose_name=_('Erstellt von'),
     )
-    is_archived = models.BooleanField(default=False, verbose_name='Archiviert')
+    is_archived = models.BooleanField(default=False, verbose_name=_('Archiviert'))
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = 'Kampagne'
-        verbose_name_plural = 'Kampagnen'
+        verbose_name = _('Kampagne')
+        verbose_name_plural = _('Kampagnen')
         ordering = ['-start_date']
 
     def __str__(self):
@@ -33,27 +34,27 @@ class Campaign(models.Model):
 class CampaignContact(models.Model):
     campaign = models.ForeignKey(
         Campaign, on_delete=models.CASCADE, related_name='campaign_contacts',
-        verbose_name='Kampagne',
+        verbose_name=_('Kampagne'),
     )
     contact = models.ForeignKey(
         Contact, on_delete=models.SET_NULL, null=True,
-        verbose_name='Kontakt',
+        verbose_name=_('Kontakt'),
     )
     account = models.ForeignKey(
         Account, on_delete=models.SET_NULL, null=True,
-        verbose_name='Account',
+        verbose_name=_('Account'),
     )
     # Snapshot fields
-    contact_name = models.CharField(max_length=300, verbose_name='Name')
-    contact_salutation = models.CharField(max_length=200, blank=True, default='', verbose_name='Anrede')
-    contact_email = models.EmailField(blank=True, verbose_name='E-Mail')
-    contact_phone = models.CharField(max_length=50, blank=True, verbose_name='Telefon')
-    account_name = models.CharField(max_length=300, verbose_name='Account')
+    contact_name = models.CharField(max_length=300, verbose_name=_('Name'))
+    contact_salutation = models.CharField(max_length=200, blank=True, default='', verbose_name=_('Anrede'))
+    contact_email = models.EmailField(blank=True, verbose_name=_('E-Mail'))
+    contact_phone = models.CharField(max_length=50, blank=True, verbose_name=_('Telefon'))
+    account_name = models.CharField(max_length=300, verbose_name=_('Account'))
     added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = 'Kampagnen-Kontakt'
-        verbose_name_plural = 'Kampagnen-Kontakte'
+        verbose_name = _('Kampagnen-Kontakt')
+        verbose_name_plural = _('Kampagnen-Kontakte')
         unique_together = ['campaign', 'contact']
         ordering = ['account_name', 'contact_name']
 
@@ -64,26 +65,26 @@ class CampaignContact(models.Model):
 class AccountCampaign(models.Model):
     account = models.ForeignKey(
         Account, on_delete=models.CASCADE, related_name='account_campaigns',
-        verbose_name='Account',
+        verbose_name=_('Account'),
     )
     campaign = models.ForeignKey(
         Campaign, on_delete=models.SET_NULL, null=True, blank=True,
-        related_name='account_campaign_links', verbose_name='Kampagne',
+        related_name='account_campaign_links', verbose_name=_('Kampagne'),
     )
-    name = models.CharField(max_length=300, blank=True, verbose_name='Name')
-    start_date = models.DateField(null=True, blank=True, verbose_name='Startdatum')
-    end_date = models.DateField(null=True, blank=True, verbose_name='Enddatum')
+    name = models.CharField(max_length=300, blank=True, verbose_name=_('Name'))
+    start_date = models.DateField(null=True, blank=True, verbose_name=_('Startdatum'))
+    end_date = models.DateField(null=True, blank=True, verbose_name=_('Enddatum'))
     attachment = models.FileField(
         upload_to='campaign_attachments/%Y/%m/',
         validators=[FileExtensionValidator(allowed_extensions=['pdf'])],
-        null=True, blank=True, verbose_name='Anhang',
+        null=True, blank=True, verbose_name=_('Anhang'),
     )
-    is_successful = models.BooleanField(default=False, verbose_name='Erfolgreich')
+    is_successful = models.BooleanField(default=False, verbose_name=_('Erfolgreich'))
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = 'Account-Kampagne'
-        verbose_name_plural = 'Account-Kampagnen'
+        verbose_name = _('Account-Kampagne')
+        verbose_name_plural = _('Account-Kampagnen')
         ordering = ['-created_at']
 
     def __str__(self):

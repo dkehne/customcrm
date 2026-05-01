@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
+from django.utils.translation import gettext as _
 
 from django.db.models import Count, Q, OuterRef, Subquery
 from django.http import FileResponse, Http404, HttpRequest
@@ -228,7 +229,7 @@ def password_change(request):
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)
-            messages.success(request, 'Passwort erfolgreich geändert.')
+            messages.success(request, _('Passwort erfolgreich geändert.'))
             return redirect('emails:profile_overview')
     else:
         form = PasswordChangeForm(request.user)

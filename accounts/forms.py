@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_lazy as _
 from core.utils import BootstrapFormMixin
 from .models import Account, Contact, AccountType, Activity, Todo
 
@@ -23,7 +24,7 @@ class ContactForm(BootstrapFormMixin, forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         if cleaned_data.get('is_primary') and not cleaned_data.get('anrede', '').strip():
-            self.add_error('anrede', 'Pflichtfeld für Hauptansprechpersonen.')
+            self.add_error('anrede', _('Pflichtfeld für Hauptansprechpersonen.'))
         return cleaned_data
 
 
@@ -34,7 +35,7 @@ class AccountTypeForm(BootstrapFormMixin, forms.ModelForm):
 
 
 class ActivityForm(BootstrapFormMixin, forms.ModelForm):
-    MANUAL_ACTIVITY_TYPES = [('call', 'Telefonanruf'), ('email', 'E-Mail'), ('meeting', 'Termin')]
+    MANUAL_ACTIVITY_TYPES = [('call', _('Telefonanruf')), ('email', _('E-Mail')), ('meeting', _('Termin'))]
 
     class Meta:
         model = Activity
@@ -66,6 +67,6 @@ class TodoForm(BootstrapFormMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         User = get_user_model()
         self.fields['assigned_to'].queryset = User.objects.filter(is_active=True).order_by('first_name', 'last_name', 'username')
-        self.fields['assigned_to'].empty_label = '— Nicht zugewiesen —'
+        self.fields['assigned_to'].empty_label = _('— Nicht zugewiesen —')
         if current_user and not self.instance.pk:
             self.fields['assigned_to'].initial = current_user

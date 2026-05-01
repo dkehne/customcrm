@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 from core.utils import BootstrapFormMixin
 from products.models import Product
 from .models import Campaign, AccountCampaign
@@ -17,14 +18,14 @@ class CampaignForm(BootstrapFormMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['product'].queryset = Product.objects.filter(is_archived=False)
         self.fields['product'].required = False
-        self.fields['product'].empty_label = 'Kein Produkt'
+        self.fields['product'].empty_label = _('Kein Produkt')
 
     def clean(self):
         cleaned_data = super().clean()
         start_date = cleaned_data.get('start_date')
         end_date = cleaned_data.get('end_date')
         if start_date and end_date and end_date < start_date:
-            self.add_error('end_date', 'Enddatum darf nicht vor dem Startdatum liegen.')
+            self.add_error('end_date', _('Enddatum darf nicht vor dem Startdatum liegen.'))
         return cleaned_data
 
 
@@ -43,5 +44,5 @@ class AccountCampaignForm(BootstrapFormMixin, forms.ModelForm):
         start_date = cleaned_data.get('start_date')
         end_date = cleaned_data.get('end_date')
         if start_date and end_date and end_date < start_date:
-            self.add_error('end_date', 'Enddatum darf nicht vor dem Startdatum liegen.')
+            self.add_error('end_date', _('Enddatum darf nicht vor dem Startdatum liegen.'))
         return cleaned_data

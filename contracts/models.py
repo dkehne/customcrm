@@ -3,16 +3,17 @@ from dateutil.relativedelta import relativedelta
 
 from django.core.validators import FileExtensionValidator
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class ContractType(models.Model):
-    name = models.CharField(max_length=200, verbose_name='Name')
-    is_active = models.BooleanField(default=True, verbose_name='Aktiv')
-    is_archived = models.BooleanField(default=False, verbose_name='Archiviert')
+    name = models.CharField(max_length=200, verbose_name=_('Name'))
+    is_active = models.BooleanField(default=True, verbose_name=_('Aktiv'))
+    is_archived = models.BooleanField(default=False, verbose_name=_('Archiviert'))
 
     class Meta:
-        verbose_name = 'Vertragstyp'
-        verbose_name_plural = 'Vertragstypen'
+        verbose_name = _('Vertragstyp')
+        verbose_name_plural = _('Vertragstypen')
         ordering = ['name']
 
     def __str__(self):
@@ -22,37 +23,37 @@ class ContractType(models.Model):
 class Contract(models.Model):
     account = models.ForeignKey(
         'accounts.Account', on_delete=models.CASCADE,
-        related_name='contracts', verbose_name='Account',
+        related_name='contracts', verbose_name=_('Account'),
     )
     account_product = models.ForeignKey(
         'products.AccountProduct', on_delete=models.SET_NULL,
         null=True, blank=True, related_name='contracts',
-        verbose_name='Account-Produkt',
+        verbose_name=_('Account-Produkt'),
     )
     gross_annual_price = models.DecimalField(
-        max_digits=12, decimal_places=2, verbose_name='Bruttojahrespreis (€)',
+        max_digits=12, decimal_places=2, verbose_name=_('Bruttojahrespreis (€)'),
     )
     contract_type = models.ForeignKey(
-        ContractType, on_delete=models.PROTECT, verbose_name='Vertragstyp',
+        ContractType, on_delete=models.PROTECT, verbose_name=_('Vertragstyp'),
         null=True, blank=True,
     )
-    start_date = models.DateField(verbose_name='Startdatum')
-    duration_months = models.PositiveIntegerField(verbose_name='Laufzeit (Monate)')
+    start_date = models.DateField(verbose_name=_('Startdatum'))
+    duration_months = models.PositiveIntegerField(verbose_name=_('Laufzeit (Monate)'))
     is_self_cancelling = models.BooleanField(
-        default=False, verbose_name='Festes Enddatum',
+        default=False, verbose_name=_('Festes Enddatum'),
     )
     renewal_interval_months = models.PositiveIntegerField(
-        null=True, blank=True, verbose_name='Verlängerungsintervall (Monate)',
+        null=True, blank=True, verbose_name=_('Verlängerungsintervall (Monate)'),
     )
     notice_period_months = models.PositiveIntegerField(
-        default=3, verbose_name='Kündigungsfrist (Monate)',
+        default=3, verbose_name=_('Kündigungsfrist (Monate)'),
     )
-    is_archived = models.BooleanField(default=False, verbose_name='Archiviert')
+    is_archived = models.BooleanField(default=False, verbose_name=_('Archiviert'))
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = 'Vertrag'
-        verbose_name_plural = 'Verträge'
+        verbose_name = _('Vertrag')
+        verbose_name_plural = _('Verträge')
         ordering = ['-start_date']
 
     def initial_end_date(self):
@@ -80,18 +81,18 @@ class Contract(models.Model):
 class ContractDocument(models.Model):
     contract = models.ForeignKey(
         Contract, on_delete=models.CASCADE, related_name='documents',
-        verbose_name='Vertrag',
+        verbose_name=_('Vertrag'),
     )
     file = models.FileField(
         upload_to='contract_documents/%Y/%m/',
         validators=[FileExtensionValidator(allowed_extensions=['pdf'])],
-        verbose_name='PDF-Datei',
+        verbose_name=_('PDF-Datei'),
     )
-    uploaded_at = models.DateTimeField(auto_now_add=True, verbose_name='Hochgeladen am')
+    uploaded_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Hochgeladen am'))
 
     class Meta:
-        verbose_name = 'Vertragsdokument'
-        verbose_name_plural = 'Vertragsdokumente'
+        verbose_name = _('Vertragsdokument')
+        verbose_name_plural = _('Vertragsdokumente')
         ordering = ['-uploaded_at']
 
     def __str__(self):

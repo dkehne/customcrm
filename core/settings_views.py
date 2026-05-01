@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import gettext as _
 
 from accounts.forms import AccountTypeForm
 from accounts.models import AccountType
@@ -18,7 +19,7 @@ def superuser_required(view_func):
     @login_required
     def wrapper(request, *args, **kwargs):
         if not request.user.is_superuser:
-            messages.error(request, 'Zugriff verweigert.')
+            messages.error(request, _('Zugriff verweigert.'))
             return redirect('core:dashboard')
         return view_func(request, *args, **kwargs)
     return wrapper
@@ -33,8 +34,8 @@ def _handle_form(request, form_class, redirect_url, title, instance=None, parent
             if parent_field:
                 setattr(obj, parent_field, parent_obj)
                 obj.save()
-            action = 'aktualisiert' if instance else 'erstellt'
-            messages.success(request, f'{title.split()[0]} {action}.')
+            action = _('aktualisiert') if instance else _('erstellt')
+            messages.success(request, _('{name} {action}.').format(name=title.split()[0], action=action))
             return redirect(redirect_url)
     else:
         form = form_class(instance=instance)
@@ -119,7 +120,7 @@ def product_phase_edit(request, pk):
 @superuser_required
 def product_phase_delete(request, pk):
     get_object_or_404(ProductPhase, pk=pk).delete()
-    messages.success(request, 'Phase gelöscht.')
+    messages.success(request, _('Phase gelöscht.'))
     return redirect('settings:product_list')
 
 
@@ -212,7 +213,7 @@ def site_settings(request):
         form = SiteSettingsForm(request.POST, request.FILES, instance=settings)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Systemeinstellungen gespeichert.')
+            messages.success(request, _('Systemeinstellungen gespeichert.'))
             return redirect('settings:site_settings')
     else:
         form = SiteSettingsForm(instance=settings)

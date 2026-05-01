@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 from accounts.models import Account
 from core.utils import BootstrapFormMixin
 from .models import UserEmailAddress
@@ -12,4 +13,4 @@ class UserEmailAddressForm(BootstrapFormMixin, forms.ModelForm):
 
 
 class AssignEmailForm(BootstrapFormMixin, forms.Form):
-    account = forms.ModelChoiceField(queryset=Account.objects.filter(is_archived=False).order_by('name'), label='Account')
+    account = forms.ModelChoiceField(queryset=Account.objects.filter(is_archived=False).order_by('name'), label=_('Account'))

@@ -8,6 +8,7 @@ from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.text import get_valid_filename
+from django.utils.translation import gettext as _
 
 from accounts.models import Account, Contact
 from core.utils import toggle_archive, confirm_delete
@@ -101,7 +102,7 @@ def campaign_create(request):
             campaign = form.save(commit=False)
             campaign.created_by = request.user
             campaign.save()
-            messages.success(request, f'Kampagne "{campaign.name}" erstellt.')
+            messages.success(request, _(f'Kampagne "{campaign.name}" erstellt.'))
             return redirect('campaigns:campaign_detail', pk=campaign.pk)
     else:
         form = CampaignForm()
@@ -118,7 +119,7 @@ def campaign_edit(request, pk):
         form = CampaignForm(request.POST, instance=campaign)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Kampagne aktualisiert.')
+            messages.success(request, _('Kampagne aktualisiert.'))
             return redirect('campaigns:campaign_detail', pk=pk)
     else:
         form = CampaignForm(instance=campaign)
@@ -200,7 +201,7 @@ def campaign_add_accounts(request, pk):
                 )
                 if created:
                     added += 1
-        messages.success(request, f'{added} Kontakt(e) zur Kampagne hinzugefügt.')
+        messages.success(request, _(f'{added} Kontakt(e) zur Kampagne hinzugefügt.'))
         return redirect('campaigns:campaign_detail', pk=pk)
 
     # GET: show account selection
@@ -222,12 +223,12 @@ def campaign_remove_contact(request, pk, contact_pk):
 
     # Only allow removal if campaign end date has not been reached
     if campaign.end_date < date.today():
-        messages.error(request, 'Kontakte können nicht entfernt werden, da das Enddatum der Kampagne erreicht ist.')
+        messages.error(request, _('Kontakte können nicht entfernt werden, da das Enddatum der Kampagne erreicht ist.'))
         return redirect('campaigns:campaign_detail', pk=pk)
 
     if request.method == 'POST':
         campaign_contact.delete()
-        messages.success(request, 'Kontakt aus der Kampagne entfernt.')
+        messages.success(request, _('Kontakt aus der Kampagne entfernt.'))
         return redirect('campaigns:campaign_detail', pk=pk)
 
     return redirect('campaigns:campaign_detail', pk=pk)
