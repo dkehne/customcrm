@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}{{ campaign.name }} – CRM{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>{{ campaign.name }}</h2>
+  <div>
+    <a href="{% url 'campaigns:campaign_add_accounts' campaign.pk %}" class="btn btn-primary">Accounts hinzufügen</a>
+    <a href="{% url 'campaigns:campaign_detail' campaign.pk %}?export=csv" class="btn btn-success">
+      <i class="bi bi-download"></i> CSV-Export
+    </a>
+    <a href="{% url 'campaigns:campaign_edit' campaign.pk %}" class="btn btn-outline-primary">Bearbeiten</a>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <dl class="row mb-0">
+      <dt class="col-sm-3">Zeitraum</dt>
+      <dd class="col-sm-9">{{ campaign.start_date|date:"d.m.Y" }} – {{ campaign.end_date|date:"d.m.Y" }}</dd>
+      <dt class="col-sm-3">Produkt</dt>
+      <dd class="col-sm-9">{{ campaign.product.name|default:"-" }}</dd>
+      <dt class="col-sm-3">Erstellt von</dt>
+      <dd class="col-sm-9">{{ campaign.created_by|default:"-" }}</dd>
+      <dt class="col-sm-3">Kontakte</dt>
+      <dd class="col-sm-9">{{ campaign_contacts|length }}</dd>
+    </dl>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><strong>Kontakte</strong></div>
+  <div class="card-body p-0">
+    <table class="table table-sm mb-0">
+      <thead>
+        <tr><th>Account</th><th>Anrede</th><th>Name</th><th>E-Mail</th><th>Telefon</th><th>Bundesland</th>{% if can_remove_contacts %}<th></th>{% endif %}</tr>
+      </thead>
+      <tbody>
+        {% for cc in campaign_contacts %}
+        <tr>
+          <td>
+            {% if cc.account %}
+            <a href="{% url 'accounts:account_detail' cc.account_id %}">{{ cc.account_name }}</a>
+            {% else %}
+            {{ cc.account_name }}
+            {% endif %}
+          </td>
+          <td>{% if cc.contact_id %}{{ cc.contact.anrede|default:"-" }}{% else %}{{ cc.contact_salutation|default:"-" }}{% endif %}</td>
+          <td>{{ cc.contact_name }}</td>
+          <td>{% if cc.contact_email %}<a href="mailto:{{ cc.contact_email }}">{{ cc.contact_email }}</a>{% else %}-{% endif %}</td>
+          <td>{{ cc.contact_phone|default:"-" }}</td>
+          <td>{{ cc.bundesland|default:"-" }}</td>
+          {% if can_remove_contacts %}
+          <td>
+            <form method="post" action="{% url 'campaigns:campaign_remove_contact' campaign.pk cc.pk %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-danger" title="Entfernen" onclick="return confirm('Kontakt wirklich aus der Kampagne entfernen?');">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </form>
+          </td>
+          {% endif %}
+        </tr>
+        {% empty %}
+        <tr><td colspan="{% if can_remove_contacts %}7{% else %}6{% endif %}" class="text-center text-muted">Keine Kontakte in dieser Kampagne.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,383 @@
+/* CustomCRM Brand Stylesheet
+   ---------------------------
+   Uses CSS custom properties for theming.
+   Primary color injected via inline style from SiteSettings.
+*/
+
+/* Import Google Fonts: Noto Sans */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+/* ========== CSS Custom Properties ========== */
+:root {
+  /* Brand colors - primary injected inline, these are derived shades */
+  --brand-primary: #CED51E;
+  --brand-primary-dark: #a8af0f;
+  --brand-primary-light: #e4ea6b;
+  --brand-primary-subtle: rgba(206, 213, 30, 0.15);
+
+  /* Sidebar & Navigation */
+  --sidebar-bg: #1a1d21;
+  --sidebar-hover: #2d3238;
+  --sidebar-border: rgba(206, 213, 30, 0.3);
+
+  /* Typography */
+  --font-family-base: 'Noto Sans', 'Liberation Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Spacing */
+  --sidebar-width: 260px;
+  --header-height: 80px;
+}
+
+/* ========== Base Typography ========== */
+html, body {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ========== Sidebar ========== */
+.sidebar {
+  min-height: 100vh;
+  background: var(--sidebar-bg);
+  width: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--sidebar-border);
+}
+
+.sidebar-brand {
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.sidebar-brand:hover {
+  background-color: var(--sidebar-hover);
+}
+
+.sidebar-brand-logo {
+  max-height: 40px;
+  max-width: 120px;
+  width: auto;
+  object-fit: contain;
+}
+
+.sidebar-brand-text {
+  color: #fff;
+  font-weight: var(--font-weight-semibold);
+  font-size: 1.125rem;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Accent line on sidebar brand */
+.sidebar-brand::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--brand-primary);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.sidebar-brand {
+  position: relative;
+}
+
+.sidebar-brand:hover::before {
+  opacity: 1;
+}
+
+/* Navigation */
+.sidebar .nav-link {
+  color: rgba(255, 255, 255, 0.7);
+  padding: 0.625rem 1rem;
+  margin: 0.125rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-medium);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.15s ease;
+}
+
+.sidebar .nav-link i {
+  font-size: 1.1rem;
+  width: 1.25rem;
+  text-align: center;
+}
+
+.sidebar .nav-link:hover {
+  color: #fff;
+  background-color: var(--sidebar-hover);
+}
+
+.sidebar .nav-link.active {
+  color: var(--brand-primary);
+  background-color: var(--brand-primary-subtle);
+  font-weight: var(--font-weight-semibold);
+}
+
+.sidebar .nav-link.active i {
+  color: var(--brand-primary);
+}
+
+/* Section headers in sidebar */
+.sidebar-section-header {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 1.25rem 1rem 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* User section at bottom */
+.sidebar-user {
+  margin-top: auto;
+  padding: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-user-name {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.sidebar-user-logout {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.sidebar-user small {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.75rem;
+}
+
+.sidebar-user-logout:hover {
+  color: var(--brand-primary);
+}
+
+/* ========== Main Content Area ========== */
+.main-content {
+  flex-grow: 1;
+  padding: 1.5rem 2rem;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* ========== Buttons with Brand Color ========== */
+.btn-brand {
+  background-color: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: #1a1d21;
+  font-weight: var(--font-weight-semibold);
+}
+
+.btn-brand:hover,
+.btn-brand:focus {
+  background-color: var(--brand-primary-dark);
+  border-color: var(--brand-primary-dark);
+  color: #1a1d21;
+}
+
+.btn-brand:active {
+  background-color: var(--brand-primary-dark);
+  border-color: var(--brand-primary-dark);
+}
+
+.btn-outline-brand {
+  color: var(--brand-primary-dark);
+  border-color: var(--brand-primary);
+  background: transparent;
+  font-weight: var(--font-weight-medium);
+}
+
+.btn-outline-brand:hover,
+.btn-outline-brand:focus {
+  background-color: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: #1a1d21;
+}
+
+/* ========== Cards ========== */
+.card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.card-header {
+  background: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ========== Tables ========== */
+.table {
+  font-size: 0.9rem;
+}
+
+.table thead th {
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: #6c757d;
+  border-bottom-width: 1px;
+}
+
+/* ========== Badges with Brand Color ========== */
+.badge-brand {
+  background-color: var(--brand-primary);
+  color: #1a1d21;
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ========== Form Elements ========== */
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 0.2rem var(--brand-primary-subtle);
+}
+
+/* ========== Links ========== */
+/* Use Bootstrap blue for content links — brand primary (green) lacks contrast on white */
+.main-content a:not(.btn):not(.nav-link) {
+  color: var(--bs-primary, #0d6efd);
+}
+
+.main-content a:not(.btn):not(.nav-link):hover {
+  color: var(--bs-primary, #0a58ca);
+}
+
+/* ========== Login Page ========== */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a1d21 0%, #2d3238 100%);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.login-header {
+  background: var(--sidebar-bg);
+  padding: 2rem;
+  text-align: center;
+  border-bottom: 3px solid var(--brand-primary);
+}
+
+.login-logo {
+  max-height: 60px;
+  max-width: 200px;
+  margin-bottom: 1rem;
+}
+
+.login-title {
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-semibold);
+  margin: 0;
+}
+
+.login-subtitle {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+.login-body {
+  padding: 2rem;
+  background: #fff;
+}
+
+.login-btn {
+  background: var(--brand-primary);
+  border: none;
+  color: #1a1d21;
+  font-weight: var(--font-weight-semibold);
+  padding: 0.75rem 1.5rem;
+  width: 100%;
+  transition: all 0.15s ease;
+}
+
+.login-btn:hover {
+  background: var(--brand-primary-dark);
+  color: #1a1d21;
+  transform: translateY(-1px);
+}
+
+/* ========== Utility Classes ========== */
+.text-brand {
+  color: var(--brand-primary) !important;
+}
+
+.bg-brand {
+  background-color: var(--brand-primary) !important;
+}
+
+.bg-brand-subtle {
+  background-color: var(--brand-primary-subtle) !important;
+}
+
+.border-brand {
+  border-color: var(--brand-primary) !important;
+}
+
+/* Archive badge */
+.archive-badge {
+  opacity: 0.6;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 220px;
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
+
+  .sidebar-brand-logo {
+    max-height: 32px;
+  }
+}

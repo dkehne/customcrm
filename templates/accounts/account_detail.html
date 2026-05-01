@@ -1,0 +1,1041 @@
+{% extends "base.html" %}
+{% load email_format %}
+{% block title %}{{ account.name }} – CRM{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 page-header">
+  <h2>{{ account.name }}</h2>
+  <div>
+    {% if back_url %}<a href="{{ back_url }}" class="btn btn-outline-secondary">← Zurück</a>{% endif %}
+    <a href="{% url 'accounts:account_archive' account.pk %}" class="btn btn-outline-warning">
+      {% if account.is_archived %}Wiederherstellen{% else %}Archivieren{% endif %}
+    </a>
+    {% if account.is_archived %}
+    <button type="button" class="btn btn-outline-danger btn-delete-archived"
+            data-delete-url="{% url 'accounts:account_delete' account.pk %}"
+            data-object-name="{{ account.name }}">Löschen</button>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row mb-4">
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-header"><strong>Stammdaten</strong></div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="edit_account">
+          {% if back_url %}<input type="hidden" name="back" value="{{ back_url }}">{% endif %}
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">{{ account_form.name.label }}</label>
+              {{ account_form.name }}
+              {% if account_form.name.errors %}<div class="invalid-feedback d-block">{{ account_form.name.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">{{ account_form.account_type.label }}</label>
+              {{ account_form.account_type }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">{{ account_form.bundesland.label }}</label>
+              {{ account_form.bundesland }}
+            </div>
+            <div class="col-12">
+              <label class="form-label">{{ account_form.owner.label }}</label>
+              {{ account_form.owner }}
+            </div>
+            <div class="col-12">
+              <label class="form-label">{{ account_form.notes.label }}</label>
+              {{ account_form.notes }}
+            </div>
+          </div>
+          <div class="mt-3">
+            <button type="submit" class="btn btn-primary btn-sm">Speichern</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Aktivitäten</strong>
+        <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addActivityForm">
+          Aktivität hinzufügen
+        </button>
+      </div>
+      <div class="collapse" id="addActivityForm">
+        <div class="card-body border-bottom bg-light">
+          <form method="post" action="{% url 'accounts:activity_add' account.pk %}">
+            {% csrf_token %}
+            <div class="row g-2">
+              <div class="col-md-6">
+                <label class="form-label small">Typ</label>
+                {{ activity_form.activity_type }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small">Datum</label>
+                {{ activity_form.date }}
+              </div>
+              <div class="col-12">
+                <label class="form-label small">Betreff</label>
+                {{ activity_form.subject }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small">Kontakt</label>
+                {{ activity_form.contact }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small">Beschreibung</label>
+                {{ activity_form.description }}
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm mt-2">Hinzufügen</button>
+          </form>
+        </div>
+      </div>
+      <div class="activity-log-scroll">
+        <table class="table table-sm mb-0">
+          <thead>
+            <tr><th>Datum</th><th>Typ</th><th>Betreff</th><th></th></tr>
+          </thead>
+          <tbody data-max-rows="10">
+            {% for activity in activities %}
+            <tr {% if activity.description or activity.inbound_email %}class="cursor-pointer activity-row" data-collapse-target="#activityDetail{{ activity.pk }}"{% endif %}>
+              <td class="text-nowrap text-muted small">
+                {{ activity.date|date:"d.m.Y" }}
+                {% if activity.description or activity.inbound_email %}
+                  <i class="bi bi-chevron-down text-muted small activity-chevron"></i>
+                {% endif %}
+              </td>
+              <td>
+                {% if activity.activity_type == 'call' %}
+                  <span class="badge bg-primary">Anruf</span>
+                {% elif activity.activity_type == 'email' %}
+                  <span class="badge bg-info">E-Mail</span>
+                {% elif activity.activity_type == 'meeting' %}
+                  <span class="badge bg-warning text-dark">Termin</span>
+                {% endif %}
+              </td>
+              <td class="text-truncate" style="max-width:180px;">{{ activity.subject }}</td>
+              <td class="text-end" style="width:1%">
+                <button type="button"
+                        class="btn btn-sm btn-outline-danger btn-delete-archived"
+                        data-delete-url="{% url 'accounts:activity_delete' activity.pk %}"
+                        data-object-name="{{ activity.subject }}">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+            {% if activity.description or activity.inbound_email %}
+            <tr class="collapse" id="activityDetail{{ activity.pk }}">
+              <td colspan="4" class="bg-light p-0">
+                <div class="p-3" style="max-height: 300px; overflow-y: auto;">
+                  {% if activity.inbound_email %}
+                  <div class="email-header">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                      <i class="bi bi-envelope text-muted"></i>
+                      <strong>{{ activity.inbound_email.subject|default:activity.subject }}</strong>
+                    </div>
+                    <div class="text-muted small">
+                      <span class="me-3"><strong>Von:</strong> {{ activity.inbound_email.sender_email }}</span>
+                      <span><strong>An:</strong> {{ activity.inbound_email.recipient_emails }}</span>
+                    </div>
+                  </div>
+                  <hr class="my-2">
+                  {% if activity.inbound_email.body_html %}
+                  <iframe class="email-body-frame" srcdoc="{{ activity.inbound_email.body_html }}" sandbox="allow-same-origin" referrerpolicy="no-referrer"></iframe>
+                  {% else %}
+                  <div class="email-body-text">{{ activity.inbound_email.body_text }}</div>
+                  {% endif %}
+                  {% if activity.inbound_email.attachments.all %}
+                  <hr class="my-2">
+                  <div class="d-flex align-items-center flex-wrap gap-1">
+                    <span class="text-muted small me-1"><i class="bi bi-paperclip"></i> Anhänge:</span>
+                    {% for att in activity.inbound_email.attachments.all %}
+                    <a href="{{ att.file.url }}" class="btn btn-sm btn-outline-secondary" download="{{ att.filename }}">
+                      {{ att.filename }}
+                    </a>
+                    {% endfor %}
+                  </div>
+                  {% endif %}
+                  {% if activity.inbound_email.eml_file %}
+                  <div class="mt-2">
+                    <a href="{{ activity.inbound_email.eml_file.url }}" class="btn btn-sm btn-outline-dark" download>
+                      <i class="bi bi-download"></i> Original .eml herunterladen
+                    </a>
+                  </div>
+                  {% endif %}
+                  {% elif activity.description %}
+                  {% if activity.activity_type == 'email' %}
+                  {{ activity.description|format_email }}
+                  {% else %}
+                  <div style="white-space: pre-wrap;">{{ activity.description|linebreaksbr }}</div>
+                  {% endif %}
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% endif %}
+            {% empty %}
+            <tr><td colspan="4" class="text-center text-muted">Keine Aktivitäten.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Kontakte -->
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <strong>Kontakte</strong>
+    <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addContactForm">
+      Neuer Kontakt
+    </button>
+  </div>
+  <div class="collapse" id="addContactForm">
+    <div class="card-body border-bottom bg-light">
+      <form method="post" action="{% url 'accounts:contact_add' account.pk %}">
+        {% csrf_token %}
+        <div class="row g-2">
+          {% for field in contact_form %}
+          <div class="col-md-{% if field.name == 'is_primary' or field.name == 'anrede' %}12{% else %}4{% endif %}{% if field.name == 'anrede' %} d-none" id="addContactAnredeField{% endif %}">
+            {% if field.name == 'is_primary' %}
+            <div class="form-check mt-2">
+              {{ field }}
+              <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            </div>
+            {% if account_products|length > 1 %}
+            <div id="addContactProductSelect" class="mt-2 d-none">
+              <label class="form-label small">Als Hauptansprechperson für Produkte</label>
+              <div>
+                {% for ap in account_products %}
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="primary_products" value="{{ ap.pk }}" id="add_ap_{{ ap.pk }}">
+                  <label class="form-check-label" for="add_ap_{{ ap.pk }}">{{ ap.product.name }}</label>
+                </div>
+                {% endfor %}
+              </div>
+              <div class="form-text text-muted">Keine Auswahl = für alle Produkte.</div>
+            </div>
+            {% endif %}
+            {% elif field.name == 'anrede' %}
+            <label class="form-label small">{{ field.label }} <span class="text-danger">*</span></label>
+            {{ field }}
+            {% if field.errors %}<div class="invalid-feedback d-block">{{ field.errors.0 }}</div>{% endif %}
+            <div class="form-text text-muted">z.B. „Sehr geehrte Frau Muster" oder „Lieber Herr Muster"</div>
+            {% else %}
+            <label class="form-label small">{{ field.label }}</label>
+            {{ field }}
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm mt-2">Hinzufügen</button>
+      </form>
+    </div>
+  </div>
+  <div class="card-body">
+    <table class="table table-sm mb-0">
+      <thead>
+        <tr><th>Name</th><th>E-Mail</th><th>Telefon</th><th>Position</th><th>Haupt</th><th>Anrede</th>{% if account_products|length > 1 %}<th>Produkt-Zuordnung</th>{% endif %}<th>Aktionen</th></tr>
+      </thead>
+      <tbody data-max-rows="10">
+        {% for contact in contacts %}
+        <tr>
+          <td>{{ contact.name }}</td>
+          <td>{{ contact.email|default:"-" }}</td>
+          <td>{{ contact.phone|default:"-" }}</td>
+          <td>{{ contact.position|default:"-" }}</td>
+          <td>{% if contact.is_primary %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</td>
+          <td class="text-muted" style="font-size:0.85rem;">{{ contact.anrede|default:"-" }}</td>
+          {% if account_products|length > 1 %}
+          <td>
+            {% if contact.is_primary %}
+              {% with contact.primary_for_products.all as assigned_aps %}
+              {% if assigned_aps %}
+                {% for ap in assigned_aps %}<span class="badge bg-secondary">{{ ap.product.name }}</span> {% endfor %}
+              {% else %}
+                <span class="text-muted small">alle</span>
+              {% endif %}
+              {% endwith %}
+            {% endif %}
+          </td>
+          {% endif %}
+          <td>
+            <a href="{% url 'accounts:contact_edit' contact.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+            <a href="{% url 'accounts:contact_archive' contact.pk %}" class="btn btn-sm btn-outline-warning">Archivieren</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="{% if account_products|length > 1 %}7{% else %}6{% endif %}" class="text-center text-muted">Keine Kontakte.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if archived_contacts %}
+  <div class="card-footer">
+    <details>
+      <summary class="text-muted small">Archivierte Kontakte ({{ archived_contacts.count }})</summary>
+      <table class="table table-sm mt-2 mb-0">
+        <tbody>
+          {% for contact in archived_contacts %}
+          <tr class="archive-badge">
+            <td>{{ contact.name }}</td>
+            <td>{{ contact.email|default:"-" }}</td>
+            <td>
+              <a href="{% url 'accounts:contact_archive' contact.pk %}" class="btn btn-sm btn-outline-success">Wiederherstellen</a>
+              <button type="button" class="btn btn-sm btn-outline-danger btn-delete-archived"
+                      data-delete-url="{% url 'accounts:contact_delete' contact.pk %}"
+                      data-object-name="{{ contact.name }}">Löschen</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </details>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Produkt-Zuordnungen -->
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <strong>Produkte</strong>
+    <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addProductForm">
+      Produkt zuordnen
+    </button>
+  </div>
+  <div class="collapse" id="addProductForm">
+    <div class="card-body border-bottom bg-light">
+      <form method="post" action="{% url 'accounts:account_product_add' account.pk %}">
+        {% csrf_token %}
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label class="form-label small">Produkt</label>
+            {{ account_product_form.product }}
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm mt-2">Zuordnen</button>
+      </form>
+    </div>
+  </div>
+  <div class="card-body">
+    <table class="table table-sm mb-0">
+      <thead>
+        <tr><th>Produkt</th><th>Aktuelle Phase</th><th>Produktverbund</th>{% if account_products|length > 1 %}<th>Verantwortlicher</th>{% endif %}<th>Aktionen</th></tr>
+      </thead>
+      <tbody data-max-rows="10">
+        {% for ap in account_products %}
+        <tr>
+          <td>{{ ap.product.name }}</td>
+          <td>
+            {% if ap.current_phase %}
+            <span class="badge {% if ap.current_phase.is_final_phase %}bg-secondary{% else %}bg-info{% endif %}">
+              {{ ap.current_phase.name }}
+            </span>
+            {% if ap.current_phase.name == 'Beendet' %}
+            <div class="text-muted small mt-1">
+              {% if ap.ended_at %}<span>{{ ap.ended_at|date:"d.m.Y" }}</span>{% endif %}
+              {% if ap.ended_reason %}<span class="ms-1">· {{ ap.get_ended_reason_display }}</span>{% endif %}
+            </div>
+            {% endif %}
+            {% else %}-{% endif %}
+          </td>
+          <td>
+            {% if ap.lead_account_product %}
+              <span class="text-muted small"><i class="bi bi-link-45deg"></i> Leit: <a href="{% url 'accounts:account_detail' ap.lead_account_product.account_id %}">{{ ap.lead_account_product.account.name }}</a></span>
+            {% else %}
+              {% with partners=ap.partner_products.all %}
+              {% if partners %}
+                <span class="text-muted small"><i class="bi bi-people"></i>
+                {% for p in partners %}<a href="{% url 'accounts:account_detail' p.account_id %}">{{ p.account.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                </span>
+              {% else %}—{% endif %}
+              {% endwith %}
+            {% endif %}
+          </td>
+          {% if account_products|length > 1 %}
+          <td>
+            {% if ap.responsible %}
+              {{ ap.responsible.get_full_name|default:ap.responsible.username }}
+            {% else %}
+              <span class="text-warning"><i class="bi bi-exclamation-triangle"></i> Nicht zugewiesen</span>
+            {% endif %}
+          </td>
+          {% endif %}
+          <td>
+            <a href="{% url 'accounts:account_product_edit' ap.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+            <a href="{% url 'accounts:account_product_archive' ap.pk %}" class="btn btn-sm btn-outline-warning">Archivieren</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="{% if account_products|length > 1 %}5{% else %}4{% endif %}" class="text-center text-muted">Keine Produkte zugeordnet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if archived_account_products %}
+  <div class="card-footer">
+    <details>
+      <summary class="text-muted small">Archivierte Produkte ({{ archived_account_products|length }})</summary>
+      <table class="table table-sm mt-2 mb-0">
+        <tbody>
+          {% for ap in archived_account_products %}
+          <tr class="archive-badge">
+            <td>{{ ap.product.name }}</td>
+            <td>{{ ap.current_phase.name|default:"-" }}</td>
+            <td>
+              <a href="{% url 'accounts:account_product_archive' ap.pk %}" class="btn btn-sm btn-outline-success">Wiederherstellen</a>
+              <button type="button" class="btn btn-sm btn-outline-danger btn-delete-archived"
+                      data-delete-url="{% url 'accounts:account_product_delete' ap.pk %}"
+                      data-object-name="{{ ap.product.name }}">Löschen</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </details>
+  </div>
+  {% endif %}
+  {% if integreat_ap %}
+  {% if latest_region_health %}
+  <div class="card-body border-top">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <strong>
+        Integreat-Qualität
+        {% if latest_region_health.ampel_color == 'green' %}
+        <span class="badge bg-success ms-1">&#9679; Grün</span>
+        {% elif latest_region_health.ampel_color == 'yellow' %}
+        <span class="badge bg-warning text-dark ms-1">&#9679; Gelb</span>
+        {% else %}
+        <span class="badge bg-danger ms-1">&#9679; Rot</span>
+        {% endif %}
+      </strong>
+      <span class="text-muted small">Score: {{ latest_region_health.ampel_score|floatformat:2 }} · Stand: {{ latest_region_health.upload.uploaded_at|date:"d.m.Y" }}</span>
+    </div>
+    <dl class="row mb-0 small">
+      <dt class="col-sm-5">Aktive Sprachen</dt>
+      <dd class="col-sm-7">{{ latest_region_health.active_languages }}</dd>
+      <dt class="col-sm-5">Seiten gesamt</dt>
+      <dd class="col-sm-7">{{ latest_region_health.total_pages }}</dd>
+      <dt class="col-sm-5">Seiten mit niedriger Verständlichkeit</dt>
+      <dd class="col-sm-7">{{ latest_region_health.hix_low_count }}{% with pct=latest_region_health.hix_low_count|pct_of:latest_region_health.total_pages %}{% if pct %} <span class="text-muted">({{ pct }}%)</span>{% endif %}{% endwith %}</dd>
+      <dt class="col-sm-5">Seiten veraltet</dt>
+      <dd class="col-sm-7">{{ latest_region_health.outdated_pages }}{% with pct=latest_region_health.outdated_pages|pct_of:latest_region_health.total_pages %}{% if pct %} <span class="text-muted">({{ pct }}%)</span>{% endif %}{% endwith %}</dd>
+      <dt class="col-sm-5">Fehlerhafte Links</dt>
+      <dd class="col-sm-7">{{ latest_region_health.broken_links }}</dd>
+    </dl>
+  </div>
+  {% endif %}
+  {% if survey_snapshots %}
+  <div class="card-body border-top p-0">
+    <div class="px-3 pt-3 pb-2"><strong>Umfrage-Historie</strong></div>
+    <table class="table table-sm mb-0">
+      <thead>
+        <tr>
+          <th>Jahr</th>
+          <th>App</th>
+          <th>Redaktion</th>
+          <th>Betreuung</th>
+          <th>Gesamt</th>
+          <th>h/Woche</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for snap in survey_snapshots %}
+        <tr class="cursor-pointer survey-row" data-collapse-target="#surveyDetail{{ snap.pk }}">
+          <td><strong>{{ snap.year }}</strong></td>
+          <td>{% include "accounts/_satisfaction_badge.html" with val=snap.satisfaction_app %}</td>
+          <td>{% include "accounts/_satisfaction_badge.html" with val=snap.satisfaction_cms %}</td>
+          <td>{% include "accounts/_satisfaction_badge.html" with val=snap.satisfaction_support %}</td>
+          <td>{% include "accounts/_satisfaction_badge.html" with val=snap.satisfaction_overall %}</td>
+          <td>{% if snap.weekly_hours %}{{ snap.weekly_hours|floatformat:1 }}h{% else %}<span class="text-muted">–</span>{% endif %}</td>
+          <td><i class="bi bi-chevron-down text-muted small survey-chevron"></i></td>
+        </tr>
+        <tr class="collapse{% if snap == latest_snapshot %} show{% endif %}" id="surveyDetail{{ snap.pk }}">
+          <td colspan="7" class="bg-light">
+            <div class="p-3">
+              <div class="row g-3">
+                {% if snap.satisfaction_content_quality or snap.satisfaction_content_freshness %}
+                <div class="col-md-6">
+                  <small class="text-muted text-uppercase fw-semibold">Inhalte</small>
+                  <div class="mt-1">
+                    <span class="me-3">Qualität: {% include "accounts/_satisfaction_badge.html" with val=snap.satisfaction_content_quality %}</span>
+                    <span>Aktualität: {% include "accounts/_satisfaction_badge.html" with val=snap.satisfaction_content_freshness %}</span>
+                  </div>
+                </div>
+                {% endif %}
+                {% if snap.promotes_online is not None %}
+                <div class="col-md-6">
+                  <small class="text-muted text-uppercase fw-semibold">Bewirbt Integreat online</small>
+                  <div class="mt-1">
+                    {% if snap.promotes_online %}<span class="text-success"><i class="bi bi-check-circle-fill"></i> Ja</span>
+                    {% else %}<span class="text-danger"><i class="bi bi-x-circle-fill"></i> Nein</span>{% endif %}
+                  </div>
+                </div>
+                {% endif %}
+                {% if snap.features.all %}
+                <div class="col-12">
+                  <div class="mb-2">
+                    <small class="text-muted text-uppercase fw-semibold">Feature-Wünsche</small>
+                    <div class="mt-1">
+                      {% for f in snap.features.all %}{% if f.kind == 'request' %}<span class="badge bg-info text-dark me-1">{{ f.feature_name }}</span>{% endif %}{% empty %}<span class="text-muted small">–</span>{% endfor %}
+                    </div>
+                  </div>
+                  <div class="mb-2">
+                    <small class="text-muted text-uppercase fw-semibold">Bekannt, aber ungenutzt</small>
+                    <div class="mt-1">
+                      {% for f in snap.features.all %}{% if f.kind == 'not_used' %}<span class="badge bg-secondary me-1">{{ f.feature_name }}</span>{% endif %}{% endfor %}
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+                {% if snap.free_text_positive %}
+                <div class="col-md-6">
+                  <small class="text-muted text-uppercase fw-semibold">Was gefällt</small>
+                  <div class="mt-1 small" style="white-space: pre-wrap;">{{ snap.free_text_positive }}</div>
+                </div>
+                {% endif %}
+                {% if snap.free_text_improvement %}
+                <div class="col-md-6">
+                  <small class="text-muted text-uppercase fw-semibold">Verbesserungspotenzial</small>
+                  <div class="mt-1 small" style="white-space: pre-wrap;">{{ snap.free_text_improvement }}</div>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+  {% endif %}
+</div>
+
+<!-- Verträge -->
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <strong>Verträge</strong>
+    <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addContractForm">
+      Vertrag anlegen
+    </button>
+  </div>
+  <div class="collapse" id="addContractForm">
+    <div class="card-body border-bottom bg-light">
+      <form method="post" action="{% url 'accounts:contract_add' account.pk %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row g-2">
+          {% for field in contract_form %}
+          <div class="col-md-{% if field.name == 'is_self_cancelling' %}12{% else %}4{% endif %}">
+            {% if field.name == 'is_self_cancelling' %}
+            <div class="form-check mt-2">
+              {{ field }}
+              <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            </div>
+            {% else %}
+            <label class="form-label small">{{ field.label }}</label>
+            {{ field }}
+            {% endif %}
+          </div>
+          {% endfor %}
+          <div class="col-md-4">
+            <label class="form-label small">PDF-Dokumente</label>
+            <input type="file" name="documents" class="form-control" accept=".pdf" multiple>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm mt-2">Erstellen</button>
+      </form>
+    </div>
+  </div>
+  <div class="card-body">
+    <table class="table table-sm mb-0">
+      <thead>
+        <tr><th>Vertragstyp</th><th>Produkt</th><th>Bruttojahrespreis</th><th>Start</th><th>Ende</th><th>Aktionen</th></tr>
+      </thead>
+      <tbody data-max-rows="10">
+        {% for contract in contracts %}
+        <tr>
+          <td>{{ contract.contract_type|default:"-" }}</td>
+          <td>{{ contract.account_product.product.name|default:"-" }}</td>
+          <td>{{ contract.gross_annual_price }} €</td>
+          <td>{{ contract.start_date|date:"d.m.Y" }}</td>
+          <td>{% if contract.is_self_cancelling %}{{ contract.current_end_date|date:"d.m.Y" }}{% else %}-{% endif %}</td>
+          <td>
+            <a href="{% url 'accounts:contract_edit' contract.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+            <a href="{% url 'accounts:contract_archive' contract.pk %}" class="btn btn-sm btn-outline-warning">Archivieren</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center text-muted">Keine Verträge.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Aufgaben (Todos) -->
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <strong>Aufgaben</strong>
+    <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addTodoForm">
+      Aufgabe hinzufügen
+    </button>
+  </div>
+  <div class="collapse" id="addTodoForm">
+    <div class="card-body border-bottom bg-light">
+      <form method="post" action="{% url 'accounts:todo_add' account.pk %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row g-2">
+          <div class="col-md-5">
+            <label class="form-label small">Titel</label>
+            {{ todo_form.title }}
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">Fälligkeitsdatum</label>
+            {{ todo_form.due_date }}
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small">PDF-Anhang</label>
+            {{ todo_form.attachment }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">Zugewiesen an</label>
+            {{ todo_form.assigned_to }}
+          </div>
+          <div class="col-md-12">
+            <label class="form-label small">Beschreibung</label>
+            {{ todo_form.description }}
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm mt-2">Hinzufügen</button>
+      </form>
+    </div>
+  </div>
+  <div class="card-body">
+    <table class="table table-sm mb-0">
+      <thead>
+        <tr><th>Titel</th><th>Fälligkeitsdatum</th><th>Anhang</th><th>Erstellt von</th><th>Zugewiesen an</th><th>Aktionen</th></tr>
+      </thead>
+      <tbody data-max-rows="10">
+        {% now "Y-m-d" as today %}
+        {% for todo in todos %}
+        <tr {% if todo.description %}class="cursor-pointer todo-row" data-collapse-target="#todoDetail{{ todo.pk }}"{% endif %}>
+          <td>
+            {{ todo.title }}
+            {% if todo.description %}
+              <i class="bi bi-chevron-down text-muted small todo-chevron"></i>
+            {% endif %}
+          </td>
+          <td>
+            {% if todo.due_date %}
+              {% if todo.due_date|date:"Y-m-d" < today %}
+                <span class="text-danger fw-bold">{{ todo.due_date|date:"d.m.Y" }}</span>
+              {% else %}
+                {{ todo.due_date|date:"d.m.Y" }}
+              {% endif %}
+            {% else %}-{% endif %}
+          </td>
+          <td>
+            {% if todo.attachment %}
+              <a href="{{ todo.attachment.url }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-file-pdf"></i> PDF
+              </a>
+            {% else %}-{% endif %}
+          </td>
+          <td>{{ todo.created_by|default:"-" }}</td>
+          <td>{{ todo.assigned_to|default:"-" }}</td>
+          <td>
+            <a href="{% url 'accounts:todo_edit' todo.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+            <form method="post" action="{% url 'accounts:todo_complete' todo.pk %}" class="d-inline"
+                  onsubmit="return confirm('Aufgabe als erledigt markieren? Diese Aktion kann nicht rückgängig gemacht werden.');">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-success">Erledigt</button>
+            </form>
+          </td>
+        </tr>
+        {% if todo.description %}
+        <tr class="collapse" id="todoDetail{{ todo.pk }}">
+          <td colspan="6" class="bg-light p-0">
+            <div class="p-3" style="max-height: 300px; overflow-y: auto; white-space: pre-wrap;">{{ todo.description|linebreaksbr }}</div>
+          </td>
+        </tr>
+        {% endif %}
+        {% empty %}
+        <tr><td colspan="6" class="text-center text-muted">Keine offenen Aufgaben.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if completed_todos %}
+  <div class="card-footer">
+    <details>
+      <summary class="text-muted small">Erledigte Aufgaben ({{ completed_todos|length }})</summary>
+      <table class="table table-sm mt-2 mb-0">
+        <tbody>
+          {% for todo in completed_todos %}
+          <tr class="text-muted">
+            <td><del>{{ todo.title }}</del></td>
+            <td>{{ todo.due_date|date:"d.m.Y"|default:"-" }}</td>
+            <td>
+              {% if todo.attachment %}
+                <a href="{{ todo.attachment.url }}" target="_blank" class="text-muted"><i class="bi bi-file-pdf"></i></a>
+              {% else %}-{% endif %}
+            </td>
+            <td><small>Erledigt am {{ todo.completed_at|date:"d.m.Y" }}</small></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </details>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Kampagnen -->
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <strong>Kampagnen</strong>
+    <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addCampaignForm">
+      Externe Kampagne hinzufügen
+    </button>
+  </div>
+  <div class="collapse" id="addCampaignForm">
+    <div class="card-body border-bottom bg-light">
+      <form method="post" action="{% url 'accounts:account_campaign_add' account.pk %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="row g-2">
+          <div class="col-md-4">
+            <label class="form-label small">Name</label>
+            {{ account_campaign_form.name }}
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Startdatum</label>
+            {{ account_campaign_form.start_date }}
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Enddatum</label>
+            {{ account_campaign_form.end_date }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small">PDF-Anhang</label>
+            {{ account_campaign_form.attachment }}
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm mt-2">Hinzufügen</button>
+      </form>
+    </div>
+  </div>
+  <div class="card-body">
+    <table class="table table-sm mb-0">
+      <thead>
+        <tr><th>Name</th><th>Zeitraum</th><th>Anhang</th><th>Erfolgreich</th><th>Aktionen</th></tr>
+      </thead>
+      <tbody data-max-rows="10">
+        {% for ac in account_campaigns %}
+        <tr>
+          <td>
+            {% if not ac.is_external %}
+              <a href="{% url 'campaigns:campaign_detail' ac.campaign.pk %}">{{ ac.display_name }}</a>
+            {% else %}
+              {{ ac.display_name }}
+            {% endif %}
+          </td>
+          <td>
+            {% if ac.display_start_date %}{{ ac.display_start_date|date:"d.m.Y" }}{% endif %}
+            {% if ac.display_start_date and ac.display_end_date %} – {% endif %}
+            {% if ac.display_end_date %}{{ ac.display_end_date|date:"d.m.Y" }}{% endif %}
+            {% if not ac.display_start_date and not ac.display_end_date %}-{% endif %}
+          </td>
+          <td>
+            {% if ac.attachment %}
+              <a href="{{ ac.attachment.url }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-file-pdf"></i> PDF
+              </a>
+            {% else %}-{% endif %}
+          </td>
+          <td>
+            <form method="post" action="{% url 'accounts:account_campaign_toggle_success' ac.pk %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm {% if ac.is_successful %}btn-success{% else %}btn-outline-secondary{% endif %}">
+                <i class="bi bi-check-lg"></i>
+              </button>
+            </form>
+          </td>
+          <td>
+            {% if ac.is_external %}
+            <button class="btn btn-sm btn-outline-primary" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#editCampaign{{ ac.pk }}">
+              Bearbeiten
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-danger btn-delete-archived"
+                    data-delete-url="{% url 'accounts:account_campaign_delete' ac.pk %}"
+                    data-object-name="{{ ac.name }}">Löschen</button>
+            {% else %}-{% endif %}
+          </td>
+        </tr>
+        {% if ac.is_external %}
+        <tr class="collapse" id="editCampaign{{ ac.pk }}">
+          <td colspan="5" class="bg-light py-2 px-3">
+            <form method="post" action="{% url 'accounts:account_campaign_edit' ac.pk %}" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="row g-2 align-items-end">
+                <div class="col-md-4">
+                  <label class="form-label small">Name</label>
+                  <input type="text" name="name" value="{{ ac.name }}" class="form-control form-control-sm" required>
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label small">Startdatum</label>
+                  <input type="date" name="start_date" value="{{ ac.start_date|date:'Y-m-d' }}" class="form-control form-control-sm">
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label small">Enddatum</label>
+                  <input type="date" name="end_date" value="{{ ac.end_date|date:'Y-m-d' }}" class="form-control form-control-sm">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small">PDF-Anhang (ersetzen)</label>
+                  <input type="file" name="attachment" accept=".pdf" class="form-control form-control-sm">
+                </div>
+                <div class="col-md-1">
+                  <button type="submit" class="btn btn-primary btn-sm w-100">Speichern</button>
+                </div>
+              </div>
+            </form>
+          </td>
+        </tr>
+        {% endif %}
+        {% empty %}
+        <tr><td colspan="5" class="text-center text-muted">Keine Kampagnen.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ---- Page header ---- */
+.page-header {
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+/* ---- Card refinements ---- */
+/* overflow:hidden clips the accent stripe at the card's rounded corners */
+.card { overflow: hidden; }
+
+.card-header {
+  position: relative;
+  padding-left: 1.125rem;
+}
+.card-header::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 55%;
+  width: 3px;
+  background: var(--brand-primary);
+  border-radius: 0 2px 2px 0;
+}
+
+/* ---- Info card: label/value styling ---- */
+.card-body dl.row dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6c757d;
+  font-weight: 600;
+  padding-top: 0.5rem;
+}
+.card-body dl.row dd {
+  font-weight: 500;
+  padding-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+/* ---- General ---- */
+.cursor-pointer {
+  cursor: pointer;
+}
+.activity-row:hover,
+.todo-row:hover,
+.survey-row:hover {
+  background-color: rgba(0,0,0,0.02);
+}
+.activity-row[aria-expanded="true"] .activity-chevron,
+.todo-row[aria-expanded="true"] .todo-chevron,
+.survey-row[aria-expanded="true"] .survey-chevron {
+  transform: rotate(180deg);
+}
+.activity-chevron,
+.todo-chevron,
+.survey-chevron {
+  transition: transform 0.2s ease;
+}
+/* Activity log scrollable panel */
+.activity-log-scroll {
+  max-height: 420px;
+  overflow-y: auto;
+  padding: 0 0.5rem;
+}
+.activity-log-scroll table thead th {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6c757d;
+}
+.activity-log-scroll td:nth-child(1) {
+  white-space: nowrap;
+  width: 1%;
+  padding-right: 0.4rem;
+}
+.activity-log-scroll td:nth-child(2) {
+  width: 1%;
+  padding-right: 0.5rem;
+}
+.activity-log-scroll td:nth-child(3) {
+  width: 100%;
+}
+
+/* Email display in activity log */
+.email-header {
+  padding: 0.25rem 0;
+}
+.email-body-frame {
+  width: 100%;
+  min-height: 120px;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 6px;
+  background: #fff;
+}
+.email-body-text {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Toggle collapse on row click, but not when clicking links, buttons or forms
+  document.querySelectorAll('[data-collapse-target]').forEach(function(row) {
+    row.addEventListener('click', function(e) {
+      if (e.target.closest('a, button, form')) return;
+      var target = document.querySelector(row.dataset.collapseTarget);
+      if (!target) return;
+      bootstrap.Collapse.getOrCreateInstance(target).toggle();
+      var expanded = row.getAttribute('aria-expanded') === 'true';
+      row.setAttribute('aria-expanded', String(!expanded));
+    });
+  });
+
+  document.querySelectorAll('tbody[data-max-rows]').forEach(function(tbody) {
+    var maxRows = parseInt(tbody.dataset.maxRows, 10);
+    // Count only non-collapse (data) rows
+    var allRows = Array.from(tbody.querySelectorAll('tr'));
+    var dataRows = allRows.filter(function(tr) { return !tr.classList.contains('collapse'); });
+    if (dataRows.length <= maxRows) return;
+
+    var totalCount = dataRows.length;
+    var hidden = false;
+
+    function hideExtra() {
+      var count = 0;
+      allRows.forEach(function(tr) {
+        if (tr.classList.contains('collapse')) {
+          // Collapse rows follow their parent data row — hide if parent is hidden
+          var prev = tr.previousElementSibling;
+          if (prev && prev.classList.contains('d-none')) {
+            tr.classList.add('d-none');
+          }
+        } else {
+          count++;
+          if (count > maxRows) {
+            tr.classList.add('d-none');
+            // Also hide any immediately following collapse row
+            var next = tr.nextElementSibling;
+            if (next && next.classList.contains('collapse')) {
+              next.classList.add('d-none');
+            }
+          }
+        }
+      });
+      hidden = true;
+    }
+
+    function showAll() {
+      allRows.forEach(function(tr) {
+        tr.classList.remove('d-none');
+      });
+      hidden = false;
+    }
+
+    // Initial hide
+    hideExtra();
+
+    // Insert toggle button after the table
+    var table = tbody.closest('table');
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn btn-sm btn-link mt-2';
+    btn.textContent = 'Alle ' + totalCount + ' anzeigen';
+    btn.addEventListener('click', function() {
+      if (hidden) {
+        showAll();
+        btn.textContent = 'Weniger anzeigen';
+      } else {
+        hideExtra();
+        btn.textContent = 'Alle ' + totalCount + ' anzeigen';
+      }
+    });
+    table.parentNode.insertBefore(btn, table.nextSibling);
+  });
+
+  // Auto-resize email iframes to fit their content
+  document.querySelectorAll('.email-body-frame').forEach(function(iframe) {
+    iframe.addEventListener('load', function() {
+      try {
+        var doc = iframe.contentDocument || iframe.contentWindow.document;
+        // Inject base styles for readability
+        var style = doc.createElement('style');
+        style.textContent = 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 14px; line-height: 1.6; color: #333; margin: 8px; } img { max-width: 100%; height: auto; }';
+        doc.head.appendChild(style);
+        iframe.style.height = doc.documentElement.scrollHeight + 'px';
+      } catch(e) {}
+    });
+  });
+});
+
+// Show product checkboxes and anrede field in add-contact form when is_primary is checked
+(function() {
+  var isPrimaryCheckbox = document.getElementById('id_is_primary');
+  var productSelect = document.getElementById('addContactProductSelect');
+  var anredeField = document.getElementById('addContactAnredeField');
+  if (isPrimaryCheckbox) {
+    function togglePrimaryFields() {
+      var checked = isPrimaryCheckbox.checked;
+      if (productSelect) productSelect.classList.toggle('d-none', !checked);
+      if (anredeField) anredeField.classList.toggle('d-none', !checked);
+    }
+    isPrimaryCheckbox.addEventListener('change', togglePrimaryFields);
+    togglePrimaryFields();
+  }
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}Aufgaben – CRM{% endblock %}
+{% block content %}
+<h2 class="mb-4">Meine Aufgaben</h2>
+
+{% if upcoming_todos %}
+<div class="card mb-4">
+  <div class="card-header"><strong>Fällig in den nächsten 2 Wochen</strong></div>
+  <div class="card-body p-0">
+    <table class="table table-sm mb-0">
+      <thead>
+        <tr><th>Fälligkeit</th><th>Aufgabe</th><th>Anhang</th><th>Account</th><th>Erstellt von</th><th>Aktionen</th></tr>
+      </thead>
+      <tbody>
+        {% for todo in upcoming_todos %}
+        <tr {% if todo.due_date < today %}class="table-danger{% if todo.description %} cursor-pointer todo-row{% endif %}"{% elif todo.due_date == today %}class="table-warning{% if todo.description %} cursor-pointer todo-row{% endif %}"{% elif todo.description %}class="cursor-pointer todo-row"{% endif %}
+            {% if todo.description %}data-collapse-target="#upcomingTodoDetail{{ todo.pk }}"{% endif %}>
+          <td>{{ todo.due_date|date:"d.m.Y" }}</td>
+          <td>
+            {{ todo.title }}
+            {% if todo.description %}<i class="bi bi-chevron-down text-muted small todo-chevron"></i>{% endif %}
+          </td>
+          <td>
+            {% if todo.attachment %}
+              <a href="{{ todo.attachment.url }}" target="_blank" title="PDF öffnen"><i class="bi bi-file-pdf text-danger"></i></a>
+            {% else %}-{% endif %}
+          </td>
+          <td><a href="{% url 'accounts:account_detail' todo.account_id %}">{{ todo.account.name }}</a></td>
+          <td>{{ todo.created_by|default:"-" }}</td>
+          <td>
+            <a href="{% url 'accounts:todo_edit' todo.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+            <form method="post" action="{% url 'accounts:todo_complete' todo.pk %}" class="d-inline"
+                  onsubmit="return confirm('Aufgabe als erledigt markieren?')">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-success">Erledigt</button>
+            </form>
+          </td>
+        </tr>
+        {% if todo.description %}
+        <tr class="collapse" id="upcomingTodoDetail{{ todo.pk }}">
+          <td colspan="6" class="bg-light p-0">
+            <div class="p-3" style="max-height: 300px; overflow-y: auto; white-space: pre-wrap;">{{ todo.description|linebreaksbr }}</div>
+          </td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% if other_todos %}
+<div class="card mb-4">
+  <div class="card-header"><strong>Weitere Aufgaben</strong></div>
+  <div class="card-body p-0">
+    <table class="table table-sm mb-0">
+      <thead>
+        <tr><th>Fälligkeit</th><th>Aufgabe</th><th>Anhang</th><th>Account</th><th>Erstellt von</th><th>Aktionen</th></tr>
+      </thead>
+      <tbody>
+        {% for todo in other_todos %}
+        <tr {% if todo.description %}class="cursor-pointer todo-row" data-collapse-target="#otherTodoDetail{{ todo.pk }}"{% endif %}>
+          <td>{% if todo.due_date %}{{ todo.due_date|date:"d.m.Y" }}{% else %}-{% endif %}</td>
+          <td>
+            {{ todo.title }}
+            {% if todo.description %}<i class="bi bi-chevron-down text-muted small todo-chevron"></i>{% endif %}
+          </td>
+          <td>
+            {% if todo.attachment %}
+              <a href="{{ todo.attachment.url }}" target="_blank" title="PDF öffnen"><i class="bi bi-file-pdf text-danger"></i></a>
+            {% else %}-{% endif %}
+          </td>
+          <td><a href="{% url 'accounts:account_detail' todo.account_id %}">{{ todo.account.name }}</a></td>
+          <td>{{ todo.created_by|default:"-" }}</td>
+          <td>
+            <a href="{% url 'accounts:todo_edit' todo.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+            <form method="post" action="{% url 'accounts:todo_complete' todo.pk %}" class="d-inline"
+                  onsubmit="return confirm('Aufgabe als erledigt markieren?')">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-success">Erledigt</button>
+            </form>
+          </td>
+        </tr>
+        {% if todo.description %}
+        <tr class="collapse" id="otherTodoDetail{{ todo.pk }}">
+          <td colspan="6" class="bg-light p-0">
+            <div class="p-3" style="max-height: 300px; overflow-y: auto; white-space: pre-wrap;">{{ todo.description|linebreaksbr }}</div>
+          </td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% if not upcoming_todos and not other_todos %}
+<div class="alert alert-info">Keine offenen Aufgaben vorhanden.</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.cursor-pointer {
+  cursor: pointer;
+}
+.todo-row:hover {
+  background-color: rgba(0,0,0,0.02);
+}
+.todo-row[aria-expanded="true"] .todo-chevron {
+  transform: rotate(180deg);
+}
+.todo-chevron {
+  transition: transform 0.2s ease;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('[data-collapse-target]').forEach(function(row) {
+    row.addEventListener('click', function(e) {
+      if (e.target.closest('a, button, form')) return;
+      var target = document.querySelector(row.dataset.collapseTarget);
+      if (!target) return;
+      bootstrap.Collapse.getOrCreateInstance(target).toggle();
+      var expanded = row.getAttribute('aria-expanded') === 'true';
+      row.setAttribute('aria-expanded', String(!expanded));
+    });
+  });
+});
+</script>
+{% endblock %}

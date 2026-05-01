@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+{% block title %}Accounts – CRM{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-header {
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  margin-bottom: 1.5rem;
+}
+.filter-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.filter-card .form-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+}
+.accounts-table {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+.accounts-table thead th {
+  background: #f8f9fa;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #6c757d;
+  border-bottom: 2px solid #dee2e6;
+  padding: 0.6rem 1rem;
+}
+.accounts-table tbody td {
+  padding: 0.55rem 1rem;
+  vertical-align: middle;
+  font-size: 0.9rem;
+}
+.accounts-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.accounts-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+.account-link {
+  font-weight: 500;
+  color: inherit;
+  text-decoration: none;
+}
+.account-link:hover {
+  color: var(--brand-primary-dark, #000);
+  text-decoration: underline;
+}
+.row-count {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-top: 0.75rem;
+}
+.campaign-action-bar {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 0.75rem 1.25rem;
+}
+.campaign-action-label {
+  font-size: 0.85rem;
+  color: #6c757d;
+  white-space: nowrap;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+  <h2 class="mb-0">Accounts{% if show_archived %} <span class="text-muted fs-5">(Archiv)</span>{% endif %}</h2>
+  <div class="d-flex gap-2">
+    {% if show_archived %}
+    <a href="{% url 'accounts:account_list' %}" class="btn btn-outline-secondary btn-sm">Aktive anzeigen</a>
+    {% else %}
+    <a href="{% url 'accounts:account_list' %}?archived=1" class="btn btn-outline-secondary btn-sm">Archiv anzeigen</a>
+    {% endif %}
+    <a href="{% url 'accounts:account_create' %}" class="btn btn-primary btn-sm">+ Neuer Account</a>
+  </div>
+</div>
+
+<div class="filter-card">
+  <form method="get">
+    {% if show_archived %}<input type="hidden" name="archived" value="1">{% endif %}
+    <div class="row g-2 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label">Suche</label>
+        <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="Name...">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Bundesland</label>
+        <select name="bundesland" class="form-select form-select-sm">
+          <option value="">Alle</option>
+          {% for code, label in bundesland_choices %}
+          <option value="{{ code }}" {% if bundesland == code %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Account-Typ</label>
+        <select name="account_type" class="form-select form-select-sm">
+          <option value="">Alle</option>
+          {% for t in account_types %}
+          <option value="{{ t.pk }}" {% if account_type_id == t.pk|stringformat:"d" %}selected{% endif %}>{{ t.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Besitzer</label>
+        <select name="owner" class="form-select form-select-sm">
+          <option value="">Alle</option>
+          <option value="none" {% if owner_id == 'none' %}selected{% endif %}>Ohne Besitzer</option>
+          {% for u in users %}
+          <option value="{{ u.pk }}" {% if owner_id == u.pk|stringformat:"d" %}selected{% endif %}>{{ u.get_full_name|default:u.username }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Produkt</label>
+        <select name="product" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="">Alle</option>
+          {% for p in products %}
+          <option value="{{ p.pk }}" {% if product_id == p.pk|stringformat:"d" %}selected{% endif %}>{{ p.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% if phases %}
+      <div class="col-md-2">
+        <label class="form-label">Phase</label>
+        <select name="phase" class="form-select form-select-sm">
+          <option value="">Alle Phasen</option>
+          {% for ph in phases %}
+          <option value="{{ ph.pk }}" {% if phase_id == ph.pk|stringformat:"d" %}selected{% endif %}>{{ ph.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% endif %}
+      <div class="col-md-auto">
+        <button type="submit" class="btn btn-primary btn-sm">Filtern</button>
+        <a href="{% url 'accounts:account_list' %}{% if show_archived %}?archived=1{% endif %}" class="btn btn-outline-secondary btn-sm">Zurücksetzen</a>
+      </div>
+    </div>
+    {% if bool_fields or date_fields %}
+    <div class="row g-2 align-items-end mt-1">
+      {% for bff in bool_fields %}
+      <div class="col-md-2">
+        <label class="form-label">{{ bff.field.name }}</label>
+        <select name="bf_{{ bff.field.pk }}" class="form-select form-select-sm">
+          <option value="">Alle</option>
+          <option value="1" {% if bff.selected == "1" %}selected{% endif %}>Ja</option>
+          <option value="0" {% if bff.selected == "0" %}selected{% endif %}>Nein</option>
+        </select>
+      </div>
+      {% endfor %}
+      {% for dff in date_fields %}
+      <div class="col-md-2">
+        <label class="form-label">{{ dff.field.name }}</label>
+        <select name="df_{{ dff.field.pk }}" class="form-select form-select-sm">
+          <option value="">Alle</option>
+          <option value="1" {% if dff.selected == "1" %}selected{% endif %}>Eingetragen</option>
+          <option value="0" {% if dff.selected == "0" %}selected{% endif %}>Nicht eingetragen</option>
+        </select>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </form>
+</div>
+
+<div class="table-responsive accounts-table">
+  <table class="table table-hover mb-0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Typ</th>
+        <th>Name</th>
+        <th>Besitzer</th>
+        <th>Aktionen</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for account in accounts %}
+      <tr{% if account.is_archived %} class="archive-badge"{% endif %}>
+        <td class="text-muted">{{ account.pk }}</td>
+        <td class="text-muted">{{ account.account_type.name|default:"-" }}</td>
+        <td><a href="{% url 'accounts:account_detail' account.pk %}?back={{ request.get_full_path|urlencode }}" class="account-link">{{ account.name }}</a></td>
+        <td class="text-muted">{{ account.owner|default:"-" }}</td>
+        <td>
+          <a href="{% url 'accounts:account_detail' account.pk %}?back={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+          {% if account.is_archived %}
+          <a href="{% url 'accounts:account_archive' account.pk %}" class="btn btn-sm btn-outline-success">Wiederherstellen</a>
+          <button type="button" class="btn btn-sm btn-outline-danger btn-delete-archived"
+                  data-delete-url="{% url 'accounts:account_delete' account.pk %}"
+                  data-object-name="{{ account.name }}">Löschen</button>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" class="text-center text-muted py-4">Keine Accounts gefunden.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="row-count">{{ accounts|length }} Einträge</p>
+
+{% if not show_archived and accounts and campaigns %}
+<div class="campaign-action-bar mt-3">
+  <form method="post" action="{% url 'accounts:accounts_to_campaign' %}" class="d-flex align-items-center gap-2">
+    {% csrf_token %}
+    <input type="hidden" name="q" value="{{ q }}">
+    <input type="hidden" name="bundesland" value="{{ bundesland }}">
+    <input type="hidden" name="account_type" value="{{ account_type_id }}">
+    <input type="hidden" name="owner_id" value="{{ owner_id }}">
+    <input type="hidden" name="product_id" value="{{ product_id }}">
+    <input type="hidden" name="phase_id" value="{{ phase_id }}">
+    {% for bff in bool_fields %}{% if bff.selected %}<input type="hidden" name="bf_{{ bff.field.pk }}" value="{{ bff.selected }}">{% endif %}{% endfor %}
+    {% for dff in date_fields %}{% if dff.selected %}<input type="hidden" name="df_{{ dff.field.pk }}" value="{{ dff.selected }}">{% endif %}{% endfor %}
+    <span class="campaign-action-label">Gefilterte Accounts zur Kampagne hinzufügen:</span>
+    <select name="campaign_id" class="form-select form-select-sm" style="max-width: 280px;" required>
+      <option value="">Kampagne wählen…</option>
+      {% for c in campaigns %}
+      <option value="{{ c.pk }}">{{ c.name }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-sm btn-outline-primary">Hinzufügen</button>
+  </form>
+</div>
+{% endif %}
+{% endblock %}

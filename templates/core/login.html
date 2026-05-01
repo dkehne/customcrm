@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Anmeldung – {{ site_name|default:"CRM" }}{% endblock %}
+{% block content_anonymous %}
+<div class="login-card">
+  <div class="login-header">
+    {% if site_logo %}
+    <img src="{{ site_logo.url }}" alt="{{ site_name }}" class="login-logo">
+    {% endif %}
+    <h1 class="login-title">{{ site_name|default:"CRM" }}</h1>
+    <p class="login-subtitle">Anmeldung</p>
+  </div>
+  <div class="login-body">
+    {% if form.errors %}
+    <div class="alert alert-danger">Benutzername oder Passwort ungültig.</div>
+    {% endif %}
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="id_username" class="form-label">Benutzername</label>
+        <input type="text" name="username" id="id_username" class="form-control" autofocus required>
+      </div>
+      <div class="mb-3">
+        <label for="id_password" class="form-label">Passwort</label>
+        <input type="password" name="password" id="id_password" class="form-control" required>
+      </div>
+      <button type="submit" class="login-btn">Anmelden</button>
+    </form>
+    {% if oidc_enabled %}
+    <hr>
+    <a href="{% url 'oidc_authentication_init' %}" class="btn btn-outline-secondary w-100">
+      <i class="bi bi-shield-lock"></i> Mit Keycloak anmelden
+    </a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

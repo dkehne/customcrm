@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Pipeline – CRM{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 page-header">
+  <h2>Pipeline</h2>
+  <span class="text-muted small">{{ rows|length }} Account{{ rows|length|pluralize }} in Bearbeitung</span>
+</div>
+
+{% if rows %}
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-sm table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Account</th>
+          <th>Produkt</th>
+          <th>Phase</th>
+          <th>Letzte Aktivität</th>
+          <th>Letzter Kontakt</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        {% with ap=row.account_product days=row.days %}
+        <tr>
+          <td>
+            <a href="{% url 'accounts:account_detail' ap.account.pk %}" class="fw-semibold text-decoration-none">
+              {{ ap.account.name }}
+            </a>
+            {% if ap.account.bundesland %}
+            <small class="text-muted ms-1">{{ ap.account.bundesland }}</small>
+            {% endif %}
+          </td>
+          <td><small class="text-muted">{{ ap.product.name }}</small></td>
+          <td>
+            {% if ap.current_phase %}
+            <span class="badge bg-info">{{ ap.current_phase.name }}</span>
+            {% else %}
+            <span class="text-muted">–</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if ap.last_activity_date %}
+            {{ ap.last_activity_date|date:"d.m.Y" }}
+            {% else %}
+            <span class="text-muted fst-italic">Noch keine</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if days is None %}
+            <span class="badge bg-danger">Nie kontaktiert</span>
+            {% elif days > 60 %}
+            <span class="badge bg-danger">{{ days }} Tage</span>
+            {% elif days > 30 %}
+            <span class="badge bg-warning text-dark">{{ days }} Tage</span>
+            {% else %}
+            <span class="badge bg-success">{{ days }} Tage</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endwith %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="card">
+  <div class="card-body text-center text-muted py-5">
+    <i class="bi bi-funnel fs-1 d-block mb-3 opacity-25"></i>
+    Keine Accounts in aktiver Pipeline.
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-header {
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+</style>
+{% endblock %}

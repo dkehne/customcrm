@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Region Health Upload – CRM{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 page-header">
+  <h2>Ampelbewertung – CSV hochladen</h2>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-body">
+        <p class="text-muted mb-3">
+          Laden Sie die „Region Conditions Summary" CSV direkt aus dem Integreat-System hoch.
+          Das Ampelsystem wird automatisch berechnet und den bekannten Kommunen zugeordnet.
+        </p>
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="csv_file" class="form-label">CSV-Datei</label>
+            <input type="file" name="csv_file" id="csv_file" accept=".csv" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Hochladen und Vorschau anzeigen</button>
+          <a href="{% url 'core:dashboard' %}" class="btn btn-outline-secondary ms-2">Abbrechen</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

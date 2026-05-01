@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Produkte – CRM{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Produkte</h2>
+  <a href="{% url 'settings:product_create' %}" class="btn btn-primary">Neues Produkt</a>
+</div>
+
+{% for product in products %}
+<div class="card mb-4{% if product.is_archived %} archive-badge{% endif %}">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <strong>{{ product.name }}</strong>
+    <div>
+      {% if product.is_archived %}<span class="badge bg-secondary me-2">Archiviert</span>{% endif %}
+      <a href="{% url 'settings:product_edit' product.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+      <a href="{% url 'settings:product_archive' product.pk %}" class="btn btn-sm btn-outline-warning">
+        {% if product.is_archived %}Wiederherstellen{% else %}Archivieren{% endif %}
+      </a>
+      {% if product.is_archived %}
+      <button type="button" class="btn btn-sm btn-outline-danger btn-delete-archived"
+              data-delete-url="{% url 'settings:product_delete' product.pk %}"
+              data-object-name="{{ product.name }}">Löschen</button>
+      {% endif %}
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <h6>Phasen
+          <a href="{% url 'settings:product_phase_create' product.pk %}" class="btn btn-sm btn-outline-primary ms-2">Neu</a>
+        </h6>
+        <table class="table table-sm">
+          <thead><tr><th>#</th><th>Name</th><th>Endphase</th><th>Aktionen</th></tr></thead>
+          <tbody>
+            {% for phase in product.phases.all %}
+            <tr>
+              <td>{{ phase.order }}</td>
+              <td>{{ phase.name }}</td>
+              <td>{% if phase.is_final_phase %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</td>
+              <td>
+                <a href="{% url 'settings:product_phase_edit' phase.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+                <a href="{% url 'settings:product_phase_delete' phase.pk %}" class="btn btn-sm btn-outline-danger">Löschen</a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-muted">Keine Phasen.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="col-md-6">
+        <h6>Felder
+          <a href="{% url 'settings:product_field_create' product.pk %}" class="btn btn-sm btn-outline-primary ms-2">Neu</a>
+        </h6>
+        <table class="table table-sm">
+          <thead><tr><th>Name</th><th>Typ</th><th>Status</th><th>Dashboard</th><th>Aktionen</th></tr></thead>
+          <tbody>
+            {% for field in product.fields.all %}
+            <tr{% if field.is_archived %} class="archive-badge"{% endif %}>
+              <td>{{ field.name }}</td>
+              <td>{{ field.get_field_type_display }}</td>
+              <td>{% if field.is_archived %}<span class="badge bg-secondary">Archiviert</span>{% else %}<span class="badge bg-success">Aktiv</span>{% endif %}</td>
+              <td>{% if field.show_on_dashboard %}<i class="bi bi-check-circle-fill text-success"></i>{% endif %}</td>
+              <td>
+                <a href="{% url 'settings:product_field_edit' field.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+                <a href="{% url 'settings:product_field_archive' field.pk %}" class="btn btn-sm btn-outline-warning">
+                  {% if field.is_archived %}Wiederherstellen{% else %}Archivieren{% endif %}
+                </a>
+                {% if field.is_archived %}
+                <button type="button" class="btn btn-sm btn-outline-danger btn-delete-archived"
+                        data-delete-url="{% url 'settings:product_field_delete' field.pk %}"
+                        data-object-name="{{ field.name }}">Löschen</button>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-muted">Keine Felder.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% empty %}
+<div class="alert alert-info">Keine Produkte vorhanden.</div>
+{% endfor %}
+<p class="text-muted small">{{ products|length }} Einträge</p>
+{% endblock %}

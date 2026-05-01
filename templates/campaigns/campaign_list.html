@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Kampagnen – CRM{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Kampagnen{% if show_archived %} (Archiv){% endif %}</h2>
+  <div>
+    {% if show_archived %}
+    <a href="{% url 'campaigns:campaign_list' %}" class="btn btn-outline-secondary">Aktive anzeigen</a>
+    {% else %}
+    <a href="{% url 'campaigns:campaign_list' %}?archived=1" class="btn btn-outline-secondary">Archiv anzeigen</a>
+    {% endif %}
+    {% if not show_archived %}
+    <a href="{% url 'campaigns:campaign_create' %}" class="btn btn-primary">Neue Kampagne</a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Globaler CSV-Export -->
+<div class="card mb-4">
+  <div class="card-header">
+    <strong>Kontakt-Export</strong>
+  </div>
+  <div class="card-body">
+    <form method="get" action="" class="row g-2 align-items-end">
+      <input type="hidden" name="export" value="csv">
+      <div class="col-md-3">
+        <label class="form-label small">Produkt</label>
+        <select name="product" class="form-select" id="exportProductSelect">
+          <option value="">Alle</option>
+          {% for product in products %}
+          <option value="{{ product.pk }}">{{ product.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small">Phase</label>
+        <select name="phase" class="form-select" id="exportPhaseSelect">
+          <option value="">Alle</option>
+          {% for phase in phases %}
+          <option value="{{ phase.pk }}" data-product="{{ phase.product_id }}">{{ phase.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="btn btn-success">
+          <i class="bi bi-download"></i> CSV-Export
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-hover">
+    <thead>
+      <tr><th>Name</th><th>Zeitraum</th><th>Kontakte</th><th>Aktionen</th></tr>
+    </thead>
+    <tbody>
+      {% for campaign in campaigns %}
+      <tr>
+        <td><a href="{% url 'campaigns:campaign_detail' campaign.pk %}">{{ campaign.name }}</a></td>
+        <td>{{ campaign.start_date|date:"d.m.Y" }} – {{ campaign.end_date|date:"d.m.Y" }}</td>
+        <td>{{ campaign.contact_count }}</td>
+        <td>
+          <a href="{% url 'campaigns:campaign_edit' campaign.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+          <a href="{% url 'campaigns:campaign_archive' campaign.pk %}" class="btn btn-sm btn-outline-warning">
+            {% if campaign.is_archived %}Wiederherstellen{% else %}Archivieren{% endif %}
+          </a>
+          {% if campaign.is_archived %}
+          <button type="button" class="btn btn-sm btn-outline-danger btn-delete-archived"
+                  data-delete-url="{% url 'campaigns:campaign_delete' campaign.pk %}"
+                  data-object-name="{{ campaign.name }}">Löschen</button>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4" class="text-center text-muted">Keine Kampagnen vorhanden.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+  var productSelect = document.getElementById('exportProductSelect');
+  var phaseSelect = document.getElementById('exportPhaseSelect');
+  var allPhaseOptions = phaseSelect.querySelectorAll('option[data-product]');
+
+  productSelect.addEventListener('change', function() {
+    var selectedProduct = productSelect.value;
+    // Reset phase
+    phaseSelect.value = '';
+    allPhaseOptions.forEach(function(opt) {
+      if (!selectedProduct || opt.dataset.product === selectedProduct) {
+        opt.style.display = '';
+      } else {
+        opt.style.display = 'none';
+      }
+    });
+  });
+})();
+</script>
+{% endblock %}

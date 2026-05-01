@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Kontakt bearbeiten – CRM{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4 page-header">
+  <div>
+    <h2>{{ contact.name }}</h2>
+    <div class="text-muted small mt-1">
+      Kontakt von <a href="{% url 'accounts:account_detail' contact.account_id %}">{{ contact.account.name }}</a>
+    </div>
+  </div>
+  <a href="{% url 'accounts:account_detail' contact.account_id %}" class="btn btn-outline-secondary">← Zurück</a>
+</div>
+
+<div class="row">
+  <div class="col-md-7">
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="card mb-4">
+        <div class="card-header"><strong>Kontaktdaten</strong></div>
+        <div class="card-body">
+          <div class="row g-3">
+
+            <div class="col-md-12">
+              <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}</label>
+              {{ form.name }}
+              {% if form.name.errors %}<div class="invalid-feedback d-block">{{ form.name.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
+              {{ form.email }}
+              {% if form.email.errors %}<div class="invalid-feedback d-block">{{ form.email.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label for="{{ form.phone.id_for_label }}" class="form-label">{{ form.phone.label }}</label>
+              {{ form.phone }}
+              {% if form.phone.errors %}<div class="invalid-feedback d-block">{{ form.phone.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <label for="{{ form.position.id_for_label }}" class="form-label">{{ form.position.label }}</label>
+              {{ form.position }}
+              {% if form.position.errors %}<div class="invalid-feedback d-block">{{ form.position.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12" id="editContactAnredeField"{% if not form.instance.is_primary %} style="display:none;"{% endif %}>
+              <label for="{{ form.anrede.id_for_label }}" class="form-label">
+                {{ form.anrede.label }} <span class="text-danger">*</span>
+              </label>
+              {{ form.anrede }}
+              {% if form.anrede.errors %}<div class="invalid-feedback d-block">{{ form.anrede.errors.0 }}</div>{% endif %}
+              <div class="form-text text-muted">z.B. „Sehr geehrte Frau Muster" oder „Lieber Herr Muster"</div>
+            </div>
+
+            <div class="col-12">
+              <div class="form-check">
+                {{ form.is_primary }}
+                <label class="form-check-label" for="{{ form.is_primary.id_for_label }}">{{ form.is_primary.label }}</label>
+              </div>
+              {% if account_products|length > 1 %}
+              <div id="editContactProductSelect" class="mt-2{% if not form.instance.is_primary %} d-none{% endif %}">
+                <label class="form-label small">Als Hauptansprechperson für Produkte</label>
+                <div>
+                  {% for ap in account_products %}
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="primary_products" value="{{ ap.pk }}" id="edit_ap_{{ ap.pk }}"
+                      {% if ap.pk in assigned_product_ids %}checked{% endif %}>
+                    <label class="form-check-label" for="edit_ap_{{ ap.pk }}">{{ ap.product.name }}</label>
+                  </div>
+                  {% endfor %}
+                </div>
+                <div class="form-text text-muted">Keine Auswahl = für alle Produkte.</div>
+              </div>
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button type="submit" class="btn btn-primary">Speichern</button>
+        <a href="{% url 'accounts:account_detail' contact.account_id %}" class="btn btn-secondary">Abbrechen</a>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-header {
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+.card { overflow: hidden; }
+.card-header {
+  position: relative;
+  padding-left: 1.125rem;
+}
+.card-header::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  height: 55%; width: 3px;
+  background: var(--brand-primary);
+  border-radius: 0 2px 2px 0;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+  var isPrimaryCheckbox = document.getElementById('id_is_primary');
+  var productSelect = document.getElementById('editContactProductSelect');
+  var anredeField = document.getElementById('editContactAnredeField');
+  if (isPrimaryCheckbox) {
+    function togglePrimaryFields() {
+      var checked = isPrimaryCheckbox.checked;
+      if (productSelect) productSelect.classList.toggle('d-none', !checked);
+      if (anredeField) anredeField.style.display = checked ? '' : 'none';
+    }
+    isPrimaryCheckbox.addEventListener('change', togglePrimaryFields);
+    togglePrimaryFields();
+  }
+})();
+</script>
+{% endblock %}

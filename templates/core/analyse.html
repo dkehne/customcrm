@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block title %}Analyse – CRM{% endblock %}
+{% block content %}
+<h2 class="mb-4">Analyse</h2>
+
+<div class="row">
+
+  <div class="col-md-12 mb-4">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Vertragspartner pro Accountmanager:in (Integreat)</strong>
+        {% if user.is_superuser %}
+        <a href="{% url 'accounts:region_health_upload' %}" class="btn btn-sm btn-outline-primary">CSV hochladen</a>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        {% if ampel_per_manager %}
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Manager:in</th>
+              <th class="text-success">&#9679; Grün</th>
+              <th class="text-warning">&#9679; Gelb</th>
+              <th class="text-danger">&#9679; Rot</th>
+              <th class="text-muted">Gesamt</th>
+              <th class="text-muted">Pipeline</th>
+              <th class="text-muted">⌀ Alter</th>
+              <th class="text-muted">Supportstunden</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for row in ampel_per_manager %}
+          <tr>
+            <td>{{ row.manager }}</td>
+            <td class="text-success fw-semibold">{{ row.green }}</td>
+            <td class="text-warning fw-semibold">{{ row.yellow }}</td>
+            <td class="text-danger fw-semibold">{{ row.red }}</td>
+            <td class="text-muted">{{ row.total }}</td>
+            <td class="text-muted">{{ row.pipeline }}</td>
+            <td class="text-muted">{% if row.avg_contract_age != None %}{{ row.avg_contract_age }} J.{% else %}–{% endif %}</td>
+            <td class="text-muted">{% if row.supportstunden != None %}{{ row.supportstunden }}{% else %}–{% endif %}</td>
+          </tr>
+          {% endfor %}
+          {% if ampel_sum_row %}
+          <tr class="table-light fw-semibold border-top">
+            <td>Gesamt</td>
+            <td class="text-success">{{ ampel_sum_row.green }}</td>
+            <td class="text-warning">{{ ampel_sum_row.yellow }}</td>
+            <td class="text-danger">{{ ampel_sum_row.red }}</td>
+            <td>{{ ampel_sum_row.total }}</td>
+            <td>{{ ampel_sum_row.pipeline }}</td>
+            <td>{% if ampel_sum_row.avg_contract_age != None %}{{ ampel_sum_row.avg_contract_age }} J.{% else %}–{% endif %}</td>
+            <td>{% if ampel_sum_row.supportstunden != None %}{{ ampel_sum_row.supportstunden }}{% else %}–{% endif %}</td>
+          </tr>
+          <tr class="table-light fw-semibold">
+            <td>Durchschnitt</td>
+            <td class="text-success">{{ ampel_avg_row.green }}</td>
+            <td class="text-warning">{{ ampel_avg_row.yellow }}</td>
+            <td class="text-danger">{{ ampel_avg_row.red }}</td>
+            <td>{{ ampel_avg_row.total }}</td>
+            <td>{{ ampel_avg_row.pipeline }}</td>
+            <td>{% if ampel_avg_row.avg_contract_age != None %}{{ ampel_avg_row.avg_contract_age }} J.{% else %}–{% endif %}</td>
+            <td>{% if ampel_avg_row.supportstunden != None %}{{ ampel_avg_row.supportstunden }}{% else %}–{% endif %}</td>
+          </tr>
+          {% endif %}
+          </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted mb-0">Noch keine Ampelbewertungs-Daten vorhanden.{% if user.is_superuser %} <a href="{% url 'accounts:region_health_upload' %}">CSV hochladen</a>{% endif %}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-12 mb-4">
+    <div class="card">
+      <div class="card-header"><strong>Kundenzufriedenheit nach Jahr</strong></div>
+      <div class="card-body">
+        {% if satisfaction_trend %}
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Jahr</th>
+              <th>Ø Gesamt</th>
+              <th>Ø App</th>
+              <th>Ø Redaktion</th>
+              <th>Ø Betreuung</th>
+              <th>Teilnehmende</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for row in satisfaction_trend %}
+          <tr>
+            <td>{{ row.year }}</td>
+            <td>{% if row.avg_overall %}<span class="{% if row.avg_overall >= 4.0 %}text-success{% elif row.avg_overall >= 3.0 %}text-warning{% else %}text-danger{% endif %} fw-semibold">{{ row.avg_overall|floatformat:1 }}</span>{% else %}–{% endif %}</td>
+            <td>{% if row.avg_app %}<span class="{% if row.avg_app >= 4.0 %}text-success{% elif row.avg_app >= 3.0 %}text-warning{% else %}text-danger{% endif %} fw-semibold">{{ row.avg_app|floatformat:1 }}</span>{% else %}–{% endif %}</td>
+            <td>{% if row.avg_cms %}<span class="{% if row.avg_cms >= 4.0 %}text-success{% elif row.avg_cms >= 3.0 %}text-warning{% else %}text-danger{% endif %} fw-semibold">{{ row.avg_cms|floatformat:1 }}</span>{% else %}–{% endif %}</td>
+            <td>{% if row.avg_support %}<span class="{% if row.avg_support >= 4.0 %}text-success{% elif row.avg_support >= 3.0 %}text-warning{% else %}text-danger{% endif %} fw-semibold">{{ row.avg_support|floatformat:1 }}</span>{% else %}–{% endif %}</td>
+            <td>{{ row.count }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted">Noch keine Umfragedaten importiert.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% if integreat_field_stats %}
+  <div class="col-md-6 mb-4">
+    <div class="card">
+      <div class="card-header"><strong>Integreat – Produktfelder (Aktiv)</strong></div>
+      <div class="card-body">
+        <table class="table table-sm">
+          <thead>
+            <tr><th>Feld</th><th>Ja</th><th>Gesamt</th></tr>
+          </thead>
+          <tbody>
+          {% for row in integreat_field_stats %}
+          <tr>
+            <td>{{ row.name }}</td>
+            <td class="fw-semibold">{{ row.count }}</td>
+            <td class="text-muted">{{ row.total }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="col-md-6 mb-4">
+    <div class="card">
+      <div class="card-header"><strong>Zufriedenheit pro Bundesland</strong></div>
+      <div class="card-body">
+        {% if satisfaction_by_bundesland %}
+        <table class="table table-sm">
+          <thead><tr><th>Bundesland</th><th>Ø Gesamt</th><th>Antworten</th></tr></thead>
+          <tbody>
+          {% for row in satisfaction_by_bundesland %}
+          <tr>
+            <td>{{ row.bundesland_display }}</td>
+            <td><span class="{% if row.avg_overall >= 4.0 %}text-success{% elif row.avg_overall >= 3.0 %}text-warning{% else %}text-danger{% endif %} fw-semibold">{{ row.avg_overall|floatformat:1 }}</span></td>
+            <td class="text-muted">{{ row.count }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted">Noch keine Umfragedaten importiert.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

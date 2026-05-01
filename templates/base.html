@@ -1,0 +1,218 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ site_name|default:"CRM" }}{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+  <link href="{% static 'vendor/bootstrap/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'vendor/bootstrap-icons/font/bootstrap-icons.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/brand.css' %}" rel="stylesheet">
+  {% if primary_color %}
+  <style>
+    :root {
+      --brand-primary: {{ primary_color }};
+      --brand-primary-dark: {{ primary_color }};
+      --brand-primary-light: {{ primary_color }}99;
+      --brand-primary-subtle: {{ primary_color }}26;
+    }
+  </style>
+  {% endif %}
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+{% if user.is_authenticated %}
+<div class="d-flex">
+  <nav class="sidebar">
+    <a href="/" class="sidebar-brand">
+      {% if site_logo %}
+      <img src="{{ site_logo.url }}" alt="{{ site_name }}" class="sidebar-brand-logo">
+      {% endif %}
+      <span class="sidebar-brand-text">{{ site_name|default:"CustomCRM" }}</span>
+    </a>
+    <ul class="nav flex-column py-2">
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'core:dashboard' %}">
+          <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'todo_list' %}active{% endif %}" href="{% url 'core:todo_list' %}">
+          <i class="bi bi-check2-square"></i> Aufgaben
+        </a>
+      </li>
+      {% if not user.is_superuser %}
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'pipeline' %}active{% endif %}" href="{% url 'core:pipeline' %}">
+          <i class="bi bi-funnel"></i> Pipeline
+        </a>
+      </li>
+      {% endif %}
+      <li class="nav-item">
+        <a class="nav-link {% if 'accounts' in request.resolver_match.app_name and request.resolver_match.url_name != 'contact_list' %}active{% endif %}" href="{% url 'accounts:account_list' %}">
+          <i class="bi bi-building"></i> Accounts
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'contact_list' %}active{% endif %}" href="{% url 'accounts:contact_list' %}">
+          <i class="bi bi-person-lines-fill"></i> Kontakte
+        </a>
+      </li>
+      {% if user.is_superuser %}
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'my_accounts' %}active{% endif %}" href="{% url 'core:my_accounts' %}">
+          <i class="bi bi-person-check"></i> Meine Kunden
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'pipeline' %}active{% endif %}" href="{% url 'core:pipeline' %}">
+          <i class="bi bi-funnel"></i> Pipeline
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if 'contracts' in request.resolver_match.app_name %}active{% endif %}" href="{% url 'contracts:contract_list' %}">
+          <i class="bi bi-file-earmark-text"></i> Verträge
+        </a>
+      </li>
+      {% endif %}
+      <li class="nav-item">
+        <a class="nav-link {% if 'campaigns' in request.resolver_match.app_name %}active{% endif %}" href="{% url 'campaigns:campaign_list' %}">
+          <i class="bi bi-megaphone"></i> Kampagnen
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'analyse' %}active{% endif %}" href="{% url 'core:analyse' %}">
+          <i class="bi bi-bar-chart-line"></i> Analyse
+        </a>
+      </li>
+      {% if user.is_superuser %}
+      <li>
+        <div class="sidebar-section-header">Einstellungen</div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'site_settings' %}active{% endif %}" href="{% url 'settings:site_settings' %}">
+          <i class="bi bi-palette"></i> Branding
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'settings:account_type_list' %}">
+          <i class="bi bi-tags"></i> Account-Typen
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'settings:product_list' %}">
+          <i class="bi bi-box"></i> Produkte
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'settings:contract_type_list' %}">
+          <i class="bi bi-file-earmark-text"></i> Vertragstypen
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'settings:user_list' %}">
+          <i class="bi bi-people"></i> Benutzer
+        </a>
+      </li>
+      {% endif %}
+      <li>
+        <div class="sidebar-section-header">Profil</div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'profile_overview' %}active{% endif %}" href="{% url 'emails:profile_overview' %}">
+          <i class="bi bi-person-circle"></i> Mein Profil
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'password_change' %}active{% endif %}" href="{% url 'core:password_change' %}">
+          <i class="bi bi-key"></i> Passwort ändern
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {% if request.resolver_match.url_name == 'unresolved_emails' %}active{% endif %}" href="{% url 'emails:unresolved_emails' %}">
+          <i class="bi bi-envelope-exclamation"></i> Nicht aufgelöste E-Mails
+          {% if unresolved_email_count %}<span class="badge bg-danger ms-1">{{ unresolved_email_count }}</span>{% endif %}
+        </a>
+      </li>
+    </ul>
+    <div class="sidebar-user">
+      <div class="sidebar-user-name">{{ user.get_full_name|default:user.username }}</div>
+      <a href="{% url 'core:logout' %}" class="sidebar-user-logout">Abmelden</a>
+      <small>v{{ app_version }}</small>
+    </div>
+  </nav>
+  <main class="main-content">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% else %}
+<div class="login-container">
+  {% block content_anonymous %}{% endblock %}
+</div>
+{% endif %}
+{% if user.is_authenticated %}
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="post" id="deleteConfirmForm">
+        {% csrf_token %}
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="deleteConfirmModalLabel">Endgültig löschen</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Schließen"></button>
+        </div>
+        <div class="modal-body">
+          <p>Sie sind dabei, <strong id="deleteObjectName"></strong> endgültig zu löschen.</p>
+          <p class="text-danger fw-bold">Diese Aktion kann nicht rückgängig gemacht werden.</p>
+          <p>Bitte geben Sie Ihren Benutzernamen ein, um die Löschung zu bestätigen:</p>
+          <input type="text" class="form-control" name="confirm_username" id="deleteConfirmUsername" autocomplete="off" placeholder="{{ user.username }}">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+          <button type="submit" class="btn btn-danger" id="deleteConfirmSubmit" disabled>Endgültig löschen</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+<script src="{% static 'vendor/bootstrap/bootstrap.bundle.min.js' %}"></script>
+{% if user.is_authenticated %}
+<script>
+(function() {
+  var modal = document.getElementById('deleteConfirmModal');
+  var form = document.getElementById('deleteConfirmForm');
+  var nameEl = document.getElementById('deleteObjectName');
+  var input = document.getElementById('deleteConfirmUsername');
+  var submitBtn = document.getElementById('deleteConfirmSubmit');
+  var expectedUsername = '{{ user.username|escapejs }}';
+
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.btn-delete-archived');
+    if (!btn) return;
+    e.preventDefault();
+    form.action = btn.dataset.deleteUrl;
+    nameEl.textContent = btn.dataset.objectName;
+    input.value = '';
+    submitBtn.disabled = true;
+    new bootstrap.Modal(modal).show();
+  });
+
+  input.addEventListener('input', function() {
+    submitBtn.disabled = (input.value !== expectedUsername);
+  });
+})();
+</script>
+{% endif %}
+{% block extra_js %}{% endblock %}
+</body>
+</html>

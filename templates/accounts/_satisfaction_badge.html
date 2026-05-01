@@ -1,0 +1,6 @@
+{% if val is not None %}
+  {% if val >= 4 %}<span class="badge bg-success">{{ val }}</span>
+  {% elif val == 3 %}<span class="badge bg-warning text-dark">{{ val }}</span>
+  {% else %}<span class="badge bg-danger">{{ val }}</span>
+  {% endif %}
+{% else %}<span class="text-muted">–</span>{% endif %}

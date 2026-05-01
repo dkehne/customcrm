@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block title %}Aufgabe bearbeiten – CRM{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4 page-header">
+  <div>
+    <h2>{{ todo.title }}</h2>
+    <div class="text-muted small mt-1">
+      Aufgabe bei <a href="{% url 'accounts:account_detail' todo.account_id %}">{{ todo.account.name }}</a>
+    </div>
+  </div>
+  <a href="{% url 'accounts:account_detail' todo.account_id %}" class="btn btn-outline-secondary">← Zurück</a>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-8">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="card mb-4">
+        <div class="card-header"><strong>Aufgabe</strong></div>
+        <div class="card-body">
+          <div class="row g-3">
+
+            <div class="col-md-8">
+              <label for="{{ form.title.id_for_label }}" class="form-label">{{ form.title.label }}</label>
+              {{ form.title }}
+              {% if form.title.errors %}<div class="invalid-feedback d-block">{{ form.title.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label for="{{ form.due_date.id_for_label }}" class="form-label">{{ form.due_date.label }}</label>
+              {{ form.due_date }}
+              {% if form.due_date.errors %}<div class="invalid-feedback d-block">{{ form.due_date.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label for="{{ form.assigned_to.id_for_label }}" class="form-label">{{ form.assigned_to.label }}</label>
+              {{ form.assigned_to }}
+              {% if form.assigned_to.errors %}<div class="invalid-feedback d-block">{{ form.assigned_to.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}</label>
+              {{ form.description }}
+              {% if form.description.errors %}<div class="invalid-feedback d-block">{{ form.description.errors.0 }}</div>{% endif %}
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header"><strong>Anhang</strong></div>
+        <div class="card-body">
+          <label class="upload-zone w-100" id="uploadZoneLabel">
+            <i class="bi bi-file-earmark-arrow-up upload-zone-icon"></i>
+            <div class="upload-zone-text mt-2">
+              {% if todo.attachment %}Neue PDF hochladen (ersetzt aktuelle Datei){% else %}PDF hochladen{% endif %}
+            </div>
+            <div class="text-muted small mt-1">Klicken zum Auswählen</div>
+            <input type="file" name="attachment" class="d-none" accept=".pdf" id="uploadZoneInput">
+          </label>
+
+          {% if todo.attachment %}
+          <div class="mt-3 pt-3 border-top d-flex align-items-center gap-2">
+            <i class="bi bi-file-earmark-pdf text-danger"></i>
+            <span class="text-muted small">Aktuelle Datei:</span>
+            <a href="{{ todo.attachment.url }}" target="_blank" class="small">{{ todo.attachment.name }}</a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <button type="submit" class="btn btn-primary">Speichern</button>
+          <a href="{% url 'accounts:account_detail' todo.account_id %}" class="btn btn-secondary">Abbrechen</a>
+        </div>
+        <button type="button" class="btn btn-outline-danger btn-delete-archived"
+                data-delete-url="{% url 'accounts:todo_delete' todo.pk %}"
+                data-object-name="{{ todo.title }}">Löschen</button>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-header {
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+.card { overflow: hidden; }
+.card-header {
+  position: relative;
+  padding-left: 1.125rem;
+}
+.card-header::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  height: 55%; width: 3px;
+  background: var(--brand-primary);
+  border-radius: 0 2px 2px 0;
+}
+
+/* Upload-Zone */
+.upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.75rem 1.5rem;
+  border: 2px dashed #dee2e6;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  background: #f8f9fa;
+}
+.upload-zone:hover {
+  border-color: var(--brand-primary);
+  background: var(--brand-primary-subtle);
+}
+.upload-zone.has-files {
+  border-color: var(--brand-primary);
+  background: var(--brand-primary-subtle);
+}
+.upload-zone-icon {
+  font-size: 1.75rem;
+  color: #adb5bd;
+  transition: color 0.15s ease;
+}
+.upload-zone:hover .upload-zone-icon,
+.upload-zone.has-files .upload-zone-icon {
+  color: var(--brand-primary-dark);
+}
+.upload-zone-text {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var input = document.getElementById('uploadZoneInput');
+  var zone = document.getElementById('uploadZoneLabel');
+  if (!input || !zone) return;
+  var label = zone.querySelector('.upload-zone-text');
+  var originalText = label.textContent;
+  input.addEventListener('change', function() {
+    if (input.files.length > 0) {
+      zone.classList.add('has-files');
+      label.textContent = input.files[0].name;
+    } else {
+      zone.classList.remove('has-files');
+      label.textContent = originalText;
+    }
+  });
+});
+</script>
+{% endblock %}

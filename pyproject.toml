@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "customcrm"
+version = "2026.9"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=6.0",
+    "gunicorn",
+    "mozilla-django-oidc",
+    "pillow",
+    "python-dateutil",
+    "uvicorn",
+]
+
+[project.optional-dependencies]
+postgres = [
+    "psycopg[binary]",
+]
+dev = [
+    "pylint",
+    "pylint-django",
+]
+
+[tool.setuptools.packages.find]
+include = [
+    "core*",
+    "accounts*",
+    "products*",
+    "contracts*",
+    "campaigns*",
+    "emails*",
+]
+
+[tool.setuptools.package-data]
+"*" = [
+    "templates/**/*.html",
+    "static/**/*",
+]

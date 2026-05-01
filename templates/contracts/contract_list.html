@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}Verträge – CRM{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-header {
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  margin-bottom: 1.5rem;
+}
+.filter-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+.filter-card .form-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+}
+.contracts-table {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+.contracts-table thead th {
+  background: #f8f9fa;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #6c757d;
+  border-bottom: 2px solid #dee2e6;
+  padding: 0.6rem 1rem;
+}
+.contracts-table tbody td {
+  padding: 0.55rem 1rem;
+  vertical-align: middle;
+  font-size: 0.9rem;
+}
+.contracts-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.contracts-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+.account-link {
+  font-weight: 500;
+  color: inherit;
+  text-decoration: none;
+}
+.account-link:hover {
+  color: var(--brand-primary-dark, #000);
+  text-decoration: underline;
+}
+.row-count {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-top: 0.75rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+  <h2 class="mb-0">Verträge{% if show_archived %} <span class="text-muted fs-5">(Archiv)</span>{% endif %}</h2>
+  <div class="d-flex gap-2">
+    {% if show_archived %}
+    <a href="{% url 'contracts:contract_list' %}" class="btn btn-outline-secondary btn-sm">Aktive anzeigen</a>
+    {% else %}
+    <a href="{% url 'contracts:contract_list' %}?archived=1" class="btn btn-outline-secondary btn-sm">Archiv anzeigen</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="filter-card">
+  <form method="get">
+    {% if show_archived %}<input type="hidden" name="archived" value="1">{% endif %}
+    <div class="row g-2 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">Account-Name</label>
+        <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="Account suchen...">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Vertragstyp</label>
+        <select name="contract_type" class="form-select form-select-sm">
+          <option value="">Alle</option>
+          {% for t in contract_types %}
+          <option value="{{ t.pk }}" {% if contract_type_id == t.pk|stringformat:"d" %}selected{% endif %}>{{ t.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-auto">
+        <button type="submit" class="btn btn-primary btn-sm">Filtern</button>
+        <a href="{% url 'contracts:contract_list' %}{% if show_archived %}?archived=1{% endif %}" class="btn btn-outline-secondary btn-sm">Zurücksetzen</a>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="table-responsive contracts-table">
+  <table class="table table-hover mb-0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Typ</th>
+        <th>Account</th>
+        <th>Produkt</th>
+        <th>Vertragstyp</th>
+        <th>Bruttojahrespreis</th>
+        <th>Start</th>
+        <th>Laufzeit</th>
+        <th>Ende</th>
+        <th>Aktionen</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% now "Y-m-d" as today %}
+      {% for contract in contracts %}
+      <tr{% if contract.is_archived %} class="archive-badge"{% elif contract.is_self_cancelling and contract.current_end_date|date:"Y-m-d" < today %} class="text-muted"{% endif %}>
+        <td class="text-muted">{{ contract.pk }}</td>
+        <td class="text-muted">{{ contract.account.account_type.name|default:"-" }}</td>
+        <td><a href="{% url 'accounts:account_detail' contract.account_id %}" class="account-link">{{ contract.account.name }}</a></td>
+        <td class="text-muted">{{ contract.account_product.product.name|default:"-" }}</td>
+        <td>{{ contract.contract_type|default:"-" }}</td>
+        <td>{{ contract.gross_annual_price }} €</td>
+        <td>{{ contract.start_date|date:"d.m.Y" }}</td>
+        <td>{{ contract.duration_months }} Mon.</td>
+        <td>
+          {{ contract.current_end_date|date:"d.m.Y" }}
+          {% if not contract.is_archived and contract.is_self_cancelling and contract.current_end_date|date:"Y-m-d" < today %}
+            <span class="badge bg-secondary ms-1">Abgelaufen</span>
+          {% endif %}
+        </td>
+        <td>
+          <a href="{% url 'accounts:contract_edit' contract.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+          {% if contract.is_archived %}
+          <a href="{% url 'accounts:contract_archive' contract.pk %}" class="btn btn-sm btn-outline-success">Wiederherstellen</a>
+          <button type="button" class="btn btn-sm btn-outline-danger btn-delete-archived"
+                  data-delete-url="{% url 'accounts:contract_delete' contract.pk %}"
+                  data-object-name="Vertrag #{{ contract.pk }}">Löschen</button>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="10" class="text-center text-muted py-4">Keine Verträge gefunden.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="row-count">{{ contracts|length }} Einträge</p>
+{% endblock %}

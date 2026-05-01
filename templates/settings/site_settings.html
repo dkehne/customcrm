@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% block title %}Branding – {{ site_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .branding-preview {
+    background: var(--sidebar-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .branding-preview-header {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .branding-preview-logo {
+    max-height: 40px;
+    max-width: 120px;
+    object-fit: contain;
+  }
+  .branding-preview-name {
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.125rem;
+  }
+  .branding-preview-accent {
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 1rem;
+  }
+  .color-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .color-input-wrapper input[type="color"] {
+    width: 60px;
+    height: 40px;
+    padding: 0;
+    border: 2px solid #dee2e6;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .color-input-wrapper input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 2px;
+  }
+  .color-input-wrapper input[type="color"]::-webkit-color-swatch {
+    border-radius: 4px;
+    border: none;
+  }
+  .color-hex-display {
+    font-family: monospace;
+    font-size: 0.9rem;
+    color: #6c757d;
+  }
+  .logo-preview-container {
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .logo-preview-container img {
+    max-height: 80px;
+    max-width: 100%;
+  }
+  .logo-preview-container .no-logo {
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Branding</h2>
+</div>
+
+<div class="row">
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <div class="mb-4">
+            <label for="id_site_name" class="form-label fw-semibold">Systemname</label>
+            <input type="text" name="site_name" id="id_site_name"
+                   class="form-control" value="{{ form.instance.site_name }}"
+                   placeholder="CustomCRM">
+            <small class="text-muted">Wird in der Navigation und im Seitentitel angezeigt.</small>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Logo</label>
+            <div class="logo-preview-container">
+              {% if form.instance.logo %}
+              <img src="{{ form.instance.logo.url }}" alt="Aktuelles Logo" id="logoPreview">
+              {% else %}
+              <span class="no-logo" id="logoPlaceholder">Kein Logo hochgeladen</span>
+              <img src="" alt="Logo-Vorschau" id="logoPreview" style="display: none;">
+              {% endif %}
+            </div>
+            <input type="file" name="logo" id="id_logo" class="form-control" accept="image/png,image/jpeg,image/svg+xml">
+            <small class="text-muted">PNG, JPG oder SVG. Empfohlen: rechteckiges Format, max. 200px Höhe.</small>
+          </div>
+
+          <div class="mb-4">
+            <label for="id_primary_color" class="form-label fw-semibold">Primärfarbe</label>
+            <div class="color-input-wrapper">
+              <input type="color" name="primary_color" id="id_primary_color"
+                     value="{{ form.instance.primary_color|default:'#CED51E' }}">
+              <span class="color-hex-display" id="colorHexDisplay">{{ form.instance.primary_color|default:'#CED51E' }}</span>
+            </div>
+            <small class="text-muted">Akzentfarbe für Buttons, aktive Elemente und Hervorhebungen.</small>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-brand">
+              <i class="bi bi-check-lg"></i> Speichern
+            </button>
+            <button type="button" class="btn btn-outline-secondary" onclick="resetToDefaults()">
+              <i class="bi bi-arrow-counterclockwise"></i> Auf Standard zurücksetzen
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-header">
+        <i class="bi bi-eye"></i> Vorschau
+      </div>
+      <div class="card-body">
+        <div class="branding-preview">
+          <div class="branding-preview-header">
+            {% if form.instance.logo %}
+            <img src="{{ form.instance.logo.url }}" alt="Logo" class="branding-preview-logo" id="previewLogo">
+            {% else %}
+            <img src="" alt="Logo" class="branding-preview-logo" id="previewLogo" style="display: none;">
+            {% endif %}
+            <span class="branding-preview-name" id="previewName">{{ form.instance.site_name|default:"CustomCRM" }}</span>
+          </div>
+          <div class="branding-preview-accent" id="previewAccent"
+               style="background-color: {{ form.instance.primary_color|default:'#CED51E' }};"></div>
+        </div>
+
+        <p class="text-muted small mb-2">So sieht die Sidebar-Navigation aus:</p>
+        <div class="d-flex flex-column gap-1" style="background: var(--sidebar-bg); border-radius: 8px; padding: 0.75rem;">
+          <div style="background: var(--brand-primary-subtle); color: var(--brand-primary); padding: 0.5rem 0.75rem; border-radius: 4px; font-size: 0.85rem;">
+            <i class="bi bi-speedometer2"></i> Dashboard
+          </div>
+          <div style="color: rgba(255,255,255,0.7); padding: 0.5rem 0.75rem; font-size: 0.85rem;">
+            <i class="bi bi-building"></i> Accounts
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const nameInput = document.getElementById('id_site_name');
+  const colorInput = document.getElementById('id_primary_color');
+  const logoInput = document.getElementById('id_logo');
+  const previewName = document.getElementById('previewName');
+  const previewAccent = document.getElementById('previewAccent');
+  const previewLogo = document.getElementById('previewLogo');
+  const logoPreview = document.getElementById('logoPreview');
+  const logoPlaceholder = document.getElementById('logoPlaceholder');
+  const colorHexDisplay = document.getElementById('colorHexDisplay');
+
+  // Update name preview
+  nameInput.addEventListener('input', function() {
+    previewName.textContent = this.value || 'CustomCRM';
+  });
+
+  // Update color preview
+  colorInput.addEventListener('input', function() {
+    const color = this.value;
+    previewAccent.style.backgroundColor = color;
+    colorHexDisplay.textContent = color.toUpperCase();
+    document.documentElement.style.setProperty('--brand-primary', color);
+    document.documentElement.style.setProperty('--brand-primary-subtle', color + '26');
+  });
+
+  // Update logo preview
+  logoInput.addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        logoPreview.src = e.target.result;
+        logoPreview.style.display = 'block';
+        previewLogo.src = e.target.result;
+        previewLogo.style.display = 'block';
+        if (logoPlaceholder) logoPlaceholder.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+});
+
+function resetToDefaults() {
+  document.getElementById('id_site_name').value = 'CustomCRM';
+  document.getElementById('id_primary_color').value = '#CED51E';
+  document.getElementById('previewName').textContent = 'CustomCRM';
+  document.getElementById('previewAccent').style.backgroundColor = '#CED51E';
+  document.getElementById('colorHexDisplay').textContent = '#CED51E';
+  document.documentElement.style.setProperty('--brand-primary', '#CED51E');
+  document.documentElement.style.setProperty('--brand-primary-subtle', '#CED51E26');
+}
+</script>
+{% endblock %}

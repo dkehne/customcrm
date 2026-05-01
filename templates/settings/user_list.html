@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Benutzer – CRM{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Benutzer</h2>
+  <a href="{% url 'settings:user_create' %}" class="btn btn-primary">Neuer Benutzer</a>
+</div>
+<table class="table">
+  <thead>
+    <tr><th>Benutzername</th><th>Name</th><th>Rolle</th><th>Aktiv</th><th>Aktionen</th></tr>
+  </thead>
+  <tbody>
+    {% for u in users %}
+    <tr{% if not u.is_active %} class="archive-badge"{% endif %}>
+      <td>{{ u.username }}</td>
+      <td>{{ u.get_full_name|default:"-" }}</td>
+      <td>{{ u.get_role_display }}</td>
+      <td>
+        {% if u.is_active %}
+        <span class="badge bg-success">Aktiv</span>
+        {% else %}
+        <span class="badge bg-secondary">Inaktiv</span>
+        {% endif %}
+      </td>
+      <td>
+        <a href="{% url 'settings:user_edit' u.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5" class="text-muted text-center">Keine Benutzer vorhanden.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p class="text-muted small">{{ users|length }} Einträge</p>
+{% endblock %}

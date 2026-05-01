@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% block title %}Vertrag bearbeiten – CRM{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4 page-header">
+  <h2>Vertrag bearbeiten: {{ contract }}</h2>
+  <a href="{% url 'accounts:account_detail' contract.account_id %}" class="btn btn-outline-secondary">← Zurück</a>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="row g-4">
+
+    <!-- Linke Spalte: Formularfelder -->
+    <div class="col-md-8">
+
+      <div class="card mb-4">
+        <div class="card-header"><strong>Vertragsdaten</strong></div>
+        <div class="card-body">
+          <div class="row g-3">
+
+            <div class="col-md-6">
+              <label for="{{ form.contract_type.id_for_label }}" class="form-label">{{ form.contract_type.label }}</label>
+              {{ form.contract_type }}
+              {% if form.contract_type.errors %}<div class="invalid-feedback d-block">{{ form.contract_type.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label for="{{ form.account_product.id_for_label }}" class="form-label">{{ form.account_product.label }}</label>
+              {{ form.account_product }}
+              {% if form.account_product.errors %}<div class="invalid-feedback d-block">{{ form.account_product.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label for="{{ form.gross_annual_price.id_for_label }}" class="form-label">{{ form.gross_annual_price.label }}</label>
+              <div class="input-group">
+                {{ form.gross_annual_price }}
+                <span class="input-group-text">€</span>
+              </div>
+              {% if form.gross_annual_price.errors %}<div class="invalid-feedback d-block">{{ form.gross_annual_price.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label for="{{ form.start_date.id_for_label }}" class="form-label">{{ form.start_date.label }}</label>
+              {{ form.start_date }}
+              {% if form.start_date.errors %}<div class="invalid-feedback d-block">{{ form.start_date.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-4">
+              <label for="{{ form.duration_months.id_for_label }}" class="form-label">{{ form.duration_months.label }}</label>
+              <div class="input-group">
+                {{ form.duration_months }}
+                <span class="input-group-text">Mon.</span>
+              </div>
+              {% if form.duration_months.errors %}<div class="invalid-feedback d-block">{{ form.duration_months.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label for="{{ form.renewal_interval_months.id_for_label }}" class="form-label">{{ form.renewal_interval_months.label }}</label>
+              <div class="input-group">
+                {{ form.renewal_interval_months }}
+                <span class="input-group-text">Mon.</span>
+              </div>
+              {% if form.renewal_interval_months.errors %}<div class="invalid-feedback d-block">{{ form.renewal_interval_months.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-md-6">
+              <label for="{{ form.notice_period_months.id_for_label }}" class="form-label">{{ form.notice_period_months.label }}</label>
+              <div class="input-group">
+                {{ form.notice_period_months }}
+                <span class="input-group-text">Mon.</span>
+              </div>
+              {% if form.notice_period_months.errors %}<div class="invalid-feedback d-block">{{ form.notice_period_months.errors.0 }}</div>{% endif %}
+            </div>
+
+            <div class="col-12">
+              <div class="form-check">
+                {{ form.is_self_cancelling }}
+                <label class="form-check-label" for="{{ form.is_self_cancelling.id_for_label }}">{{ form.is_self_cancelling.label }}</label>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header"><strong>Dokumente</strong></div>
+        <div class="card-body">
+          <label class="upload-zone w-100" id="uploadZoneLabel">
+            <i class="bi bi-file-earmark-arrow-up upload-zone-icon"></i>
+            <div class="upload-zone-text mt-2">PDF-Dokumente hochladen</div>
+            <div class="text-muted small mt-1">Klicken zum Auswählen · Mehrere Dateien möglich</div>
+            <input type="file" name="documents" class="d-none" accept=".pdf" multiple id="uploadZoneInput">
+          </label>
+
+          {% if documents %}
+          <div class="mt-3 border-top pt-3">
+            {% for doc in documents %}
+            <div class="d-flex justify-content-between align-items-center py-2 {% if not forloop.last %}border-bottom{% endif %}">
+              <div class="d-flex align-items-center gap-2 text-truncate">
+                <i class="bi bi-file-earmark-pdf text-danger flex-shrink-0"></i>
+                <a href="{{ doc.file.url }}" target="_blank" class="text-truncate">{{ doc.file.name|cut:"contract_documents/" }}</a>
+                <small class="text-muted flex-shrink-0">{{ doc.uploaded_at|date:"d.m.Y" }}</small>
+              </div>
+              <a href="{% url 'accounts:contract_document_delete' doc.pk %}" class="btn btn-sm btn-outline-danger flex-shrink-0 ms-2">Löschen</a>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <button type="submit" class="btn btn-primary">Speichern</button>
+          <a href="{% url 'accounts:account_detail' contract.account_id %}" class="btn btn-secondary">Abbrechen</a>
+        </div>
+        <a href="{% url 'accounts:contract_archive' contract.pk %}"
+           class="btn btn-outline-{% if contract.is_archived %}success{% else %}warning{% endif %} btn-sm">
+          {% if contract.is_archived %}Wiederherstellen{% else %}Archivieren{% endif %}
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Rechte Spalte: Berechnete Werte -->
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header"><strong>Berechnung</strong></div>
+        <div class="card-body">
+          <div class="text-muted small text-uppercase fw-semibold mb-1" style="letter-spacing:.05em;">Aktuelles Enddatum</div>
+          <div class="fs-3 fw-bold">{{ contract.current_end_date|date:"d.m.Y" }}</div>
+          <div class="text-muted small mt-1">Inkl. automatischer Verlängerung</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</form>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-header {
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+.card { overflow: hidden; }
+.card-header {
+  position: relative;
+  padding-left: 1.125rem;
+}
+.card-header::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  height: 55%; width: 3px;
+  background: var(--brand-primary);
+  border-radius: 0 2px 2px 0;
+}
+
+/* Upload-Zone */
+.upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  border: 2px dashed #dee2e6;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  background: #f8f9fa;
+}
+.upload-zone:hover {
+  border-color: var(--brand-primary);
+  background: var(--brand-primary-subtle);
+}
+.upload-zone.has-files {
+  border-color: var(--brand-primary);
+  background: var(--brand-primary-subtle);
+}
+.upload-zone-icon {
+  font-size: 2rem;
+  color: #adb5bd;
+  transition: color 0.15s ease;
+}
+.upload-zone:hover .upload-zone-icon,
+.upload-zone.has-files .upload-zone-icon {
+  color: var(--brand-primary-dark);
+}
+.upload-zone-text {
+  font-weight: 600;
+  font-size: 0.925rem;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var input = document.getElementById('uploadZoneInput');
+  var zone = document.getElementById('uploadZoneLabel');
+  if (!input || !zone) return;
+  var label = zone.querySelector('.upload-zone-text');
+  input.addEventListener('change', function() {
+    if (input.files.length > 0) {
+      zone.classList.add('has-files');
+      label.textContent = input.files.length === 1
+        ? input.files[0].name
+        : input.files.length + ' Dateien ausgewählt';
+    } else {
+      zone.classList.remove('has-files');
+      label.textContent = 'PDF-Dokumente hochladen';
+    }
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}Dashboard – CRM{% endblock %}
+
+{% block extra_css %}
+<style>
+.dashboard-header {
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  margin-bottom: 1.5rem;
+}
+.product-filter-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.product-filter-card label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #6c757d;
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+.product-filter-card .form-select {
+  max-width: 260px;
+  font-size: 0.9rem;
+}
+.customers-table {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+.customers-table thead th {
+  background: #f8f9fa;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: #6c757d;
+  border-bottom: 2px solid #dee2e6;
+  padding: 0.75rem 1rem;
+}
+.customers-table tbody td {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+  font-size: 0.9rem;
+}
+.customers-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.customers-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+.account-link {
+  font-weight: 500;
+  color: inherit;
+  text-decoration: none;
+}
+.account-link:hover {
+  color: var(--brand-primary-dark, #000);
+  text-decoration: underline;
+}
+.activity-badge {
+  font-size: 0.78rem;
+  padding: 0.25em 0.6em;
+  border-radius: 20px;
+  font-weight: 500;
+}
+.activity-fresh {
+  background: #d1fae5;
+  color: #065f46;
+}
+.activity-stale {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.activity-none {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+.row-count {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-top: 0.75rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header d-flex justify-content-between align-items-center">
+  <h2 class="mb-0">Meine Kunden</h2>
+</div>
+
+{% if products %}
+<div class="product-filter-card">
+  <label>Produkt</label>
+  <form method="get" class="d-flex align-items-center gap-2 mb-0">
+    <select name="product" class="form-select form-select-sm" onchange="this.form.submit()">
+      {% for p in products %}
+      <option value="{{ p.pk }}" {% if selected_product.pk == p.pk %}selected{% endif %}>{{ p.name }}</option>
+      {% endfor %}
+    </select>
+  </form>
+</div>
+
+{% if selected_product %}
+<div class="table-responsive customers-table">
+  <table class="table table-hover mb-0">
+    <thead>
+      <tr>
+        <th>Typ</th>
+        <th>Account</th>
+        {% if show_ampel %}<th>Regionenzustand</th>{% endif %}
+        <th>Letzte Aktivität</th>
+        {% for f in fields %}
+        <th>{{ f.name }}</th>
+        {% endfor %}
+        <th>Aktionen</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td class="text-muted">{{ row.account_product.account.account_type.name|default:"-" }}</td>
+        <td>
+          <a href="{% url 'accounts:account_detail' row.account_product.account_id %}" class="account-link">{{ row.account_product.account.name }}</a>
+          {% if row.partner_count %}<span class="badge bg-secondary ms-1" title="Produktverbund">+ {{ row.partner_count }}</span>{% endif %}
+        </td>
+        {% if show_ampel %}
+        <td>
+          {% if row.ampel == 'green' %}
+            <span class="badge bg-success">&#9679; Grün</span>
+          {% elif row.ampel == 'yellow' %}
+            <span class="badge bg-warning text-dark">&#9679; Gelb</span>
+          {% elif row.ampel == 'red' %}
+            <span class="badge bg-danger">&#9679; Rot</span>
+          {% else %}
+            <span class="text-muted">—</span>
+          {% endif %}
+        </td>
+        {% endif %}
+        <td>
+          {% if row.last_activity == '–' %}
+            <span class="activity-badge activity-none">–</span>
+          {% elif row.last_activity == '<60 Tage' %}
+            <span class="activity-badge activity-fresh">{{ row.last_activity }}</span>
+          {% else %}
+            <span class="activity-badge activity-stale">{{ row.last_activity }}</span>
+          {% endif %}
+        </td>
+        {% for cell in row.field_cells %}
+        <td>
+          {% if cell.type == 'bool' %}
+            {% if cell.value %}
+            <i class="bi bi-check-circle-fill text-success"></i>
+            {% else %}
+            <i class="bi bi-x-circle text-danger"></i>
+            {% endif %}
+          {% elif cell.type == 'date' %}
+            {% if cell.value %}{{ cell.value|date:"d.m.Y" }}{% else %}-{% endif %}
+          {% elif cell.type == 'int' %}
+            {% if cell.value != None %}{{ cell.value }}{% else %}-{% endif %}
+          {% else %}
+            -
+          {% endif %}
+        </td>
+        {% endfor %}
+        <td>
+          <a href="{% url 'accounts:account_detail' row.account_product.account_id %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="{{ fields|length|add:5 }}" class="text-center text-muted py-4">Keine Zuordnungen für dieses Produkt in Ihren Accounts.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="row-count">{{ rows|length }} Einträge</p>
+{% endif %}
+
+{% else %}
+<div class="alert alert-info">Es sind noch keine Produkte konfiguriert.</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block title %}Nicht aufgelöste E-Mails – CRM{% endblock %}
+{% block content %}
+<h2 class="mb-4">Nicht aufgelöste E-Mails</h2>
+
+<div class="card">
+  <div class="card-body">
+    <p class="text-muted small mb-3">Diese E-Mails konnten keinem Account automatisch zugeordnet werden. Bitte weisen Sie sie manuell zu.</p>
+    <div class="table-responsive">
+    <table class="table table-sm mb-0">
+      <thead>
+        <tr>
+          <th>Datum</th>
+          <th>Absender</th>
+          <th>Betreff</th>
+          <th>Empfänger</th>
+          <th>Account zuweisen</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in email_list %}
+        <tr>
+          <td>{{ item.email.received_at|date:"d.m.Y H:i" }}</td>
+          <td>{{ item.email.sender_email }}</td>
+          <td>{{ item.email.subject|default:"(Kein Betreff)" }}</td>
+          <td><small>{{ item.email.recipient_emails|truncatechars:50 }}</small></td>
+          <td>
+            <div class="d-flex gap-1 align-items-start">
+              <form method="post" action="{% url 'emails:assign_email' item.email.pk %}" class="d-flex gap-1">
+                {% csrf_token %}
+                <div class="account-autocomplete" style="min-width:200px">
+                  <input type="text" class="form-control form-control-sm account-search-input" placeholder="Account suchen…" autocomplete="off">
+                  <input type="hidden" name="account" class="account-id-input">
+                </div>
+                <button type="submit" class="btn btn-sm btn-primary">Zuweisen</button>
+              </form>
+              <button type="button"
+                      class="btn btn-sm btn-outline-danger btn-delete-archived"
+                      data-delete-url="{% url 'emails:delete_email' item.email.pk %}"
+                      data-object-name="{{ item.email.subject|default:'(Kein Betreff)' }}">Löschen</button>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-center text-muted">Keine nicht aufgelösten E-Mails.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Shared dropdown appended to body to avoid overflow clipping from table-responsive
+const dropdown = document.createElement('ul');
+dropdown.className = 'list-unstyled bg-white border rounded shadow-sm mb-0';
+dropdown.style.cssText = 'position:fixed;z-index:9999;display:none;max-height:200px;overflow-y:auto;min-width:200px';
+document.body.appendChild(dropdown);
+
+let activeInput = null;
+let activeIdInput = null;
+
+function positionDropdown(input) {
+  const rect = input.getBoundingClientRect();
+  dropdown.style.top = rect.bottom + 'px';
+  dropdown.style.left = rect.left + 'px';
+  dropdown.style.width = rect.width + 'px';
+}
+
+function hideDropdown() {
+  dropdown.style.display = 'none';
+  dropdown.innerHTML = '';
+  activeInput = null;
+  activeIdInput = null;
+}
+
+document.querySelectorAll('.account-autocomplete').forEach(function(widget) {
+  const searchInput = widget.querySelector('.account-search-input');
+  const idInput = widget.querySelector('.account-id-input');
+  let debounceTimer;
+
+  searchInput.addEventListener('input', function() {
+    const q = searchInput.value.trim();
+    idInput.value = '';
+    clearTimeout(debounceTimer);
+    if (!q) { hideDropdown(); return; }
+    activeInput = searchInput;
+    activeIdInput = idInput;
+    debounceTimer = setTimeout(function() {
+      fetch('{% url "accounts:account_search" %}?q=' + encodeURIComponent(q))
+        .then(r => r.json())
+        .then(function(data) {
+          dropdown.innerHTML = '';
+          if (!data.length) {
+            dropdown.innerHTML = '<li class="px-3 py-2 text-muted small">Keine Ergebnisse</li>';
+          } else {
+            data.forEach(function(account) {
+              const li = document.createElement('li');
+              const label = account.type ? account.name + ' (' + account.type + ')' : account.name;
+              li.textContent = label;
+              li.className = 'px-3 py-1 small';
+              li.style.cursor = 'pointer';
+              li.addEventListener('mouseenter', function() { li.classList.add('bg-light'); });
+              li.addEventListener('mouseleave', function() { li.classList.remove('bg-light'); });
+              li.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                searchInput.value = label;
+                idInput.value = account.id;
+                hideDropdown();
+              });
+              dropdown.appendChild(li);
+            });
+          }
+          positionDropdown(searchInput);
+          dropdown.style.display = 'block';
+        });
+    }, 200);
+  });
+
+  searchInput.addEventListener('blur', function() {
+    setTimeout(hideDropdown, 150);
+  });
+  searchInput.addEventListener('focus', function() {
+    if (dropdown.innerHTML && activeInput === searchInput) {
+      positionDropdown(searchInput);
+      dropdown.style.display = 'block';
+    }
+  });
+});
+</script>
+{% endblock %}

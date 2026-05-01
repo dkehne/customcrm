@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – CRM{% endblock %}
+{% block content %}
+<h2 class="mb-4">Superadmin Dashboard</h2>
+
+<div class="row mb-4">
+  <div class="col-md-3">
+    <div class="card text-bg-primary">
+      <div class="card-body">
+        <h5 class="card-title">Accounts gesamt</h5>
+        <p class="display-6">{{ total_accounts }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-bg-success">
+      <div class="card-body">
+        <h5 class="card-title">Verträge gesamt</h5>
+        <p class="display-6">{{ total_contracts }}</p>
+      </div>
+    </div>
+  </div>
+  {% if malte_groesse %}
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Malte-Größen <small class="text-muted fw-normal fs-6">(Aktiv)</small></h5>
+        <div class="d-flex gap-3 mt-2">
+          <div class="text-center">
+            <div class="display-6">{{ malte_groesse.1|default:"0" }}</div>
+            <div class="text-muted small">Klein (1)</div>
+          </div>
+          <div class="text-center">
+            <div class="display-6">{{ malte_groesse.2|default:"0" }}</div>
+            <div class="text-muted small">Mittel (2)</div>
+          </div>
+          <div class="text-center">
+            <div class="display-6">{{ malte_groesse.3|default:"0" }}</div>
+            <div class="text-muted small">Groß (3)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<div class="row">
+
+  <div class="col-md-6 mb-4">
+    <div class="card">
+      <div class="card-header"><strong>Verträge nach Typ</strong></div>
+      <div class="card-body">
+        {% if contracts_by_type %}
+        <table class="table table-sm">
+          <thead><tr><th>Vertragstyp</th><th>Anzahl</th><th>Neu in {{ current_year }}</th></tr></thead>
+          <tbody>
+          {% for row in contracts_by_type %}
+          <tr>
+            <td>{{ row.contract_type__name|default:"Ohne Typ" }}</td>
+            <td>{{ row.count }}</td>
+            <td>{{ row.new_this_year }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted">Keine Daten vorhanden.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6 mb-4">
+    <div class="card {% if expiring_contracts %}border-warning{% endif %}">
+      <div class="card-header {% if expiring_contracts %}bg-warning bg-opacity-10{% endif %}">
+        <strong>Auslaufende Verträge</strong>
+        <span class="text-muted fw-normal ms-2 small">(festes Enddatum, nächste 90 Tage)</span>
+        {% if expiring_contracts %}
+        <span class="badge bg-warning text-dark ms-2">{{ expiring_contracts|length }}</span>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        {% if expiring_contracts %}
+        <table class="table table-sm">
+          <thead><tr><th>Account</th><th>Vertragstyp</th><th>Enddatum</th><th>Verantwortlich</th></tr></thead>
+          <tbody>
+          {% for item in expiring_contracts %}
+          <tr>
+            <td><a href="{% url 'accounts:account_detail' item.contract.account.pk %}" class="text-decoration-none fw-semibold">{{ item.contract.account.name }}</a></td>
+            <td><small class="text-muted">{{ item.contract.contract_type.name|default:"–" }}</small></td>
+            <td>
+              <span class="{% if item.days_until <= 14 %}text-danger fw-semibold{% elif item.days_until <= 30 %}text-warning fw-semibold{% else %}text-body{% endif %}">
+                {{ item.end_date|date:"d.m.Y" }}
+                <small class="text-muted">({{ item.days_until }} Tage)</small>
+              </span>
+            </td>
+            <td><small class="text-muted">{{ item.contract.account.owner.get_full_name|default:item.contract.account.owner.username|default:"–" }}</small></td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted">Keine Verträge laufen in den nächsten 90 Tagen aus.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-12 mb-4">
+    <div class="card">
+      <div class="card-header"><strong>Produkte nach Phase</strong></div>
+      <div class="card-body">
+        {% if products_by_phase %}
+        <table class="table table-sm">
+          <thead><tr><th>Produkt</th><th>Phase</th><th>Anzahl</th></tr></thead>
+          <tbody>
+          {% for row in products_by_phase %}
+          <tr>
+            <td>{{ row.product__name }}</td>
+            <td>{{ row.current_phase__name|default:"Keine Phase" }}</td>
+            <td>{{ row.count }}</td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted">Keine Daten vorhanden.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-12 mb-4">
+    <div class="card {% if inactive_accounts %}border-danger{% endif %}">
+      <div class="card-header {% if inactive_accounts %}bg-danger bg-opacity-10{% endif %}">
+        <strong>Inaktive Partner</strong>
+        <span class="text-muted fw-normal ms-2 small">(aktiver Vertrag, keine Aktivität seit &gt; 90 Tagen)</span>
+        {% if inactive_accounts %}
+        <span class="badge bg-danger ms-2">{{ inactive_accounts|length }}</span>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        {% if inactive_accounts %}
+        <table class="table table-sm">
+          <thead><tr><th>Account</th><th>Bundesland</th><th>Letzte Aktivität</th><th>Verantwortlich</th></tr></thead>
+          <tbody>
+          {% for account in inactive_accounts %}
+          <tr>
+            <td><a href="{% url 'accounts:account_detail' account.pk %}" class="text-decoration-none fw-semibold">{{ account.name }}</a></td>
+            <td><small class="text-muted">{{ account.bundesland }}</small></td>
+            <td>
+              {% if account.last_activity_date %}
+              <span class="text-danger">{{ account.last_activity_date|date:"d.m.Y" }}</span>
+              {% else %}
+              <span class="badge bg-danger">Nie kontaktiert</span>
+              {% endif %}
+            </td>
+            <td><small class="text-muted">{{ account.owner.get_full_name|default:account.owner.username|default:"–" }}</small></td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted">Alle Partner wurden in den letzten 90 Tagen kontaktiert.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

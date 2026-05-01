@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Mein Profil – CRM{% endblock %}
+{% block content %}
+<h2 class="mb-4">Mein Profil</h2>
+
+<!-- Dashboard-Einstellungen -->
+<div class="card mb-4">
+  <div class="card-header"><strong>Dashboard-Einstellungen</strong></div>
+  <div class="card-body">
+    <form method="post" action="{% url 'emails:set_default_product' %}">
+      {% csrf_token %}
+      <div class="row g-2 align-items-end">
+        <div class="col-md-6">
+          <label class="form-label small">Standard-Produkt unter „Meine Kunden"</label>
+          <select name="default_product" class="form-select">
+            <option value="">Erstes verfügbares Produkt</option>
+            {% for product in products %}
+            <option value="{{ product.pk }}" {% if user.default_dashboard_product_id == product.pk %}selected{% endif %}>
+              {{ product.name }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary btn-sm">Speichern</button>
+        </div>
+      </div>
+      <small class="text-muted">Dieses Produkt wird standardmäßig unter „Meine Kunden" angezeigt.</small>
+    </form>
+  </div>
+</div>
+
+<!-- BCC-Adresse -->
+<div class="card mb-4">
+  <div class="card-header"><strong>BCC-Adresse für E-Mail-Erfassung</strong></div>
+  <div class="card-body">
+    <p class="text-muted small mb-2">Fügen Sie diese Adresse als BCC hinzu, damit Ihre E-Mails automatisch im CRM erfasst werden.</p>
+    <div class="input-group" style="max-width: 500px;">
+      <input type="text" class="form-control" value="{{ inbound_address.address }}" readonly id="bccAddress">
+      <button class="btn btn-outline-secondary" type="button" onclick="navigator.clipboard.writeText(document.getElementById('bccAddress').value); this.innerHTML='<i class=\'bi bi-check\'></i> Kopiert'; setTimeout(() => this.innerHTML='<i class=\'bi bi-clipboard\'></i> Kopieren', 2000);">
+        <i class="bi bi-clipboard"></i> Kopieren
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Registrierte E-Mail-Adressen -->
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <strong>Meine E-Mail-Adressen</strong>
+    <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addEmailForm">
+      Adresse hinzufügen
+    </button>
+  </div>
+  <div class="collapse" id="addEmailForm">
+    <div class="card-body border-bottom bg-light">
+      <form method="post" action="{% url 'emails:email_address_add' %}">
+        {% csrf_token %}
+        <div class="row g-2 align-items-end">
+          <div class="col-md-6">
+            <label class="form-label small">E-Mail-Adresse</label>
+            {{ form.email }}
+          </div>
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-primary btn-sm">Hinzufügen</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="text-muted small mb-2">Diese Adressen werden verwendet, um eingehende E-Mails Ihrem Konto zuzuordnen.</p>
+    <table class="table table-sm mb-0">
+      <thead>
+        <tr><th>E-Mail-Adresse</th><th>Hinzugefügt am</th><th>Aktionen</th></tr>
+      </thead>
+      <tbody>
+        {% for addr in email_addresses %}
+        <tr>
+          <td>{{ addr.email }}</td>
+          <td>{{ addr.created_at|date:"d.m.Y H:i" }}</td>
+          <td>
+            <form method="post" action="{% url 'emails:email_address_delete' addr.pk %}" class="d-inline"
+                  onsubmit="return confirm('E-Mail-Adresse entfernen?')">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-danger">Entfernen</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3" class="text-center text-muted">Keine E-Mail-Adressen registriert.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
