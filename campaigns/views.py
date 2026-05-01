@@ -102,7 +102,7 @@ def campaign_create(request):
             campaign = form.save(commit=False)
             campaign.created_by = request.user
             campaign.save()
-            messages.success(request, _(f'Kampagne "{campaign.name}" erstellt.'))
+            messages.success(request, _('Kampagne "%s" erstellt.') % campaign.name)
             return redirect('campaigns:campaign_detail', pk=campaign.pk)
     else:
         form = CampaignForm()
@@ -187,7 +187,7 @@ def campaign_add_accounts(request, pk):
             except Account.DoesNotExist:
                 continue
             for contact in get_contacts_for_product(account, campaign.product):
-                _, created = CampaignContact.objects.get_or_create(
+                _obj, created = CampaignContact.objects.get_or_create(
                     campaign=campaign,
                     contact=contact,
                     defaults={
@@ -201,7 +201,7 @@ def campaign_add_accounts(request, pk):
                 )
                 if created:
                     added += 1
-        messages.success(request, _(f'{added} Kontakt(e) zur Kampagne hinzugefügt.'))
+        messages.success(request, _('%d Kontakt(e) zur Kampagne hinzugefügt.') % added)
         return redirect('campaigns:campaign_detail', pk=pk)
 
     # GET: show account selection
