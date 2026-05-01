@@ -49,7 +49,6 @@ class CampaignContact(models.Model):
     contact_email = models.EmailField(blank=True, verbose_name='E-Mail')
     contact_phone = models.CharField(max_length=50, blank=True, verbose_name='Telefon')
     account_name = models.CharField(max_length=300, verbose_name='Account')
-    bundesland = models.CharField(max_length=2, blank=True, verbose_name='Bundesland')
     added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

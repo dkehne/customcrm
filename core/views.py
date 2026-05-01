@@ -1,6 +1,4 @@
 from datetime import date, timedelta
-from django.conf import settings
-from django.http import FileResponse, Http404, HttpRequest
 import os
 
 from django.conf import settings as django_settings
@@ -8,13 +6,12 @@ from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
-from collections import defaultdict
 
-from django.db.models import Avg, Count, Min, Q, OuterRef, Subquery, Sum
-from django.http import HttpRequest
+from django.db.models import Count, Q, OuterRef, Subquery
+from django.http import FileResponse, Http404, HttpRequest
 from django.shortcuts import render, redirect
 
-from accounts.models import Account, Activity, RegionHealthEntry, RegionHealthUpload, SurveySnapshot, Todo
+from accounts.models import Account, Activity, Contact, Todo
 from contracts.models import Contract
 from products.models import AccountProduct, AccountProductFieldValue, Product, ProductField
 
@@ -74,25 +71,8 @@ def dashboard(request):
             .annotate(count=Count('account__auto_id', distinct=True))
             .order_by('-count')
         )
-        pipeline_by_owner = {row['account__owner__id']: row['count'] for row in pipeline_per_user}
         total_accounts = Account.objects.filter(is_archived=False).count()
         total_contracts = Contract.objects.filter(is_archived=False).count()
-
-        # Widget: Malte Größenverteilung (Aktiv)
-        malte_groesse_raw = (
-            AccountProductFieldValue.objects
-            .filter(
-                field__name__iexact='Größe',
-                field__product__name__iexact='Malte',
-                account_product__is_archived=False,
-                account_product__account__is_archived=False,
-                account_product__current_phase__name='Aktiv',
-            )
-            .values('value_int')
-            .annotate(count=Count('id'))
-            .order_by('value_int')
-        )
-        malte_groesse = {row['value_int']: row['count'] for row in malte_groesse_raw}
 
         # Widget: Auslaufende Verträge (fixed end date, within 90 days)
         in_90_days = today + timedelta(days=90)
@@ -133,7 +113,6 @@ def dashboard(request):
             'pipeline_per_user': pipeline_per_user,
             'expiring_contracts': expiring_contracts,
             'inactive_accounts': inactive_accounts,
-            'malte_groesse': malte_groesse,
         })
     else:
         return render(request, 'core/dashboard_verwalter.html',
@@ -201,18 +180,6 @@ def _my_accounts_context(user, request):
             .order_by('account__name')
         )
 
-        is_integreat = selected_product.name.lower() == 'integreat'
-        ampel_by_account = {}
-        if is_integreat:
-            latest_upload = RegionHealthUpload.objects.first()
-            if latest_upload:
-                account_ids = [ap.account_id for ap in account_products]
-                ampel_entries = RegionHealthEntry.objects.filter(
-                    upload=latest_upload,
-                    account_id__in=account_ids,
-                ).values('account_id', 'ampel_color')
-                ampel_by_account = {e['account_id']: e['ampel_color'] for e in ampel_entries}
-
         for ap in account_products:
             value_map = {fv.field_id: fv for fv in ap.field_values.all()}
             field_cells = []
@@ -238,7 +205,6 @@ def _my_accounts_context(user, request):
                 'account_product': ap,
                 'field_cells': field_cells,
                 'last_activity': last_activity,
-                'ampel': ampel_by_account.get(ap.account_id),
                 'partner_count': ap.partner_count or 0,
             })
 
@@ -247,7 +213,6 @@ def _my_accounts_context(user, request):
         'selected_product': selected_product,
         'fields': fields,
         'rows': rows,
-        'show_ampel': selected_product is not None and selected_product.name.lower() == 'integreat',
     }
 
 
@@ -358,171 +323,43 @@ def todo_list(request):
     })
 
 
-def _compute_ampel_per_manager():
-    """Compute Integreat Ampelbewertung table data grouped by account manager."""
-    today = date.today()
-    latest_upload = RegionHealthUpload.objects.first()
-    if not latest_upload:
-        return [], None, None
-
-    entries = (
-        RegionHealthEntry.objects
-        .filter(upload=latest_upload, account__isnull=False, account__owner__isnull=False)
-        .select_related('account__owner')
-    )
-
-    oldest_contracts = (
-        Contract.objects
-        .filter(is_archived=False, is_self_cancelling=False, account__owner__isnull=False)
-        .values('account_id', 'account__owner_id')
-        .annotate(oldest_start=Min('start_date'))
-    )
-    owner_contract_starts = defaultdict(list)
-    for row in oldest_contracts:
-        owner_contract_starts[row['account__owner_id']].append(row['oldest_start'])
-    avg_age_by_owner = {
-        owner_id: sum((today - s).days for s in starts) / len(starts) / 365.25
-        for owner_id, starts in owner_contract_starts.items()
-    }
-
-    support_rows = (
-        AccountProductFieldValue.objects
-        .filter(
-            field__name__icontains='Supportstunden',
-            field__field_type='integer',
-            account_product__is_archived=False,
-            account_product__account__is_archived=False,
-            account_product__account__owner__isnull=False,
-            value_int__isnull=False,
-        )
-        .values('account_product__account__owner_id')
-        .annotate(total=Sum('value_int'))
-    )
-    supportstunden_per_owner = {
-        row['account_product__account__owner_id']: row['total']
-        for row in support_rows
-    }
-
-    pipeline_per_user = (
-        AccountProduct.objects.filter(
-            is_archived=False,
-            account__is_archived=False,
-            current_phase__is_final_phase=False,
-            account__owner__isnull=False,
-        )
-        .values('account__owner__id')
-        .annotate(count=Count('account__auto_id', distinct=True))
-    )
-    pipeline_by_owner = {row['account__owner__id']: row['count'] for row in pipeline_per_user}
-
-    manager_data = {}
-    for entry in entries:
-        owner = entry.account.owner
-        key = owner.pk
-        if key not in manager_data:
-            name = owner.get_full_name() or owner.username
-            manager_data[key] = {'manager': name, 'green': 0, 'yellow': 0, 'red': 0}
-        manager_data[key][entry.ampel_color] += 1
-    for owner_pk, data in manager_data.items():
-        data['total'] = data['green'] + data['yellow'] + data['red']
-        avg_years = avg_age_by_owner.get(owner_pk)
-        data['avg_contract_age'] = round(avg_years, 1) if avg_years is not None else None
-        data['supportstunden'] = supportstunden_per_owner.get(owner_pk)
-        data['pipeline'] = pipeline_by_owner.get(owner_pk, 0)
-    ampel_per_manager = sorted(manager_data.values(), key=lambda x: (-x['green'], x['manager']))
-
-    if not ampel_per_manager:
-        return [], None, None
-
-    n = len(ampel_per_manager)
-    age_values = [r['avg_contract_age'] for r in ampel_per_manager if r['avg_contract_age'] is not None]
-    support_values = [r['supportstunden'] for r in ampel_per_manager if r['supportstunden'] is not None]
-    ampel_sum_row = {
-        'green': sum(r['green'] for r in ampel_per_manager),
-        'yellow': sum(r['yellow'] for r in ampel_per_manager),
-        'red': sum(r['red'] for r in ampel_per_manager),
-        'total': sum(r['total'] for r in ampel_per_manager),
-        'avg_contract_age': round(sum(age_values) / len(age_values), 1) if age_values else None,
-        'supportstunden': sum(support_values) if support_values else None,
-        'pipeline': sum(r['pipeline'] for r in ampel_per_manager),
-    }
-    ampel_avg_row = {
-        'green': round(ampel_sum_row['green'] / n, 1),
-        'yellow': round(ampel_sum_row['yellow'] / n, 1),
-        'red': round(ampel_sum_row['red'] / n, 1),
-        'total': round(ampel_sum_row['total'] / n, 1),
-        'avg_contract_age': round(sum(age_values) / len(age_values), 1) if age_values else None,
-        'supportstunden': round(sum(support_values) / len(support_values), 1) if support_values else None,
-        'pipeline': round(ampel_sum_row['pipeline'] / n, 1),
-    }
-    return ampel_per_manager, ampel_sum_row, ampel_avg_row
-
-
 @login_required
 def analyse(request):
-    ampel_per_manager, ampel_sum_row, ampel_avg_row = _compute_ampel_per_manager()
+    """Generic statistics view."""
+    from datetime import date as dt_date
+    from django.db.models import Count
+    from django.db.models.functions import TruncMonth
 
-    satisfaction_trend = (
-        SurveySnapshot.objects
-        .values('year')
-        .annotate(
-            avg_overall=Avg('satisfaction_overall'),
-            avg_app=Avg('satisfaction_app'),
-            avg_cms=Avg('satisfaction_cms'),
-            avg_support=Avg('satisfaction_support'),
-            count=Count('id'),
-        )
-        .order_by('year')
+    total_accounts = Account.objects.filter(is_archived=False).count()
+    total_contacts = Contact.objects.filter(is_archived=False, account__is_archived=False).count()
+    total_active_account_products = AccountProduct.objects.filter(
+        is_archived=False, account__is_archived=False,
+    ).count()
+
+    # Active products per product
+    products_by_count = (
+        AccountProduct.objects
+        .filter(is_archived=False, account__is_archived=False)
+        .values('product__name')
+        .annotate(count=Count('id'))
+        .order_by('-count')
     )
 
-    bundesland_map = dict(Account.BUNDESLAND_CHOICES)
-    satisfaction_by_bundesland_qs = (
-        SurveySnapshot.objects
-        .filter(account__bundesland__gt='', satisfaction_overall__isnull=False)
-        .values('account__bundesland')
-        .annotate(
-            avg_overall=Avg('satisfaction_overall'),
-            count=Count('id'),
-        )
-        .order_by('-avg_overall')
+    # Activities per month (last 12 months)
+    twelve_months_ago = dt_date.today().replace(day=1) - timedelta(days=365)
+    activities_per_month = (
+        Activity.objects
+        .filter(date__gte=twelve_months_ago)
+        .annotate(month=TruncMonth('date'))
+        .values('month')
+        .annotate(count=Count('id'))
+        .order_by('month')
     )
-    satisfaction_by_bundesland = [
-        {**row, 'bundesland_display': bundesland_map.get(row['account__bundesland'], row['account__bundesland'])}
-        for row in satisfaction_by_bundesland_qs
-    ]
-
-    # Integreat boolean field stats (active/final phase accounts)
-    integreat_field_stats = []
-    integreat_active_total = 0
-    integreat = Product.objects.filter(name__iexact='integreat', is_archived=False).first()
-    if integreat:
-        final_phases = integreat.phases.filter(is_final_phase=True)
-        active_aps = AccountProduct.objects.filter(
-            product=integreat,
-            is_archived=False,
-            current_phase__in=final_phases,
-            lead_account_product__isnull=True,
-        )
-        integreat_active_total = active_aps.count()
-        bool_fields = integreat.fields.filter(field_type=ProductField.FieldType.BOOLEAN, is_archived=False).order_by('name')
-        for field in bool_fields:
-            count_yes = AccountProductFieldValue.objects.filter(
-                field=field,
-                value_bool=True,
-                account_product__product=integreat,
-                account_product__is_archived=False,
-                account_product__current_phase__in=final_phases,
-                account_product__lead_account_product__isnull=True,
-            ).count()
-            integreat_field_stats.append({'name': field.name, 'count': count_yes, 'total': integreat_active_total})
 
     return render(request, 'core/analyse.html', {
-        'ampel_per_manager': ampel_per_manager,
-        'ampel_sum_row': ampel_sum_row,
-        'ampel_avg_row': ampel_avg_row,
-        'satisfaction_trend': satisfaction_trend,
-        'satisfaction_by_bundesland': satisfaction_by_bundesland,
-        'integreat_field_stats': integreat_field_stats,
-        'integreat_active_total': integreat_active_total,
+        'total_accounts': total_accounts,
+        'total_contacts': total_contacts,
+        'total_active_account_products': total_active_account_products,
+        'products_by_count': products_by_count,
+        'activities_per_month': activities_per_month,
     })
-

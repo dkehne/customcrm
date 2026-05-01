@@ -43,8 +43,4 @@ urlpatterns = [
     path('account-campaigns/<int:pk>/edit/', views.account_campaign_edit, name='account_campaign_edit'),
     path('account-campaigns/<int:pk>/toggle/', views.account_campaign_toggle_success, name='account_campaign_toggle_success'),
     path('account-campaigns/<int:pk>/delete/', views.account_campaign_delete, name='account_campaign_delete'),
-    # Region Health
-    path('region-health/upload/', views.region_health_upload, name='region_health_upload'),
-    path('region-health/preview/', views.region_health_preview, name='region_health_preview'),
-    path('region-health/unmatched/<int:upload_pk>/', views.region_health_unmatched, name='region_health_unmatched'),
 ]

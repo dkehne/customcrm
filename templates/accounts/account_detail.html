@@ -36,10 +36,6 @@
               <label class="form-label">{{ account_form.account_type.label }}</label>
               {{ account_form.account_type }}
             </div>
-            <div class="col-md-6">
-              <label class="form-label">{{ account_form.bundesland.label }}</label>
-              {{ account_form.bundesland }}
-            </div>
             <div class="col-12">
               <label class="form-label">{{ account_form.owner.label }}</label>
               {{ account_form.owner }}
@@ -399,122 +395,6 @@
       </table>
     </details>
   </div>
-  {% endif %}
-  {% if integreat_ap %}
-  {% if latest_region_health %}
-  <div class="card-body border-top">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-      <strong>
-        Integreat-Qualität
-        {% if latest_region_health.ampel_color == 'green' %}
-        <span class="badge bg-success ms-1">&#9679; Grün</span>
-        {% elif latest_region_health.ampel_color == 'yellow' %}
-        <span class="badge bg-warning text-dark ms-1">&#9679; Gelb</span>
-        {% else %}
-        <span class="badge bg-danger ms-1">&#9679; Rot</span>
-        {% endif %}
-      </strong>
-      <span class="text-muted small">Score: {{ latest_region_health.ampel_score|floatformat:2 }} · Stand: {{ latest_region_health.upload.uploaded_at|date:"d.m.Y" }}</span>
-    </div>
-    <dl class="row mb-0 small">
-      <dt class="col-sm-5">Aktive Sprachen</dt>
-      <dd class="col-sm-7">{{ latest_region_health.active_languages }}</dd>
-      <dt class="col-sm-5">Seiten gesamt</dt>
-      <dd class="col-sm-7">{{ latest_region_health.total_pages }}</dd>
-      <dt class="col-sm-5">Seiten mit niedriger Verständlichkeit</dt>
-      <dd class="col-sm-7">{{ latest_region_health.hix_low_count }}{% with pct=latest_region_health.hix_low_count|pct_of:latest_region_health.total_pages %}{% if pct %} <span class="text-muted">({{ pct }}%)</span>{% endif %}{% endwith %}</dd>
-      <dt class="col-sm-5">Seiten veraltet</dt>
-      <dd class="col-sm-7">{{ latest_region_health.outdated_pages }}{% with pct=latest_region_health.outdated_pages|pct_of:latest_region_health.total_pages %}{% if pct %} <span class="text-muted">({{ pct }}%)</span>{% endif %}{% endwith %}</dd>
-      <dt class="col-sm-5">Fehlerhafte Links</dt>
-      <dd class="col-sm-7">{{ latest_region_health.broken_links }}</dd>
-    </dl>
-  </div>
-  {% endif %}
-  {% if survey_snapshots %}
-  <div class="card-body border-top p-0">
-    <div class="px-3 pt-3 pb-2"><strong>Umfrage-Historie</strong></div>
-    <table class="table table-sm mb-0">
-      <thead>
-        <tr>
-          <th>Jahr</th>
-          <th>App</th>
-          <th>Redaktion</th>
-          <th>Betreuung</th>
-          <th>Gesamt</th>
-          <th>h/Woche</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for snap in survey_snapshots %}
-        <tr class="cursor-pointer survey-row" data-collapse-target="#surveyDetail{{ snap.pk }}">
-          <td><strong>{{ snap.year }}</strong></td>
-          <td>{% include "accounts/_satisfaction_badge.html" with val=snap.satisfaction_app %}</td>
-          <td>{% include "accounts/_satisfaction_badge.html" with val=snap.satisfaction_cms %}</td>
-          <td>{% include "accounts/_satisfaction_badge.html" with val=snap.satisfaction_support %}</td>
-          <td>{% include "accounts/_satisfaction_badge.html" with val=snap.satisfaction_overall %}</td>
-          <td>{% if snap.weekly_hours %}{{ snap.weekly_hours|floatformat:1 }}h{% else %}<span class="text-muted">–</span>{% endif %}</td>
-          <td><i class="bi bi-chevron-down text-muted small survey-chevron"></i></td>
-        </tr>
-        <tr class="collapse{% if snap == latest_snapshot %} show{% endif %}" id="surveyDetail{{ snap.pk }}">
-          <td colspan="7" class="bg-light">
-            <div class="p-3">
-              <div class="row g-3">
-                {% if snap.satisfaction_content_quality or snap.satisfaction_content_freshness %}
-                <div class="col-md-6">
-                  <small class="text-muted text-uppercase fw-semibold">Inhalte</small>
-                  <div class="mt-1">
-                    <span class="me-3">Qualität: {% include "accounts/_satisfaction_badge.html" with val=snap.satisfaction_content_quality %}</span>
-                    <span>Aktualität: {% include "accounts/_satisfaction_badge.html" with val=snap.satisfaction_content_freshness %}</span>
-                  </div>
-                </div>
-                {% endif %}
-                {% if snap.promotes_online is not None %}
-                <div class="col-md-6">
-                  <small class="text-muted text-uppercase fw-semibold">Bewirbt Integreat online</small>
-                  <div class="mt-1">
-                    {% if snap.promotes_online %}<span class="text-success"><i class="bi bi-check-circle-fill"></i> Ja</span>
-                    {% else %}<span class="text-danger"><i class="bi bi-x-circle-fill"></i> Nein</span>{% endif %}
-                  </div>
-                </div>
-                {% endif %}
-                {% if snap.features.all %}
-                <div class="col-12">
-                  <div class="mb-2">
-                    <small class="text-muted text-uppercase fw-semibold">Feature-Wünsche</small>
-                    <div class="mt-1">
-                      {% for f in snap.features.all %}{% if f.kind == 'request' %}<span class="badge bg-info text-dark me-1">{{ f.feature_name }}</span>{% endif %}{% empty %}<span class="text-muted small">–</span>{% endfor %}
-                    </div>
-                  </div>
-                  <div class="mb-2">
-                    <small class="text-muted text-uppercase fw-semibold">Bekannt, aber ungenutzt</small>
-                    <div class="mt-1">
-                      {% for f in snap.features.all %}{% if f.kind == 'not_used' %}<span class="badge bg-secondary me-1">{{ f.feature_name }}</span>{% endif %}{% endfor %}
-                    </div>
-                  </div>
-                </div>
-                {% endif %}
-                {% if snap.free_text_positive %}
-                <div class="col-md-6">
-                  <small class="text-muted text-uppercase fw-semibold">Was gefällt</small>
-                  <div class="mt-1 small" style="white-space: pre-wrap;">{{ snap.free_text_positive }}</div>
-                </div>
-                {% endif %}
-                {% if snap.free_text_improvement %}
-                <div class="col-md-6">
-                  <small class="text-muted text-uppercase fw-semibold">Verbesserungspotenzial</small>
-                  <div class="mt-1 small" style="white-space: pre-wrap;">{{ snap.free_text_improvement }}</div>
-                </div>
-                {% endif %}
-              </div>
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  {% endif %}
   {% endif %}
 </div>
 

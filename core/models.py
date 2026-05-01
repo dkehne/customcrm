@@ -26,6 +26,48 @@ class SiteSettings(models.Model):
         help_text='Hauptfarbe im Hex-Format (z.B. #CED51E)',
     )
 
+    # Configurable Labels
+    account_label_singular = models.CharField(
+        max_length=50, default='Konto',
+        verbose_name='Account-Bezeichnung (Einzahl)',
+        help_text='z.B. "Kommune", "Organisation", "Kunde"',
+    )
+    account_label_plural = models.CharField(
+        max_length=50, default='Konten',
+        verbose_name='Account-Bezeichnung (Mehrzahl)',
+        help_text='z.B. "Kommunen", "Organisationen", "Kunden"',
+    )
+    product_label_singular = models.CharField(
+        max_length=50, default='Produkt',
+        verbose_name='Produkt-Bezeichnung (Einzahl)',
+        help_text='z.B. "Produkt", "Service", "Leistung"',
+    )
+    product_label_plural = models.CharField(
+        max_length=50, default='Produkte',
+        verbose_name='Produkt-Bezeichnung (Mehrzahl)',
+        help_text='z.B. "Produkte", "Services", "Leistungen"',
+    )
+    contact_label_singular = models.CharField(
+        max_length=50, default='Kontakt',
+        verbose_name='Kontakt-Bezeichnung (Einzahl)',
+    )
+    contact_label_plural = models.CharField(
+        max_length=50, default='Kontakte',
+        verbose_name='Kontakt-Bezeichnung (Mehrzahl)',
+    )
+
+    # Module Toggles
+    contracts_enabled = models.BooleanField(
+        default=True,
+        verbose_name='Verträge aktiviert',
+        help_text='Wenn deaktiviert, werden Vertrags-Menüpunkte und -Widgets ausgeblendet',
+    )
+    campaigns_enabled = models.BooleanField(
+        default=True,
+        verbose_name='Kampagnen aktiviert',
+        help_text='Wenn deaktiviert, werden Kampagnen-Menüpunkte ausgeblendet',
+    )
+
     class Meta:
         verbose_name = 'Systemeinstellungen'
         verbose_name_plural = 'Systemeinstellungen'

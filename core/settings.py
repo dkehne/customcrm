@@ -43,6 +43,7 @@ if OIDC_ENABLED:
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -102,10 +103,21 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+from django.utils.translation import gettext_lazy as _
+
 LANGUAGE_CODE = 'de'
 TIME_ZONE = 'Europe/Berlin'
 USE_I18N = True
 USE_TZ = True
+
+LANGUAGES = [
+    ('de', _('Deutsch')),
+    ('en', _('English')),
+    ('fr', _('Français')),
+    ('es', _('Español')),
+]
+
+LOCALE_PATHS = [BASE_DIR / 'locale']
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-German-language Django CRM for municipal customer management. Manages accounts (Kommunen), contacts, products with workflow phases, contracts with auto-renewal logic, and marketing campaigns. Used internally by the digitalfabrik team.
+Generic Django CRM for customer/account management. Manages accounts, contacts, products with workflow phases, contracts with auto-renewal logic, and marketing campaigns. Configurable labels, module toggles, and i18n infrastructure make it adaptable to different organizations.
 
 ## Commands
 
@@ -25,28 +25,21 @@ python manage.py test accounts.tests.AccountListViewTest.test_filter_by_name  # 
 # Linting
 python -m pylint core accounts products contracts campaigns emails --load-plugins pylint_django
 
-# Import LimeSurvey exports (YYYY.csv files)
-python manage.py import_surveys <verzeichnis>
-
-# Create todos for primary contacts missing an Anrede
-python manage.py create_anrede_todos
-
 # Fetch and process inbound emails via IMAP
 python manage.py fetch_emails           # single run
 python manage.py fetch_emails --daemon  # continuous polling (default: every 5 min)
 python manage.py fetch_emails --dry-run # preview without saving
 
-# One-time data migration helpers
-python manage.py import_salesforce --owner <username> [--sf-dir <pfad>] [--dry-run]
-python manage.py duplicate_account <account_id>  # copies Stammdaten, Kontakte, Produkte, Verträge, Aktivitäten (no Todos/Umfragen/Vertragsdokumente)
+# User management
+python manage.py create_users           # bulk create users from CSV
 ```
 
 ## Architecture
 
 ### Django Apps
 
-- **core**: Project config (settings, urls, wsgi), authentication, user roles, dashboards, analyse view
-- **accounts**: Accounts, contacts, activities, todos, region health (Ampelbewertung)
+- **core**: Project config (settings, urls, wsgi), authentication, user roles, dashboards, analyse view, SiteSettings
+- **accounts**: Accounts, contacts, activities, todos
 - **products**: Products with dynamic phases and custom fields, Produktverbund
 - **contracts**: Contracts with documents, auto-renewal calculations
 - **campaigns**: Marketing campaigns with contact snapshots
@@ -62,13 +55,15 @@ Account
 │   └── lead_account_product → AccountProduct (Produktverbund)
 ├── Contracts → ContractType, ContractDocuments
 ├── Activities (call/email/meeting/task log)
-├── Todos (task list)
-└── RegionHealthEntry (Ampelbewertung: green/yellow/red per upload)
+└── Todos (task list)
 
 Campaign
 └── CampaignContacts (denormalized contact snapshots)
 
-SurveySnapshot (LimeSurvey data per account per year)
+SiteSettings (singleton, pk=1)
+├── Branding: site_name, logo, primary_color
+├── Labels: account_label_singular/plural, product_label_singular/plural, contact_label_singular/plural
+└── Module toggles: contracts_enabled, campaigns_enabled
 
 CustomUser
 ├── UserEmailAddress (registered sender addresses for matching)
@@ -80,15 +75,29 @@ Activity → optional InboundEmail → EmailAttachments
 
 ### Role-Based Access
 
-- `CustomUser.is_superuser` (Django built-in): Full access, sees global statistics dashboard with Ampel-Tabelle, pipeline, contracts, expiring contracts, inactive accounts
+- `CustomUser.is_superuser` (Django built-in): Full access, sees global statistics dashboard, pipeline, contracts, expiring contracts, inactive accounts
 - `Verwalter`: Sees only owned accounts, filtered dashboard with upcoming todos and pipeline view
+
+### SiteSettings — Labels and Module Toggles
+
+`SiteSettings` (singleton model, always `pk=1`) exposes:
+- **Labels**: `account_label_singular/plural`, `product_label_singular/plural`, `contact_label_singular/plural` — use `{{ labels.account_plural }}` etc. in templates (injected by `core.context_processors.site_branding`)
+- **Module toggles**: `contracts_enabled`, `campaigns_enabled` — wrap nav links with `{% if site_settings.contracts_enabled %}` in `base.html`
+
+The `site_branding` context processor (in `TEMPLATES[0]['OPTIONS']['context_processors']`) injects `site_settings`, `labels`, `site_name`, `site_logo`, `primary_color` into all templates.
+
+### i18n Infrastructure
+
+- `LocaleMiddleware` is active (inserted after `SessionMiddleware`)
+- `LOCALE_PATHS = [BASE_DIR / 'locale']` — place `.po`/`.mo` files under `locale/<lang>/LC_MESSAGES/`
+- `LANGUAGES` configured: de, en, fr, es
+- Run `python manage.py makemessages -l en` to extract strings; `compilemessages` to compile
 
 ### Common Patterns
 
 - **Soft delete**: `is_archived` boolean on most models
 - **Owner filtering**: Non-superusers see only `account__owner=user`
 - **Permission checks**: `if not request.user.is_superuser: messages.error(...); return redirect(...)`
-- **CSV export**: Semi-colon delimiter, UTF-8-sig encoding, Bundesland display names
 - **PDF uploads**: `get_valid_filename(f.name)[:100]` before saving to strip special chars and limit length
 - **Forms**: All `ModelForm`s inherit `BootstrapFormMixin` (from `core/utils.py`) which auto-applies Bootstrap CSS classes — no need to add `attrs` manually
 - **Model validation**: Django does NOT call `full_clean()` on `save()`. When model-level `clean()` methods matter (e.g. `AccountProduct`), call `full_clean()` explicitly in the view before saving and catch `ValidationError`
@@ -114,12 +123,11 @@ Activity → optional InboundEmail → EmailAttachments
 ## Configuration
 
 - **Database**: SQLite in development, PostgreSQL in production (via `DATABASE_URL` env var)
-- **Production DB**: configured in `/etc/customcrm.env`
 - **Custom User Model**: `core.CustomUser`
 - **OIDC**: Optional, controlled by `OIDC_ENABLED` env var (Keycloak integration); role `superuser` in JWT `realm_access.roles` grants superuser access
 - **Email integration**: `INBOUND_EMAIL_DOMAIN`, `IMAP_HOST`, `IMAP_PORT` (default 993), `IMAP_USER`, `IMAP_PASSWORD`, `IMAP_USE_SSL` (default True)
 - **Media uploads**: `media/contract_documents/%Y/%m/` for PDFs
-- **Deployment**: Gunicorn + Uvicorn workers, WorkingDirectory `/opt/customcrm/core/`
+- **Deployment**: Gunicorn + Uvicorn workers
 
 ## Frontend / Design
 

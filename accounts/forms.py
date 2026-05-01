@@ -7,7 +7,7 @@ from .models import Account, Contact, AccountType, Activity, Todo
 class AccountForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = Account
-        fields = ['name', 'account_type', 'bundesland', 'owner', 'notes']
+        fields = ['name', 'account_type', 'owner', 'notes']
         widgets = {'notes': forms.Textarea(attrs={'rows': 3})}
 
     def __init__(self, *args, **kwargs):

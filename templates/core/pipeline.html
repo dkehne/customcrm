@@ -27,9 +27,6 @@
             <a href="{% url 'accounts:account_detail' ap.account.pk %}" class="fw-semibold text-decoration-none">
               {{ ap.account.name }}
             </a>
-            {% if ap.account.bundesland %}
-            <small class="text-muted ms-1">{{ ap.account.bundesland }}</small>
-            {% endif %}
           </td>
           <td><small class="text-muted">{{ ap.product.name }}</small></td>
           <td>

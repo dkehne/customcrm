@@ -34,12 +34,6 @@
             </div>
 
             <div class="col-md-6">
-              <label for="{{ form.bundesland.id_for_label }}" class="form-label">{{ form.bundesland.label }}</label>
-              {{ form.bundesland }}
-              {% if form.bundesland.errors %}<div class="invalid-feedback d-block">{{ form.bundesland.errors.0 }}</div>{% endif %}
-            </div>
-
-            <div class="col-md-6">
               <label for="{{ form.owner.id_for_label }}" class="form-label">{{ form.owner.label }}</label>
               {{ form.owner }}
               {% if form.owner.errors %}<div class="invalid-feedback d-block">{{ form.owner.errors.0 }}</div>{% endif %}

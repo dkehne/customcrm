@@ -37,7 +37,7 @@ def campaign_list(request):
         response['Content-Disposition'] = 'attachment; filename="kontakte_export.csv"'
         response.charset = 'utf-8-sig'
         writer = csv.writer(response, delimiter=';')
-        writer.writerow(['Bundesland', 'Account', 'Name', 'E-Mail', 'Produkt'])
+        writer.writerow(['Account', 'Name', 'E-Mail', 'Produkt'])
 
         if product_id:
             try:
@@ -58,7 +58,6 @@ def campaign_list(request):
                 for account in matching_accounts:
                     for contact in get_contacts_for_product(account, filter_product, phase_id):
                         writer.writerow([
-                            account.get_bundesland_display(),
                             account.name,
                             contact.name,
                             contact.email,
@@ -79,7 +78,6 @@ def campaign_list(request):
                     if not ap.is_archived
                 )
                 writer.writerow([
-                    c.account.get_bundesland_display(),
                     c.account.name,
                     c.name,
                     c.email,
@@ -153,11 +151,10 @@ def campaign_detail(request, pk):
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
         response.charset = 'utf-8-sig'
         writer = csv.writer(response, delimiter=';')
-        writer.writerow(['Bundesland', 'Account', 'Anrede', 'Name', 'E-Mail', 'Telefon'])
+        writer.writerow(['Account', 'Anrede', 'Name', 'E-Mail', 'Telefon'])
         for cc in campaign_contacts:
             anrede = cc.contact.anrede if cc.contact_id else cc.contact_salutation
             writer.writerow([
-                cc.bundesland,
                 cc.account_name,
                 anrede,
                 cc.contact_name,
@@ -199,7 +196,6 @@ def campaign_add_accounts(request, pk):
                         'contact_email': contact.email,
                         'contact_phone': contact.phone,
                         'account_name': account.name,
-                        'bundesland': account.bundesland,
                     },
                 )
                 if created:

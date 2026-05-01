@@ -119,6 +119,60 @@
             <small class="text-muted">Akzentfarbe für Buttons, aktive Elemente und Hervorhebungen.</small>
           </div>
 
+          <hr class="my-4">
+
+          <h5 class="fw-semibold mb-3">Bezeichnungen</h5>
+          <p class="text-muted small mb-3">Passen Sie die Begriffe an Ihre Organisation an (z.B. "Kommune" statt "Konto").</p>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label for="{{ form.account_label_singular.id_for_label }}" class="form-label fw-semibold">{{ form.account_label_singular.label }}</label>
+              {{ form.account_label_singular }}
+              {% if form.account_label_singular.help_text %}<small class="text-muted">{{ form.account_label_singular.help_text }}</small>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ form.account_label_plural.id_for_label }}" class="form-label fw-semibold">{{ form.account_label_plural.label }}</label>
+              {{ form.account_label_plural }}
+              {% if form.account_label_plural.help_text %}<small class="text-muted">{{ form.account_label_plural.help_text }}</small>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ form.product_label_singular.id_for_label }}" class="form-label fw-semibold">{{ form.product_label_singular.label }}</label>
+              {{ form.product_label_singular }}
+              {% if form.product_label_singular.help_text %}<small class="text-muted">{{ form.product_label_singular.help_text }}</small>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ form.product_label_plural.id_for_label }}" class="form-label fw-semibold">{{ form.product_label_plural.label }}</label>
+              {{ form.product_label_plural }}
+              {% if form.product_label_plural.help_text %}<small class="text-muted">{{ form.product_label_plural.help_text }}</small>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ form.contact_label_singular.id_for_label }}" class="form-label fw-semibold">{{ form.contact_label_singular.label }}</label>
+              {{ form.contact_label_singular }}
+            </div>
+            <div class="col-md-6">
+              <label for="{{ form.contact_label_plural.id_for_label }}" class="form-label fw-semibold">{{ form.contact_label_plural.label }}</label>
+              {{ form.contact_label_plural }}
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <h5 class="fw-semibold mb-3">Module</h5>
+          <div class="form-check mb-2">
+            {{ form.contracts_enabled }}
+            <label class="form-check-label" for="{{ form.contracts_enabled.id_for_label }}">
+              {{ form.contracts_enabled.label }}
+            </label>
+            {% if form.contracts_enabled.help_text %}<div><small class="text-muted">{{ form.contracts_enabled.help_text }}</small></div>{% endif %}
+          </div>
+          <div class="form-check mb-3">
+            {{ form.campaigns_enabled }}
+            <label class="form-check-label" for="{{ form.campaigns_enabled.id_for_label }}">
+              {{ form.campaigns_enabled.label }}
+            </label>
+            {% if form.campaigns_enabled.help_text %}<div><small class="text-muted">{{ form.campaigns_enabled.help_text }}</small></div>{% endif %}
+          </div>
+
           <div class="d-flex gap-2">
             <button type="submit" class="btn btn-brand">
               <i class="bi bi-check-lg"></i> Speichern

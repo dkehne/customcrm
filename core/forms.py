@@ -6,7 +6,13 @@ from .utils import BootstrapFormMixin
 class SiteSettingsForm(BootstrapFormMixin, forms.ModelForm):
     class Meta:
         model = SiteSettings
-        fields = ['site_name', 'logo', 'primary_color']
+        fields = [
+            'site_name', 'logo', 'primary_color',
+            'account_label_singular', 'account_label_plural',
+            'product_label_singular', 'product_label_plural',
+            'contact_label_singular', 'contact_label_plural',
+            'contracts_enabled', 'campaigns_enabled',
+        ]
         widgets = {
             'primary_color': forms.TextInput(attrs={'type': 'color'}),
         }

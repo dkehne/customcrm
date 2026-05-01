@@ -15,6 +15,14 @@ def site_branding(request):
         'site_name': settings.site_name,
         'site_logo': settings.logo,
         'primary_color': settings.primary_color,
+        'labels': {
+            'account_singular': settings.account_label_singular,
+            'account_plural': settings.account_label_plural,
+            'product_singular': settings.product_label_singular,
+            'product_plural': settings.product_label_plural,
+            'contact_singular': settings.contact_label_singular,
+            'contact_plural': settings.contact_label_plural,
+        },
     }
 
 

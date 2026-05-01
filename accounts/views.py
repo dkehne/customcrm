@@ -1,6 +1,3 @@
-import csv
-import io
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
@@ -25,149 +22,7 @@ from products.forms import AccountProductForm
 from products.models import AccountProduct, AccountProductFieldValue, Product, ProductField, ProductPhase
 
 from .forms import AccountForm, ContactForm, ActivityForm, TodoForm
-from .models import Account, AccountType, Contact, Activity, Todo, RegionHealthUpload, RegionHealthEntry
-
-
-# --- Region Health helpers ---
-
-# Mapping: CSV prefix → Account type names (in order of priority)
-_PREFIX_TO_ACCOUNT_TYPES = {
-    'Bundesland': ['Bundesland'],
-    'Landkreis': ['Kreis / Landkreis'],
-    'Kreis': ['Kreis / Landkreis'],
-    'Region': ['Region'],
-    'Städteregion': ['Region'],
-    'Stadt': ['Stadt (kreisfrei)', 'Stadt (kreisangehörig)'],
-    'Gemeinde': ['Stadt (kreisangehörig)', 'Stadt (kreisfrei)'],
-    'Samtgemeinde': ['Stadt (kreisangehörig)', 'Stadt (kreisfrei)'],
-}
-
-_KNOWN_PREFIXES = sorted(_PREFIX_TO_ACCOUNT_TYPES.keys(), key=len, reverse=True)
-
-
-def _strip_prefix(region_name):
-    """Return (prefix, bare_name). prefix is '' if no known prefix found."""
-    for prefix in _KNOWN_PREFIXES:
-        if region_name.startswith(prefix + ' '):
-            return prefix, region_name[len(prefix) + 1:].strip()
-    return '', region_name
-
-
-def _calc_ampel(broken_links, hix_low_count, total_pages, outdated_pages):
-    """Returns (score: float, color: str)."""
-    def pct_score(count, total):
-        if total == 0:
-            return 1
-        pct = count / total * 100
-        if pct < 5:
-            return 1
-        if pct <= 10:
-            return 2
-        if pct <= 50:
-            return 3
-        if pct <= 74:
-            return 4
-        return 5
-
-    def abs_score(val):
-        if val < 5:
-            return 1
-        if val <= 10:
-            return 2
-        if val <= 50:
-            return 3
-        if val <= 74:
-            return 4
-        return 5
-
-    score = (pct_score(outdated_pages, total_pages) + pct_score(hix_low_count, total_pages) + abs_score(broken_links)) / 3
-    if score <= 2.0:
-        color = 'green'
-    elif score <= 3.5:
-        color = 'yellow'
-    else:
-        color = 'red'
-    return round(score, 4), color
-
-
-def _match_account(bare_name, prefix):
-    """Try to find exactly one matching Account. Returns Account or None."""
-    type_names = _PREFIX_TO_ACCOUNT_TYPES.get(prefix, [])
-
-    def _try_name(name):
-        if type_names:
-            qs = Account.objects.filter(name=name, account_type__name__in=type_names, is_archived=False)
-            if qs.count() == 1:
-                return qs.first()
-        qs_any = Account.objects.filter(name=name, is_archived=False)
-        if qs_any.count() == 1:
-            return qs_any.first()
-        return None
-
-    # First: bare name (CSV has prefix but account name doesn't)
-    result = _try_name(bare_name)
-    if result:
-        return result
-    # Fallback: full name with prefix (accounts were renamed to include prefix)
-    if prefix:
-        result = _try_name(f"{prefix} {bare_name}")
-        if result:
-            return result
-    return None
-
-
-def _parse_region_health_csv(file_obj):
-    """
-    Parse uploaded CSV file. Returns list of dicts with parsed + computed fields.
-    Each dict has: region_name, broken_links, hix_low_count, total_pages,
-    missing_translation_pages, outdated_pages, mt_budget, active_languages,
-    ampel_score, ampel_color, account_id (int or None), matched (bool).
-    """
-    content = file_obj.read()
-    # Try UTF-8-sig first (Excel export), then UTF-8
-    for encoding in ('utf-8-sig', 'utf-8', 'latin-1'):
-        try:
-            text = content.decode(encoding)
-            break
-        except UnicodeDecodeError:
-            continue
-    reader = csv.DictReader(io.StringIO(text))
-    entries = []
-    for row in reader:
-        region_name = row.get('Region', '').strip()
-        if not region_name:
-            continue
-        try:
-            broken_links = int(row.get('Anzahl fehlerhafter Links', 0) or 0)
-            hix_low_count = int(row.get('Anzahl Seiten mit niedrigem HIX-Wert', 0) or 0)
-            total_pages = int(row.get('Anzahl an Seiten', 0) or 0)
-            missing_translation_pages = int(row.get('Anzahl Seiten mit mindestens einer fehlenden oder veralteten Übersetzung', 0) or 0)
-            outdated_pages = int(row.get('Anzahl veralteter Seiten', 0) or 0)
-            mt_budget = int(row.get('MT Budget', 0) or 0)
-            active_languages = int(row.get('Anzahl aktiver Sprachen neben der Standard-Sprache', 0) or 0)
-        except (ValueError, TypeError):
-            continue
-
-        ampel_score, ampel_color = _calc_ampel(broken_links, hix_low_count, total_pages, outdated_pages)
-        prefix, bare_name = _strip_prefix(region_name)
-        account = _match_account(bare_name, prefix)
-
-        entries.append({
-            'region_name': region_name,
-            'broken_links': broken_links,
-            'hix_low_count': hix_low_count,
-            'total_pages': total_pages,
-            'missing_translation_pages': missing_translation_pages,
-            'outdated_pages': outdated_pages,
-            'mt_budget': mt_budget,
-            'active_languages': active_languages,
-            'ampel_score': ampel_score,
-            'ampel_color': ampel_color,
-            'account_id': account.pk if account else None,
-            'account_name': account.name if account else None,
-            'matched': account is not None,
-        })
-    return entries
+from .models import Account, AccountType, Contact, Activity, Todo
 
 
 @login_required
@@ -179,7 +34,6 @@ def account_list(request):
 
     filters = {
         'q': request.GET.get('q', '').strip(),
-        'bundesland': request.GET.get('bundesland', ''),
         'account_type': request.GET.get('account_type', ''),
         'owner': request.GET.get('owner', ''),
         'product': request.GET.get('product', ''),
@@ -189,8 +43,6 @@ def account_list(request):
 
     if filters['q']:
         accounts = accounts.filter(name__icontains=filters['q'])
-    if filters['bundesland']:
-        accounts = accounts.filter(bundesland=filters['bundesland'])
     if filters['account_type']:
         accounts = accounts.filter(account_type_id=filters['account_type'])
 
@@ -257,9 +109,8 @@ def account_list(request):
 
     return render(request, 'accounts/account_list.html', {
         'accounts': accounts, 'show_archived': show_archived,
-        'q': filters['q'], 'bundesland': filters['bundesland'],
+        'q': filters['q'],
         'account_type_id': filters['account_type'], 'owner_id': owner_id,
-        'bundesland_choices': Account.BUNDESLAND_CHOICES,
         'account_types': AccountType.objects.filter(is_archived=False),
         'users': CustomUser.objects.filter(is_active=True).order_by('username'),
         'products': products_all,
@@ -270,7 +121,6 @@ def account_list(request):
         'date_fields': date_fields,
         'campaigns': Campaign.objects.filter(is_archived=False, end_date__gte=timezone.now().date()).order_by('-start_date'),
     })
-
 
 
 @login_required
@@ -291,7 +141,6 @@ def accounts_to_campaign(request):
         accounts = accounts.filter(owner=request.user)
 
     q = request.POST.get('q', '').strip()
-    bundesland = request.POST.get('bundesland', '')
     account_type = request.POST.get('account_type', '')
     owner_id = request.POST.get('owner_id', '')
     product_id = request.POST.get('product_id', '')
@@ -299,8 +148,6 @@ def accounts_to_campaign(request):
 
     if q:
         accounts = accounts.filter(name__icontains=q)
-    if bundesland:
-        accounts = accounts.filter(bundesland=bundesland)
     if account_type:
         accounts = accounts.filter(account_type_id=account_type)
     if owner_id == 'none':
@@ -346,7 +193,6 @@ def accounts_to_campaign(request):
                     'contact_email': contact.email or '',
                     'contact_phone': contact.phone or '',
                     'account_name': account.name,
-                    'bundesland': account.bundesland or '',
                 },
             )
             if created:
@@ -413,19 +259,6 @@ def account_detail(request, pk):
     else:
         account_form = AccountForm(instance=account)
 
-    survey_snapshots = account.survey_snapshots.prefetch_related('features').order_by('year')
-    latest_snapshot = survey_snapshots.last()
-
-    latest_region_health = (
-        account.region_health_entries.select_related('upload').order_by('-upload__id').first()
-    )
-
-    integreat_ap = account.account_products.filter(
-        is_archived=False,
-        product__name__icontains='integreat',
-        current_phase__name__iexact='aktiv',
-    ).first()
-
     return render(request, 'accounts/account_detail.html', {
         'account': account,
         'account_form': account_form,
@@ -451,10 +284,6 @@ def account_detail(request, pk):
         'document_form': ContractDocumentForm(),
         'activity_form': ActivityForm(account=account),
         'todo_form': TodoForm(current_user=request.user),
-        'survey_snapshots': survey_snapshots,
-        'latest_snapshot': latest_snapshot,
-        'latest_region_health': latest_region_health,
-        'integreat_ap': integreat_ap,
     })
 
 
@@ -816,7 +645,6 @@ def todo_edit(request, pk):
     return render(request, 'accounts/todo_edit.html', {'form': form, 'todo': todo})
 
 
-
 @login_required
 def todo_complete(request, pk):
     todo = get_object_or_404(Todo, pk=pk)
@@ -879,130 +707,6 @@ def account_campaign_delete(request, pk):
         ac.delete()
         messages.success(request, 'Kampagne gelöscht.')
     return redirect('accounts:account_detail', pk=account_pk)
-
-
-@login_required
-def region_health_upload(request):
-    if not request.user.is_superuser:
-        messages.error(request, 'Keine Berechtigung.')
-        return redirect('core:dashboard')
-
-    if request.method == 'POST':
-        uploaded_file = request.FILES.get('csv_file')
-        if not uploaded_file:
-            messages.error(request, 'Bitte eine CSV-Datei auswählen.')
-            return render(request, 'accounts/region_health_upload.html', {})
-
-        entries = _parse_region_health_csv(uploaded_file)
-        if not entries:
-            messages.error(request, 'Die CSV-Datei enthält keine verwertbaren Zeilen.')
-            return render(request, 'accounts/region_health_upload.html', {})
-
-        request.session['region_health_entries'] = entries
-        request.session['region_health_filename'] = uploaded_file.name
-        return redirect('accounts:region_health_preview')
-
-    return render(request, 'accounts/region_health_upload.html', {})
-
-
-@login_required
-def region_health_preview(request):
-    if not request.user.is_superuser:
-        messages.error(request, 'Keine Berechtigung.')
-        return redirect('core:dashboard')
-
-    entries = request.session.get('region_health_entries')
-    if not entries:
-        messages.error(request, 'Keine Daten zum Bestätigen. Bitte zuerst eine CSV hochladen.')
-        return redirect('accounts:region_health_upload')
-
-    filename = request.session.get('region_health_filename', 'upload.csv')
-
-    if request.method == 'POST':
-        matched = [e for e in entries if e['matched']]
-        upload = RegionHealthUpload.objects.create(
-            uploaded_by=request.user,
-            filename=filename,
-            rows_total=len(entries),
-            rows_matched=len(matched),
-        )
-        for e in entries:
-            RegionHealthEntry.objects.create(
-                upload=upload,
-                account_id=e['account_id'],
-                region_name=e['region_name'],
-                broken_links=e['broken_links'],
-                hix_low_count=e['hix_low_count'],
-                total_pages=e['total_pages'],
-                missing_translation_pages=e['missing_translation_pages'],
-                outdated_pages=e['outdated_pages'],
-                mt_budget=e['mt_budget'],
-                active_languages=e['active_languages'],
-                ampel_score=e['ampel_score'],
-                ampel_color=e['ampel_color'],
-            )
-        del request.session['region_health_entries']
-        request.session.pop('region_health_filename', None)
-        unmatched_count = len(entries) - len(matched)
-        if unmatched_count:
-            messages.success(
-                request,
-                f'Upload gespeichert: {len(matched)} von {len(entries)} Einträgen gematchet. '
-                f'{unmatched_count} ungematcht – bitte manuell zuordnen.',
-            )
-            return redirect('accounts:region_health_unmatched', upload_pk=upload.pk)
-        messages.success(request, f'Upload gespeichert: alle {len(entries)} Einträge gematchet.')
-        return redirect('core:dashboard')
-
-    matched_count = sum(1 for e in entries if e['matched'])
-    unmatched_entries = [e for e in entries if not e['matched']]
-    return render(request, 'accounts/region_health_upload_preview.html', {
-        'entries': entries,
-        'filename': filename,
-        'total': len(entries),
-        'matched_count': matched_count,
-        'unmatched_count': len(unmatched_entries),
-        'unmatched_entries': unmatched_entries,
-    })
-
-
-@login_required
-def region_health_unmatched(request, upload_pk):
-    if not request.user.is_superuser:
-        messages.error(request, 'Keine Berechtigung.')
-        return redirect('core:dashboard')
-
-    upload = get_object_or_404(RegionHealthUpload, pk=upload_pk)
-    unmatched = upload.entries.filter(account__isnull=True).order_by('region_name')
-
-    if request.method == 'POST':
-        assigned = 0
-        for key, account_id in request.POST.items():
-            if not key.startswith('account_id_') or not account_id:
-                continue
-            entry_id = key[len('account_id_'):]
-            try:
-                entry = RegionHealthEntry.objects.get(pk=entry_id, upload=upload, account__isnull=True)
-                account = Account.objects.get(pk=account_id, is_archived=False)
-                entry.account = account
-                entry.save()
-                assigned += 1
-            except (RegionHealthEntry.DoesNotExist, Account.DoesNotExist):
-                pass
-        if assigned:
-            messages.success(request, f'{assigned} Einträge zugeordnet.')
-        return redirect('accounts:region_health_unmatched', upload_pk=upload_pk)
-
-    return render(request, 'accounts/region_health_unmatched.html', {
-        'upload': upload,
-        'unmatched': unmatched,
-        'all_accounts': Account.objects.filter(
-            is_archived=False,
-            account_products__is_archived=False,
-            account_products__product__name__iexact='integreat',
-            account_products__current_phase__name='Aktiv',
-        ).distinct().order_by('name'),
-    })
 
 
 @login_required

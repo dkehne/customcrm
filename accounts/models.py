@@ -18,34 +18,11 @@ class AccountType(models.Model):
 
 
 class Account(models.Model):
-    BUNDESLAND_CHOICES = [
-        ('BW', 'Baden-Württemberg'),
-        ('BY', 'Bayern'),
-        ('BE', 'Berlin'),
-        ('BB', 'Brandenburg'),
-        ('HB', 'Bremen'),
-        ('HH', 'Hamburg'),
-        ('HE', 'Hessen'),
-        ('MV', 'Mecklenburg-Vorpommern'),
-        ('NI', 'Niedersachsen'),
-        ('NW', 'Nordrhein-Westfalen'),
-        ('RP', 'Rheinland-Pfalz'),
-        ('SL', 'Saarland'),
-        ('SN', 'Sachsen'),
-        ('ST', 'Sachsen-Anhalt'),
-        ('SH', 'Schleswig-Holstein'),
-        ('TH', 'Thüringen'),
-    ]
-
     name = models.CharField(max_length=300, verbose_name='Name')
     auto_id = models.AutoField(primary_key=True)
     account_type = models.ForeignKey(
         AccountType, on_delete=models.PROTECT, verbose_name='Account-Typ',
         null=True, blank=True,
-    )
-    bundesland = models.CharField(
-        max_length=2, choices=BUNDESLAND_CHOICES, blank=True,
-        verbose_name='Bundesland',
     )
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
@@ -173,112 +150,3 @@ class Todo(models.Model):
         return self.title
 
 
-class SurveySnapshot(models.Model):
-    account = models.ForeignKey(
-        Account, on_delete=models.CASCADE,
-        related_name='survey_snapshots', verbose_name='Account',
-    )
-    year = models.IntegerField(verbose_name='Jahr')
-
-    # Zufriedenheit normalisiert 1–5 (null = nicht erhoben)
-    satisfaction_app               = models.IntegerField(null=True, blank=True, verbose_name='App')
-    satisfaction_cms               = models.IntegerField(null=True, blank=True, verbose_name='Redaktionssystem')
-    satisfaction_support           = models.IntegerField(null=True, blank=True, verbose_name='Betreuung')
-    satisfaction_overall           = models.IntegerField(null=True, blank=True, verbose_name='Gesamt')
-    satisfaction_content_quality   = models.IntegerField(null=True, blank=True, verbose_name='Inhaltsqualität')
-    satisfaction_content_freshness = models.IntegerField(null=True, blank=True, verbose_name='Aktualität Inhalte')
-
-    weekly_hours    = models.FloatField(null=True, blank=True, verbose_name='Stunden/Woche')
-    promotes_online = models.BooleanField(null=True, blank=True, verbose_name='Bewirbt online')
-
-    free_text_positive    = models.TextField(blank=True, default='', verbose_name='Was gefällt')
-    free_text_improvement = models.TextField(blank=True, default='', verbose_name='Verbesserungspotenzial')
-
-    respondent_email       = models.CharField(max_length=300, blank=True, default='')
-    respondent_name        = models.CharField(max_length=300, blank=True, default='')
-    limesurvey_response_id = models.IntegerField(null=True, blank=True)
-
-    class Meta:
-        verbose_name = 'Umfrage-Snapshot'
-        verbose_name_plural = 'Umfrage-Snapshots'
-        ordering = ['year']
-        unique_together = [('account', 'year')]
-
-    def __str__(self):
-        return f'{self.account} – {self.year}'
-
-
-class RegionHealthUpload(models.Model):
-    uploaded_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True,
-        verbose_name='Hochgeladen von',
-    )
-    uploaded_at = models.DateTimeField(auto_now_add=True, verbose_name='Hochgeladen am')
-    filename = models.CharField(max_length=255, verbose_name='Dateiname')
-    rows_total = models.IntegerField(verbose_name='Zeilen gesamt')
-    rows_matched = models.IntegerField(verbose_name='Zeilen gematchet')
-
-    class Meta:
-        verbose_name = 'Region-Health-Upload'
-        verbose_name_plural = 'Region-Health-Uploads'
-        ordering = ['-uploaded_at']
-
-    def __str__(self):
-        return f'{self.filename} ({self.uploaded_at:%d.%m.%Y})'
-
-
-class RegionHealthEntry(models.Model):
-    AMPEL_CHOICES = [
-        ('green', 'Grün'),
-        ('yellow', 'Gelb'),
-        ('red', 'Rot'),
-    ]
-
-    upload = models.ForeignKey(
-        RegionHealthUpload, on_delete=models.CASCADE, related_name='entries',
-        verbose_name='Upload',
-    )
-    account = models.ForeignKey(
-        'Account', null=True, blank=True, on_delete=models.SET_NULL,
-        related_name='region_health_entries', verbose_name='Account',
-    )
-    region_name = models.CharField(max_length=300, verbose_name='Region (CSV)')
-    broken_links = models.IntegerField(verbose_name='Fehlerhafte Links')
-    hix_low_count = models.IntegerField(verbose_name='Seiten mit niedrigem HIX')
-    total_pages = models.IntegerField(verbose_name='Seiten gesamt')
-    missing_translation_pages = models.IntegerField(verbose_name='Seiten mit fehlenden Übersetzungen')
-    outdated_pages = models.IntegerField(verbose_name='Veraltete Seiten')
-    mt_budget = models.IntegerField(verbose_name='MT Budget')
-    active_languages = models.IntegerField(verbose_name='Aktive Sprachen')
-    ampel_score = models.FloatField(verbose_name='Ampel-Score')
-    ampel_color = models.CharField(
-        max_length=10, choices=AMPEL_CHOICES, verbose_name='Ampelfarbe',
-    )
-
-    class Meta:
-        verbose_name = 'Region-Health-Eintrag'
-        verbose_name_plural = 'Region-Health-Einträge'
-        ordering = ['-upload__uploaded_at', 'region_name']
-
-    def __str__(self):
-        return self.region_name
-
-
-class SurveyFeature(models.Model):
-    class Kind(models.TextChoices):
-        REQUEST  = 'request',  'Feature-Wunsch'
-        NOT_USED = 'not_used', 'Bekannt, aber ungenutzt'
-
-    snapshot     = models.ForeignKey(
-        SurveySnapshot, on_delete=models.CASCADE,
-        related_name='features', verbose_name='Snapshot',
-    )
-    feature_name = models.CharField(max_length=300, verbose_name='Feature')
-    kind         = models.CharField(max_length=10, choices=Kind.choices)
-
-    class Meta:
-        verbose_name = 'Survey-Feature'
-        ordering = ['feature_name']
-
-    def __str__(self):
-        return self.feature_name

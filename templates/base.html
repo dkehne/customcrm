@@ -70,17 +70,21 @@
           <i class="bi bi-funnel"></i> Pipeline
         </a>
       </li>
+      {% if site_settings.contracts_enabled %}
       <li class="nav-item">
         <a class="nav-link {% if 'contracts' in request.resolver_match.app_name %}active{% endif %}" href="{% url 'contracts:contract_list' %}">
           <i class="bi bi-file-earmark-text"></i> Verträge
         </a>
       </li>
       {% endif %}
+      {% endif %}
+      {% if site_settings.campaigns_enabled %}
       <li class="nav-item">
         <a class="nav-link {% if 'campaigns' in request.resolver_match.app_name %}active{% endif %}" href="{% url 'campaigns:campaign_list' %}">
           <i class="bi bi-megaphone"></i> Kampagnen
         </a>
       </li>
+      {% endif %}
       <li class="nav-item">
         <a class="nav-link {% if request.resolver_match.url_name == 'analyse' %}active{% endif %}" href="{% url 'core:analyse' %}">
           <i class="bi bi-bar-chart-line"></i> Analyse

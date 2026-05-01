@@ -16,7 +16,7 @@
     <div class="card-body p-0">
       <table class="table table-sm mb-0">
         <thead>
-          <tr><th style="width:40px"></th><th>Typ</th><th>Account</th><th>Bundesland</th><th>Besitzer</th></tr>
+          <tr><th style="width:40px"></th><th>Typ</th><th>Account</th><th>Besitzer</th></tr>
         </thead>
         <tbody>
           {% for account in accounts %}
@@ -28,7 +28,6 @@
             </td>
             <td>{{ account.account_type.name|default:"-" }}</td>
             <td>{{ account.name }}</td>
-            <td>{{ account.get_bundesland_display|default:"-" }}</td>
             <td>{{ account.owner|default:"-" }}</td>
           </tr>
           {% empty %}

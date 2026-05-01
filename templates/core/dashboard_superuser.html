@@ -20,29 +20,6 @@
       </div>
     </div>
   </div>
-  {% if malte_groesse %}
-  <div class="col-md-4">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Malte-Größen <small class="text-muted fw-normal fs-6">(Aktiv)</small></h5>
-        <div class="d-flex gap-3 mt-2">
-          <div class="text-center">
-            <div class="display-6">{{ malte_groesse.1|default:"0" }}</div>
-            <div class="text-muted small">Klein (1)</div>
-          </div>
-          <div class="text-center">
-            <div class="display-6">{{ malte_groesse.2|default:"0" }}</div>
-            <div class="text-muted small">Mittel (2)</div>
-          </div>
-          <div class="text-center">
-            <div class="display-6">{{ malte_groesse.3|default:"0" }}</div>
-            <div class="text-muted small">Groß (3)</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  {% endif %}
 </div>
 
 <div class="row">
@@ -143,12 +120,11 @@
       <div class="card-body">
         {% if inactive_accounts %}
         <table class="table table-sm">
-          <thead><tr><th>Account</th><th>Bundesland</th><th>Letzte Aktivität</th><th>Verantwortlich</th></tr></thead>
+          <thead><tr><th>Account</th><th>Letzte Aktivität</th><th>Verantwortlich</th></tr></thead>
           <tbody>
           {% for account in inactive_accounts %}
           <tr>
             <td><a href="{% url 'accounts:account_detail' account.pk %}" class="text-decoration-none fw-semibold">{{ account.name }}</a></td>
-            <td><small class="text-muted">{{ account.bundesland }}</small></td>
             <td>
               {% if account.last_activity_date %}
               <span class="text-danger">{{ account.last_activity_date|date:"d.m.Y" }}</span>

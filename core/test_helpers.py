@@ -50,7 +50,6 @@ class CRMTestCase(TestCase):
 
     def create_account(self, name='Teststadt', owner=None, **kwargs):
         defaults = {
-            'bundesland': 'BY',
             'is_archived': False,
         }
         defaults.update(kwargs)

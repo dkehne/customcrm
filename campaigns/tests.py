@@ -55,7 +55,6 @@ class CampaignContactModelTest(CRMTestCase):
             campaign=campaign, contact=contact, account=account,
             contact_name=contact.name, contact_email=contact.email,
             contact_phone=contact.phone, account_name=account.name,
-            bundesland=account.bundesland,
         )
         self.assertEqual(str(cc), f'{contact.name} ({account.name})')
 
@@ -67,7 +66,6 @@ class CampaignContactModelTest(CRMTestCase):
             campaign=campaign, contact=contact, account=account,
             contact_name='Vorher', contact_email=contact.email,
             contact_phone='', account_name=account.name,
-            bundesland=account.bundesland,
         )
         contact.name = 'Nachher'
         contact.save()
@@ -106,7 +104,6 @@ class CampaignAccessControlTest(CRMTestCase):
         })
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Campaign.objects.filter(name='Neue Kampagne').exists())
-
 
 
 class CampaignSnapshotTest(CRMTestCase):
@@ -166,7 +163,6 @@ class CampaignCSVExportTest(CRMTestCase):
             campaign=campaign, contact=contact, account=account,
             contact_name=contact.name, contact_email=contact.email,
             contact_phone=contact.phone, account_name=account.name,
-            bundesland=account.bundesland,
         )
         response = self.client.get(f'/campaigns/{campaign.pk}/?export=csv')
         self.assertEqual(response['Content-Type'], 'text/csv')
@@ -190,7 +186,7 @@ class CampaignRemoveContactTest(CRMTestCase):
         cc = CampaignContact.objects.create(
             campaign=campaign, contact=self.contact, account=self.account,
             contact_name=self.contact.name, contact_email='', contact_phone='',
-            account_name=self.account.name, bundesland='',
+            account_name=self.account.name,
         )
         response = self.client.post(f'/campaigns/{campaign.pk}/remove-contact/{cc.pk}/')
         self.assertEqual(response.status_code, 302)
@@ -204,7 +200,7 @@ class CampaignRemoveContactTest(CRMTestCase):
         cc = CampaignContact.objects.create(
             campaign=campaign, contact=self.contact, account=self.account,
             contact_name=self.contact.name, contact_email='', contact_phone='',
-            account_name=self.account.name, bundesland='',
+            account_name=self.account.name,
         )
         response = self.client.post(f'/campaigns/{campaign.pk}/remove-contact/{cc.pk}/')
         self.assertTrue(CampaignContact.objects.filter(pk=cc.pk).exists())

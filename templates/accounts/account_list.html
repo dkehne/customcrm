@@ -99,15 +99,6 @@
         <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="Name...">
       </div>
       <div class="col-md-2">
-        <label class="form-label">Bundesland</label>
-        <select name="bundesland" class="form-select form-select-sm">
-          <option value="">Alle</option>
-          {% for code, label in bundesland_choices %}
-          <option value="{{ code }}" {% if bundesland == code %}selected{% endif %}>{{ label }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="col-md-2">
         <label class="form-label">Account-Typ</label>
         <select name="account_type" class="form-select form-select-sm">
           <option value="">Alle</option>
@@ -219,7 +210,6 @@
   <form method="post" action="{% url 'accounts:accounts_to_campaign' %}" class="d-flex align-items-center gap-2">
     {% csrf_token %}
     <input type="hidden" name="q" value="{{ q }}">
-    <input type="hidden" name="bundesland" value="{{ bundesland }}">
     <input type="hidden" name="account_type" value="{{ account_type_id }}">
     <input type="hidden" name="owner_id" value="{{ owner_id }}">
     <input type="hidden" name="product_id" value="{{ product_id }}">

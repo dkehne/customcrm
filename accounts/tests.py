@@ -23,10 +23,6 @@ class AccountModelTest(CRMTestCase):
         names = list(Account.objects.values_list('name', flat=True))
         self.assertEqual(names, ['Apfel', 'Zebra'])
 
-    def test_bundesland_display(self):
-        account = self.create_account(bundesland='BY')
-        self.assertEqual(account.get_bundesland_display(), 'Bayern')
-
 
 class ContactModelTest(CRMTestCase):
 
@@ -134,7 +130,6 @@ class AccountCRUDViewTest(CRMTestCase):
         at = self.create_account_type()
         response = self.client.post('/accounts/create/', {
             'name': 'Neue Stadt',
-            'bundesland': 'BY',
             'account_type': at.pk,
             'notes': '',
         })
@@ -145,7 +140,6 @@ class AccountCRUDViewTest(CRMTestCase):
         account = self.create_account(name='Alt')
         response = self.client.post(f'/accounts/{account.pk}/edit/', {
             'name': 'Neu',
-            'bundesland': 'BY',
             'notes': '',
         })
         self.assertEqual(response.status_code, 302)
