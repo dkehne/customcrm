@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Verträge – CRM{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Verträge" %} – CRM{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -68,12 +69,12 @@
 
 {% block content %}
 <div class="page-header d-flex justify-content-between align-items-center">
-  <h2 class="mb-0">Verträge{% if show_archived %} <span class="text-muted fs-5">(Archiv)</span>{% endif %}</h2>
+  <h2 class="mb-0">{% trans "Verträge" %}{% if show_archived %} <span class="text-muted fs-5">({% trans "Archiv" %})</span>{% endif %}</h2>
   <div class="d-flex gap-2">
     {% if show_archived %}
-    <a href="{% url 'contracts:contract_list' %}" class="btn btn-outline-secondary btn-sm">Aktive anzeigen</a>
+    <a href="{% url 'contracts:contract_list' %}" class="btn btn-outline-secondary btn-sm">{% trans "Aktive anzeigen" %}</a>
     {% else %}
-    <a href="{% url 'contracts:contract_list' %}?archived=1" class="btn btn-outline-secondary btn-sm">Archiv anzeigen</a>
+    <a href="{% url 'contracts:contract_list' %}?archived=1" class="btn btn-outline-secondary btn-sm">{% trans "Archiv anzeigen" %}</a>
     {% endif %}
   </div>
 </div>
@@ -83,21 +84,21 @@
     {% if show_archived %}<input type="hidden" name="archived" value="1">{% endif %}
     <div class="row g-2 align-items-end">
       <div class="col-md-4">
-        <label class="form-label">Account-Name</label>
-        <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="Account suchen...">
+        <label class="form-label">{% trans "Account-Name" %}</label>
+        <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="{% trans 'Account suchen...' %}">
       </div>
       <div class="col-md-3">
-        <label class="form-label">Vertragstyp</label>
+        <label class="form-label">{% trans "Vertragstyp" %}</label>
         <select name="contract_type" class="form-select form-select-sm">
-          <option value="">Alle</option>
+          <option value="">{% trans "Alle" %}</option>
           {% for t in contract_types %}
           <option value="{{ t.pk }}" {% if contract_type_id == t.pk|stringformat:"d" %}selected{% endif %}>{{ t.name }}</option>
           {% endfor %}
         </select>
       </div>
       <div class="col-md-auto">
-        <button type="submit" class="btn btn-primary btn-sm">Filtern</button>
-        <a href="{% url 'contracts:contract_list' %}{% if show_archived %}?archived=1{% endif %}" class="btn btn-outline-secondary btn-sm">Zurücksetzen</a>
+        <button type="submit" class="btn btn-primary btn-sm">{% trans "Filtern" %}</button>
+        <a href="{% url 'contracts:contract_list' %}{% if show_archived %}?archived=1{% endif %}" class="btn btn-outline-secondary btn-sm">{% trans "Zurücksetzen" %}</a>
       </div>
     </div>
   </form>
@@ -108,15 +109,15 @@
     <thead>
       <tr>
         <th>ID</th>
-        <th>Typ</th>
-        <th>Account</th>
-        <th>Produkt</th>
-        <th>Vertragstyp</th>
-        <th>Bruttojahrespreis</th>
-        <th>Start</th>
-        <th>Laufzeit</th>
-        <th>Ende</th>
-        <th>Aktionen</th>
+        <th>{% trans "Typ" %}</th>
+        <th>{% trans "Account" %}</th>
+        <th>{% trans "Produkt" %}</th>
+        <th>{% trans "Vertragstyp" %}</th>
+        <th>{% trans "Bruttojahrespreis" %}</th>
+        <th>{% trans "Start" %}</th>
+        <th>{% trans "Laufzeit" %}</th>
+        <th>{% trans "Ende" %}</th>
+        <th>{% trans "Aktionen" %}</th>
       </tr>
     </thead>
     <tbody>
@@ -134,24 +135,24 @@
         <td>
           {{ contract.current_end_date|date:"d.m.Y" }}
           {% if not contract.is_archived and contract.is_self_cancelling and contract.current_end_date|date:"Y-m-d" < today %}
-            <span class="badge bg-secondary ms-1">Abgelaufen</span>
+            <span class="badge bg-secondary ms-1">{% trans "Abgelaufen" %}</span>
           {% endif %}
         </td>
         <td>
-          <a href="{% url 'accounts:contract_edit' contract.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+          <a href="{% url 'accounts:contract_edit' contract.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Bearbeiten" %}</a>
           {% if contract.is_archived %}
-          <a href="{% url 'accounts:contract_archive' contract.pk %}" class="btn btn-sm btn-outline-success">Wiederherstellen</a>
+          <a href="{% url 'accounts:contract_archive' contract.pk %}" class="btn btn-sm btn-outline-success">{% trans "Wiederherstellen" %}</a>
           <button type="button" class="btn btn-sm btn-outline-danger btn-delete-archived"
                   data-delete-url="{% url 'accounts:contract_delete' contract.pk %}"
-                  data-object-name="Vertrag #{{ contract.pk }}">Löschen</button>
+                  data-object-name="{% blocktrans with pk=contract.pk %}Vertrag #{{ pk }}{% endblocktrans %}">{% trans "Löschen" %}</button>
           {% endif %}
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="10" class="text-center text-muted py-4">Keine Verträge gefunden.</td></tr>
+      <tr><td colspan="10" class="text-center text-muted py-4">{% trans "Keine Verträge gefunden." %}</td></tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
-<p class="row-count">{{ contracts|length }} Einträge</p>
+<p class="row-count">{% blocktrans with count=contracts|length %}{{ count }} Einträge{% endblocktrans %}</p>
 {% endblock %}

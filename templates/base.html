@@ -1,4 +1,4 @@
-{% load static %}
+{% load static i18n %}
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -39,7 +39,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link {% if request.resolver_match.url_name == 'todo_list' %}active{% endif %}" href="{% url 'core:todo_list' %}">
-          <i class="bi bi-check2-square"></i> Aufgaben
+          <i class="bi bi-check2-square"></i> {% trans "Aufgaben" %}
         </a>
       </li>
       {% if not user.is_superuser %}
@@ -56,13 +56,13 @@
       </li>
       <li class="nav-item">
         <a class="nav-link {% if request.resolver_match.url_name == 'contact_list' %}active{% endif %}" href="{% url 'accounts:contact_list' %}">
-          <i class="bi bi-person-lines-fill"></i> Kontakte
+          <i class="bi bi-person-lines-fill"></i> {% trans "Kontakte" %}
         </a>
       </li>
       {% if user.is_superuser %}
       <li class="nav-item">
         <a class="nav-link {% if request.resolver_match.url_name == 'my_accounts' %}active{% endif %}" href="{% url 'core:my_accounts' %}">
-          <i class="bi bi-person-check"></i> Meine Kunden
+          <i class="bi bi-person-check"></i> {% trans "Meine Kunden" %}
         </a>
       </li>
       <li class="nav-item">
@@ -73,7 +73,7 @@
       {% if site_settings.contracts_enabled %}
       <li class="nav-item">
         <a class="nav-link {% if 'contracts' in request.resolver_match.app_name %}active{% endif %}" href="{% url 'contracts:contract_list' %}">
-          <i class="bi bi-file-earmark-text"></i> Verträge
+          <i class="bi bi-file-earmark-text"></i> {% trans "Verträge" %}
         </a>
       </li>
       {% endif %}
@@ -81,18 +81,18 @@
       {% if site_settings.campaigns_enabled %}
       <li class="nav-item">
         <a class="nav-link {% if 'campaigns' in request.resolver_match.app_name %}active{% endif %}" href="{% url 'campaigns:campaign_list' %}">
-          <i class="bi bi-megaphone"></i> Kampagnen
+          <i class="bi bi-megaphone"></i> {% trans "Kampagnen" %}
         </a>
       </li>
       {% endif %}
       <li class="nav-item">
         <a class="nav-link {% if request.resolver_match.url_name == 'analyse' %}active{% endif %}" href="{% url 'core:analyse' %}">
-          <i class="bi bi-bar-chart-line"></i> Analyse
+          <i class="bi bi-bar-chart-line"></i> {% trans "Analyse" %}
         </a>
       </li>
       {% if user.is_superuser %}
       <li>
-        <div class="sidebar-section-header">Einstellungen</div>
+        <div class="sidebar-section-header">{% trans "Einstellungen" %}</div>
       </li>
       <li class="nav-item">
         <a class="nav-link {% if request.resolver_match.url_name == 'site_settings' %}active{% endif %}" href="{% url 'settings:site_settings' %}">
@@ -101,48 +101,48 @@
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{% url 'settings:account_type_list' %}">
-          <i class="bi bi-tags"></i> Account-Typen
+          <i class="bi bi-tags"></i> {% trans "Account-Typen" %}
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{% url 'settings:product_list' %}">
-          <i class="bi bi-box"></i> Produkte
+          <i class="bi bi-box"></i> {% trans "Produkte" %}
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{% url 'settings:contract_type_list' %}">
-          <i class="bi bi-file-earmark-text"></i> Vertragstypen
+          <i class="bi bi-file-earmark-text"></i> {% trans "Vertragstypen" %}
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{% url 'settings:user_list' %}">
-          <i class="bi bi-people"></i> Benutzer
+          <i class="bi bi-people"></i> {% trans "Benutzer" %}
         </a>
       </li>
       {% endif %}
       <li>
-        <div class="sidebar-section-header">Profil</div>
+        <div class="sidebar-section-header">{% trans "Profil" %}</div>
       </li>
       <li class="nav-item">
         <a class="nav-link {% if request.resolver_match.url_name == 'profile_overview' %}active{% endif %}" href="{% url 'emails:profile_overview' %}">
-          <i class="bi bi-person-circle"></i> Mein Profil
+          <i class="bi bi-person-circle"></i> {% trans "Mein Profil" %}
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link {% if request.resolver_match.url_name == 'password_change' %}active{% endif %}" href="{% url 'core:password_change' %}">
-          <i class="bi bi-key"></i> Passwort ändern
+          <i class="bi bi-key"></i> {% trans "Passwort ändern" %}
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link {% if request.resolver_match.url_name == 'unresolved_emails' %}active{% endif %}" href="{% url 'emails:unresolved_emails' %}">
-          <i class="bi bi-envelope-exclamation"></i> Nicht aufgelöste E-Mails
+          <i class="bi bi-envelope-exclamation"></i> {% trans "Nicht aufgelöste E-Mails" %}
           {% if unresolved_email_count %}<span class="badge bg-danger ms-1">{{ unresolved_email_count }}</span>{% endif %}
         </a>
       </li>
     </ul>
     <div class="sidebar-user">
       <div class="sidebar-user-name">{{ user.get_full_name|default:user.username }}</div>
-      <a href="{% url 'core:logout' %}" class="sidebar-user-logout">Abmelden</a>
+      <a href="{% url 'core:logout' %}" class="sidebar-user-logout">{% trans "Abmelden" %}</a>
       <small>v{{ app_version }}</small>
     </div>
   </nav>
@@ -171,18 +171,18 @@
       <form method="post" id="deleteConfirmForm">
         {% csrf_token %}
         <div class="modal-header bg-danger text-white">
-          <h5 class="modal-title" id="deleteConfirmModalLabel">Endgültig löschen</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Schließen"></button>
+          <h5 class="modal-title" id="deleteConfirmModalLabel">{% trans "Endgültig löschen" %}</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="{% trans 'Schließen' %}"></button>
         </div>
         <div class="modal-body">
-          <p>Sie sind dabei, <strong id="deleteObjectName"></strong> endgültig zu löschen.</p>
-          <p class="text-danger fw-bold">Diese Aktion kann nicht rückgängig gemacht werden.</p>
-          <p>Bitte geben Sie Ihren Benutzernamen ein, um die Löschung zu bestätigen:</p>
+          <p>{% trans "Sie sind dabei," %} <strong id="deleteObjectName"></strong> {% trans "endgültig zu löschen." %}</p>
+          <p class="text-danger fw-bold">{% trans "Diese Aktion kann nicht rückgängig gemacht werden." %}</p>
+          <p>{% trans "Bitte geben Sie Ihren Benutzernamen ein, um die Löschung zu bestätigen:" %}</p>
           <input type="text" class="form-control" name="confirm_username" id="deleteConfirmUsername" autocomplete="off" placeholder="{{ user.username }}">
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-          <button type="submit" class="btn btn-danger" id="deleteConfirmSubmit" disabled>Endgültig löschen</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Abbrechen" %}</button>
+          <button type="submit" class="btn btn-danger" id="deleteConfirmSubmit" disabled>{% trans "Endgültig löschen" %}</button>
         </div>
       </form>
     </div>

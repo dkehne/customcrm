@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Branding – {{ site_name }}{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Branding" %} – {{ site_name }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -77,7 +78,7 @@
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h2>Branding</h2>
+  <h2>{% trans "Branding" %}</h2>
 </div>
 
 <div class="row">
@@ -88,41 +89,41 @@
           {% csrf_token %}
 
           <div class="mb-4">
-            <label for="id_site_name" class="form-label fw-semibold">Systemname</label>
+            <label for="id_site_name" class="form-label fw-semibold">{% trans "Systemname" %}</label>
             <input type="text" name="site_name" id="id_site_name"
                    class="form-control" value="{{ form.instance.site_name }}"
                    placeholder="CustomCRM">
-            <small class="text-muted">Wird in der Navigation und im Seitentitel angezeigt.</small>
+            <small class="text-muted">{% trans "Wird in der Navigation und im Seitentitel angezeigt." %}</small>
           </div>
 
           <div class="mb-4">
-            <label class="form-label fw-semibold">Logo</label>
+            <label class="form-label fw-semibold">{% trans "Logo" %}</label>
             <div class="logo-preview-container">
               {% if form.instance.logo %}
-              <img src="{{ form.instance.logo.url }}" alt="Aktuelles Logo" id="logoPreview">
+              <img src="{{ form.instance.logo.url }}" alt="{% trans 'Aktuelles Logo' %}" id="logoPreview">
               {% else %}
-              <span class="no-logo" id="logoPlaceholder">Kein Logo hochgeladen</span>
-              <img src="" alt="Logo-Vorschau" id="logoPreview" style="display: none;">
+              <span class="no-logo" id="logoPlaceholder">{% trans "Kein Logo hochgeladen" %}</span>
+              <img src="" alt="{% trans 'Logo-Vorschau' %}" id="logoPreview" style="display: none;">
               {% endif %}
             </div>
             <input type="file" name="logo" id="id_logo" class="form-control" accept="image/png,image/jpeg,image/svg+xml">
-            <small class="text-muted">PNG, JPG oder SVG. Empfohlen: rechteckiges Format, max. 200px Höhe.</small>
+            <small class="text-muted">{% trans "PNG, JPG oder SVG. Empfohlen: rechteckiges Format, max. 200px Höhe." %}</small>
           </div>
 
           <div class="mb-4">
-            <label for="id_primary_color" class="form-label fw-semibold">Primärfarbe</label>
+            <label for="id_primary_color" class="form-label fw-semibold">{% trans "Primärfarbe" %}</label>
             <div class="color-input-wrapper">
               <input type="color" name="primary_color" id="id_primary_color"
                      value="{{ form.instance.primary_color|default:'#CED51E' }}">
               <span class="color-hex-display" id="colorHexDisplay">{{ form.instance.primary_color|default:'#CED51E' }}</span>
             </div>
-            <small class="text-muted">Akzentfarbe für Buttons, aktive Elemente und Hervorhebungen.</small>
+            <small class="text-muted">{% trans "Akzentfarbe für Buttons, aktive Elemente und Hervorhebungen." %}</small>
           </div>
 
           <hr class="my-4">
 
-          <h5 class="fw-semibold mb-3">Bezeichnungen</h5>
-          <p class="text-muted small mb-3">Passen Sie die Begriffe an Ihre Organisation an (z.B. "Kommune" statt "Konto").</p>
+          <h5 class="fw-semibold mb-3">{% trans "Bezeichnungen" %}</h5>
+          <p class="text-muted small mb-3">{% trans "Passen Sie die Begriffe an Ihre Organisation an (z.B. \"Kommune\" statt \"Konto\")." %}</p>
 
           <div class="row g-3 mb-3">
             <div class="col-md-6">
@@ -157,7 +158,7 @@
 
           <hr class="my-4">
 
-          <h5 class="fw-semibold mb-3">Module</h5>
+          <h5 class="fw-semibold mb-3">{% trans "Module" %}</h5>
           <div class="form-check mb-2">
             {{ form.contracts_enabled }}
             <label class="form-check-label" for="{{ form.contracts_enabled.id_for_label }}">
@@ -175,10 +176,10 @@
 
           <div class="d-flex gap-2">
             <button type="submit" class="btn btn-brand">
-              <i class="bi bi-check-lg"></i> Speichern
+              <i class="bi bi-check-lg"></i> {% trans "Speichern" %}
             </button>
             <button type="button" class="btn btn-outline-secondary" onclick="resetToDefaults()">
-              <i class="bi bi-arrow-counterclockwise"></i> Auf Standard zurücksetzen
+              <i class="bi bi-arrow-counterclockwise"></i> {% trans "Auf Standard zurücksetzen" %}
             </button>
           </div>
         </form>
@@ -189,7 +190,7 @@
   <div class="col-lg-5">
     <div class="card">
       <div class="card-header">
-        <i class="bi bi-eye"></i> Vorschau
+        <i class="bi bi-eye"></i> {% trans "Vorschau" %}
       </div>
       <div class="card-body">
         <div class="branding-preview">
@@ -205,7 +206,7 @@
                style="background-color: {{ form.instance.primary_color|default:'#CED51E' }};"></div>
         </div>
 
-        <p class="text-muted small mb-2">So sieht die Sidebar-Navigation aus:</p>
+        <p class="text-muted small mb-2">{% trans "So sieht die Sidebar-Navigation aus:" %}</p>
         <div class="d-flex flex-column gap-1" style="background: var(--sidebar-bg); border-radius: 8px; padding: 0.75rem;">
           <div style="background: var(--brand-primary-subtle); color: var(--brand-primary); padding: 0.5rem 0.75rem; border-radius: 4px; font-size: 0.85rem;">
             <i class="bi bi-speedometer2"></i> Dashboard

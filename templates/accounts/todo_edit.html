@@ -1,15 +1,16 @@
 {% extends "base.html" %}
-{% block title %}Aufgabe bearbeiten – CRM{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Aufgabe bearbeiten" %} – CRM{% endblock %}
 {% block content %}
 
 <div class="d-flex justify-content-between align-items-center mb-4 page-header">
   <div>
     <h2>{{ todo.title }}</h2>
     <div class="text-muted small mt-1">
-      Aufgabe bei <a href="{% url 'accounts:account_detail' todo.account_id %}">{{ todo.account.name }}</a>
+      {% trans "Aufgabe bei" %} <a href="{% url 'accounts:account_detail' todo.account_id %}">{{ todo.account.name }}</a>
     </div>
   </div>
-  <a href="{% url 'accounts:account_detail' todo.account_id %}" class="btn btn-outline-secondary">← Zurück</a>
+  <a href="{% url 'accounts:account_detail' todo.account_id %}" class="btn btn-outline-secondary">{% trans "← Zurück" %}</a>
 </div>
 
 <div class="row g-4">
@@ -18,7 +19,7 @@
       {% csrf_token %}
 
       <div class="card mb-4">
-        <div class="card-header"><strong>Aufgabe</strong></div>
+        <div class="card-header"><strong>{% trans "Aufgabe" %}</strong></div>
         <div class="card-body">
           <div class="row g-3">
 
@@ -51,21 +52,21 @@
       </div>
 
       <div class="card mb-4">
-        <div class="card-header"><strong>Anhang</strong></div>
+        <div class="card-header"><strong>{% trans "Anhang" %}</strong></div>
         <div class="card-body">
           <label class="upload-zone w-100" id="uploadZoneLabel">
             <i class="bi bi-file-earmark-arrow-up upload-zone-icon"></i>
             <div class="upload-zone-text mt-2">
-              {% if todo.attachment %}Neue PDF hochladen (ersetzt aktuelle Datei){% else %}PDF hochladen{% endif %}
+              {% if todo.attachment %}{% trans "Neue PDF hochladen (ersetzt aktuelle Datei)" %}{% else %}{% trans "PDF hochladen" %}{% endif %}
             </div>
-            <div class="text-muted small mt-1">Klicken zum Auswählen</div>
+            <div class="text-muted small mt-1">{% trans "Klicken zum Auswählen" %}</div>
             <input type="file" name="attachment" class="d-none" accept=".pdf" id="uploadZoneInput">
           </label>
 
           {% if todo.attachment %}
           <div class="mt-3 pt-3 border-top d-flex align-items-center gap-2">
             <i class="bi bi-file-earmark-pdf text-danger"></i>
-            <span class="text-muted small">Aktuelle Datei:</span>
+            <span class="text-muted small">{% trans "Aktuelle Datei:" %}</span>
             <a href="{{ todo.attachment.url }}" target="_blank" class="small">{{ todo.attachment.name }}</a>
           </div>
           {% endif %}
@@ -74,12 +75,12 @@
 
       <div class="d-flex justify-content-between align-items-center">
         <div>
-          <button type="submit" class="btn btn-primary">Speichern</button>
-          <a href="{% url 'accounts:account_detail' todo.account_id %}" class="btn btn-secondary">Abbrechen</a>
+          <button type="submit" class="btn btn-primary">{% trans "Speichern" %}</button>
+          <a href="{% url 'accounts:account_detail' todo.account_id %}" class="btn btn-secondary">{% trans "Abbrechen" %}</a>
         </div>
         <button type="button" class="btn btn-outline-danger btn-delete-archived"
                 data-delete-url="{% url 'accounts:todo_delete' todo.pk %}"
-                data-object-name="{{ todo.title }}">Löschen</button>
+                data-object-name="{{ todo.title }}">{% trans "Löschen" %}</button>
       </div>
 
     </form>

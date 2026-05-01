@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Accounts – CRM{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Accounts" %} – CRM{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -79,14 +80,14 @@
 
 {% block content %}
 <div class="page-header d-flex justify-content-between align-items-center">
-  <h2 class="mb-0">Accounts{% if show_archived %} <span class="text-muted fs-5">(Archiv)</span>{% endif %}</h2>
+  <h2 class="mb-0">Accounts{% if show_archived %} <span class="text-muted fs-5">({% trans "Archiv" %})</span>{% endif %}</h2>
   <div class="d-flex gap-2">
     {% if show_archived %}
-    <a href="{% url 'accounts:account_list' %}" class="btn btn-outline-secondary btn-sm">Aktive anzeigen</a>
+    <a href="{% url 'accounts:account_list' %}" class="btn btn-outline-secondary btn-sm">{% trans "Aktive anzeigen" %}</a>
     {% else %}
-    <a href="{% url 'accounts:account_list' %}?archived=1" class="btn btn-outline-secondary btn-sm">Archiv anzeigen</a>
+    <a href="{% url 'accounts:account_list' %}?archived=1" class="btn btn-outline-secondary btn-sm">{% trans "Archiv anzeigen" %}</a>
     {% endif %}
-    <a href="{% url 'accounts:account_create' %}" class="btn btn-primary btn-sm">+ Neuer Account</a>
+    <a href="{% url 'accounts:account_create' %}" class="btn btn-primary btn-sm">+ {% trans "Neuer Account" %}</a>
   </div>
 </div>
 
@@ -95,32 +96,32 @@
     {% if show_archived %}<input type="hidden" name="archived" value="1">{% endif %}
     <div class="row g-2 align-items-end">
       <div class="col-md-3">
-        <label class="form-label">Suche</label>
-        <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="Name...">
+        <label class="form-label">{% trans "Suche" %}</label>
+        <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="{% trans 'Name...' %}">
       </div>
       <div class="col-md-2">
-        <label class="form-label">Account-Typ</label>
+        <label class="form-label">{% trans "Account-Typ" %}</label>
         <select name="account_type" class="form-select form-select-sm">
-          <option value="">Alle</option>
+          <option value="">{% trans "Alle" %}</option>
           {% for t in account_types %}
           <option value="{{ t.pk }}" {% if account_type_id == t.pk|stringformat:"d" %}selected{% endif %}>{{ t.name }}</option>
           {% endfor %}
         </select>
       </div>
       <div class="col-md-2">
-        <label class="form-label">Besitzer</label>
+        <label class="form-label">{% trans "Besitzer" %}</label>
         <select name="owner" class="form-select form-select-sm">
-          <option value="">Alle</option>
-          <option value="none" {% if owner_id == 'none' %}selected{% endif %}>Ohne Besitzer</option>
+          <option value="">{% trans "Alle" %}</option>
+          <option value="none" {% if owner_id == 'none' %}selected{% endif %}>{% trans "Ohne Besitzer" %}</option>
           {% for u in users %}
           <option value="{{ u.pk }}" {% if owner_id == u.pk|stringformat:"d" %}selected{% endif %}>{{ u.get_full_name|default:u.username }}</option>
           {% endfor %}
         </select>
       </div>
       <div class="col-md-2">
-        <label class="form-label">Produkt</label>
+        <label class="form-label">{% trans "Produkt" %}</label>
         <select name="product" class="form-select form-select-sm" onchange="this.form.submit()">
-          <option value="">Alle</option>
+          <option value="">{% trans "Alle" %}</option>
           {% for p in products %}
           <option value="{{ p.pk }}" {% if product_id == p.pk|stringformat:"d" %}selected{% endif %}>{{ p.name }}</option>
           {% endfor %}
@@ -128,9 +129,9 @@
       </div>
       {% if phases %}
       <div class="col-md-2">
-        <label class="form-label">Phase</label>
+        <label class="form-label">{% trans "Phase" %}</label>
         <select name="phase" class="form-select form-select-sm">
-          <option value="">Alle Phasen</option>
+          <option value="">{% trans "Alle Phasen" %}</option>
           {% for ph in phases %}
           <option value="{{ ph.pk }}" {% if phase_id == ph.pk|stringformat:"d" %}selected{% endif %}>{{ ph.name }}</option>
           {% endfor %}
@@ -138,8 +139,8 @@
       </div>
       {% endif %}
       <div class="col-md-auto">
-        <button type="submit" class="btn btn-primary btn-sm">Filtern</button>
-        <a href="{% url 'accounts:account_list' %}{% if show_archived %}?archived=1{% endif %}" class="btn btn-outline-secondary btn-sm">Zurücksetzen</a>
+        <button type="submit" class="btn btn-primary btn-sm">{% trans "Filtern" %}</button>
+        <a href="{% url 'accounts:account_list' %}{% if show_archived %}?archived=1{% endif %}" class="btn btn-outline-secondary btn-sm">{% trans "Zurücksetzen" %}</a>
       </div>
     </div>
     {% if bool_fields or date_fields %}
@@ -148,9 +149,9 @@
       <div class="col-md-2">
         <label class="form-label">{{ bff.field.name }}</label>
         <select name="bf_{{ bff.field.pk }}" class="form-select form-select-sm">
-          <option value="">Alle</option>
-          <option value="1" {% if bff.selected == "1" %}selected{% endif %}>Ja</option>
-          <option value="0" {% if bff.selected == "0" %}selected{% endif %}>Nein</option>
+          <option value="">{% trans "Alle" %}</option>
+          <option value="1" {% if bff.selected == "1" %}selected{% endif %}>{% trans "Ja" %}</option>
+          <option value="0" {% if bff.selected == "0" %}selected{% endif %}>{% trans "Nein" %}</option>
         </select>
       </div>
       {% endfor %}
@@ -158,9 +159,9 @@
       <div class="col-md-2">
         <label class="form-label">{{ dff.field.name }}</label>
         <select name="df_{{ dff.field.pk }}" class="form-select form-select-sm">
-          <option value="">Alle</option>
-          <option value="1" {% if dff.selected == "1" %}selected{% endif %}>Eingetragen</option>
-          <option value="0" {% if dff.selected == "0" %}selected{% endif %}>Nicht eingetragen</option>
+          <option value="">{% trans "Alle" %}</option>
+          <option value="1" {% if dff.selected == "1" %}selected{% endif %}>{% trans "Eingetragen" %}</option>
+          <option value="0" {% if dff.selected == "0" %}selected{% endif %}>{% trans "Nicht eingetragen" %}</option>
         </select>
       </div>
       {% endfor %}
@@ -174,10 +175,10 @@
     <thead>
       <tr>
         <th>ID</th>
-        <th>Typ</th>
-        <th>Name</th>
-        <th>Besitzer</th>
-        <th>Aktionen</th>
+        <th>{% trans "Typ" %}</th>
+        <th>{% trans "Name" %}</th>
+        <th>{% trans "Besitzer" %}</th>
+        <th>{% trans "Aktionen" %}</th>
       </tr>
     </thead>
     <tbody>
@@ -188,22 +189,22 @@
         <td><a href="{% url 'accounts:account_detail' account.pk %}?back={{ request.get_full_path|urlencode }}" class="account-link">{{ account.name }}</a></td>
         <td class="text-muted">{{ account.owner|default:"-" }}</td>
         <td>
-          <a href="{% url 'accounts:account_detail' account.pk %}?back={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+          <a href="{% url 'accounts:account_detail' account.pk %}?back={{ request.get_full_path|urlencode }}" class="btn btn-sm btn-outline-primary">{% trans "Bearbeiten" %}</a>
           {% if account.is_archived %}
-          <a href="{% url 'accounts:account_archive' account.pk %}" class="btn btn-sm btn-outline-success">Wiederherstellen</a>
+          <a href="{% url 'accounts:account_archive' account.pk %}" class="btn btn-sm btn-outline-success">{% trans "Wiederherstellen" %}</a>
           <button type="button" class="btn btn-sm btn-outline-danger btn-delete-archived"
                   data-delete-url="{% url 'accounts:account_delete' account.pk %}"
-                  data-object-name="{{ account.name }}">Löschen</button>
+                  data-object-name="{{ account.name }}">{% trans "Löschen" %}</button>
           {% endif %}
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="5" class="text-center text-muted py-4">Keine Accounts gefunden.</td></tr>
+      <tr><td colspan="5" class="text-center text-muted py-4">{% trans "Keine Accounts gefunden." %}</td></tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
-<p class="row-count">{{ accounts|length }} Einträge</p>
+<p class="row-count">{% blocktrans with count=accounts|length %}{{ count }} Einträge{% endblocktrans %}</p>
 
 {% if not show_archived and accounts and campaigns %}
 <div class="campaign-action-bar mt-3">
@@ -216,14 +217,14 @@
     <input type="hidden" name="phase_id" value="{{ phase_id }}">
     {% for bff in bool_fields %}{% if bff.selected %}<input type="hidden" name="bf_{{ bff.field.pk }}" value="{{ bff.selected }}">{% endif %}{% endfor %}
     {% for dff in date_fields %}{% if dff.selected %}<input type="hidden" name="df_{{ dff.field.pk }}" value="{{ dff.selected }}">{% endif %}{% endfor %}
-    <span class="campaign-action-label">Gefilterte Accounts zur Kampagne hinzufügen:</span>
+    <span class="campaign-action-label">{% trans "Gefilterte Accounts zur Kampagne hinzufügen:" %}</span>
     <select name="campaign_id" class="form-select form-select-sm" style="max-width: 280px;" required>
-      <option value="">Kampagne wählen…</option>
+      <option value="">{% trans "Kampagne wählen…" %}</option>
       {% for c in campaigns %}
       <option value="{{ c.pk }}">{{ c.name }}</option>
       {% endfor %}
     </select>
-    <button type="submit" class="btn btn-sm btn-outline-primary">Hinzufügen</button>
+    <button type="submit" class="btn btn-sm btn-outline-primary">{% trans "Hinzufügen" %}</button>
   </form>
 </div>
 {% endif %}

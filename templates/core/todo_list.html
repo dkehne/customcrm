@@ -1,15 +1,16 @@
 {% extends "base.html" %}
-{% block title %}Aufgaben – CRM{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Aufgaben" %} – CRM{% endblock %}
 {% block content %}
-<h2 class="mb-4">Meine Aufgaben</h2>
+<h2 class="mb-4">{% trans "Meine Aufgaben" %}</h2>
 
 {% if upcoming_todos %}
 <div class="card mb-4">
-  <div class="card-header"><strong>Fällig in den nächsten 2 Wochen</strong></div>
+  <div class="card-header"><strong>{% trans "Fällig in den nächsten 2 Wochen" %}</strong></div>
   <div class="card-body p-0">
     <table class="table table-sm mb-0">
       <thead>
-        <tr><th>Fälligkeit</th><th>Aufgabe</th><th>Anhang</th><th>Account</th><th>Erstellt von</th><th>Aktionen</th></tr>
+        <tr><th>{% trans "Fälligkeit" %}</th><th>{% trans "Aufgabe" %}</th><th>{% trans "Anhang" %}</th><th>{% trans "Account" %}</th><th>{% trans "Erstellt von" %}</th><th>{% trans "Aktionen" %}</th></tr>
       </thead>
       <tbody>
         {% for todo in upcoming_todos %}
@@ -22,17 +23,17 @@
           </td>
           <td>
             {% if todo.attachment %}
-              <a href="{{ todo.attachment.url }}" target="_blank" title="PDF öffnen"><i class="bi bi-file-pdf text-danger"></i></a>
+              <a href="{{ todo.attachment.url }}" target="_blank" title="{% trans 'PDF öffnen' %}"><i class="bi bi-file-pdf text-danger"></i></a>
             {% else %}-{% endif %}
           </td>
           <td><a href="{% url 'accounts:account_detail' todo.account_id %}">{{ todo.account.name }}</a></td>
           <td>{{ todo.created_by|default:"-" }}</td>
           <td>
-            <a href="{% url 'accounts:todo_edit' todo.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+            <a href="{% url 'accounts:todo_edit' todo.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Bearbeiten" %}</a>
             <form method="post" action="{% url 'accounts:todo_complete' todo.pk %}" class="d-inline"
-                  onsubmit="return confirm('Aufgabe als erledigt markieren?')">
+                  onsubmit="return confirm('{% trans "Aufgabe als erledigt markieren?" %}')">
               {% csrf_token %}
-              <button type="submit" class="btn btn-sm btn-outline-success">Erledigt</button>
+              <button type="submit" class="btn btn-sm btn-outline-success">{% trans "Erledigt" %}</button>
             </form>
           </td>
         </tr>
@@ -52,11 +53,11 @@
 
 {% if other_todos %}
 <div class="card mb-4">
-  <div class="card-header"><strong>Weitere Aufgaben</strong></div>
+  <div class="card-header"><strong>{% trans "Weitere Aufgaben" %}</strong></div>
   <div class="card-body p-0">
     <table class="table table-sm mb-0">
       <thead>
-        <tr><th>Fälligkeit</th><th>Aufgabe</th><th>Anhang</th><th>Account</th><th>Erstellt von</th><th>Aktionen</th></tr>
+        <tr><th>{% trans "Fälligkeit" %}</th><th>{% trans "Aufgabe" %}</th><th>{% trans "Anhang" %}</th><th>{% trans "Account" %}</th><th>{% trans "Erstellt von" %}</th><th>{% trans "Aktionen" %}</th></tr>
       </thead>
       <tbody>
         {% for todo in other_todos %}
@@ -68,17 +69,17 @@
           </td>
           <td>
             {% if todo.attachment %}
-              <a href="{{ todo.attachment.url }}" target="_blank" title="PDF öffnen"><i class="bi bi-file-pdf text-danger"></i></a>
+              <a href="{{ todo.attachment.url }}" target="_blank" title="{% trans 'PDF öffnen' %}"><i class="bi bi-file-pdf text-danger"></i></a>
             {% else %}-{% endif %}
           </td>
           <td><a href="{% url 'accounts:account_detail' todo.account_id %}">{{ todo.account.name }}</a></td>
           <td>{{ todo.created_by|default:"-" }}</td>
           <td>
-            <a href="{% url 'accounts:todo_edit' todo.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+            <a href="{% url 'accounts:todo_edit' todo.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Bearbeiten" %}</a>
             <form method="post" action="{% url 'accounts:todo_complete' todo.pk %}" class="d-inline"
-                  onsubmit="return confirm('Aufgabe als erledigt markieren?')">
+                  onsubmit="return confirm('{% trans "Aufgabe als erledigt markieren?" %}')">
               {% csrf_token %}
-              <button type="submit" class="btn btn-sm btn-outline-success">Erledigt</button>
+              <button type="submit" class="btn btn-sm btn-outline-success">{% trans "Erledigt" %}</button>
             </form>
           </td>
         </tr>
@@ -97,7 +98,7 @@
 {% endif %}
 
 {% if not upcoming_todos and not other_todos %}
-<div class="alert alert-info">Keine offenen Aufgaben vorhanden.</div>
+<div class="alert alert-info">{% trans "Keine offenen Aufgaben vorhanden." %}</div>
 {% endif %}
 {% endblock %}
 

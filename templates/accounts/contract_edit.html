@@ -1,10 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Vertrag bearbeiten – CRM{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Vertrag bearbeiten" %} – CRM{% endblock %}
 {% block content %}
 
 <div class="d-flex justify-content-between align-items-center mb-4 page-header">
-  <h2>Vertrag bearbeiten: {{ contract }}</h2>
-  <a href="{% url 'accounts:account_detail' contract.account_id %}" class="btn btn-outline-secondary">← Zurück</a>
+  <h2>{% blocktrans with contract=contract %}Vertrag bearbeiten: {{ contract }}{% endblocktrans %}</h2>
+  <a href="{% url 'accounts:account_detail' contract.account_id %}" class="btn btn-outline-secondary">{% trans "← Zurück" %}</a>
 </div>
 
 <form method="post" enctype="multipart/form-data">
@@ -15,7 +16,7 @@
     <div class="col-md-8">
 
       <div class="card mb-4">
-        <div class="card-header"><strong>Vertragsdaten</strong></div>
+        <div class="card-header"><strong>{% trans "Vertragsdaten" %}</strong></div>
         <div class="card-body">
           <div class="row g-3">
 
@@ -85,12 +86,12 @@
       </div>
 
       <div class="card mb-4">
-        <div class="card-header"><strong>Dokumente</strong></div>
+        <div class="card-header"><strong>{% trans "Dokumente" %}</strong></div>
         <div class="card-body">
           <label class="upload-zone w-100" id="uploadZoneLabel">
             <i class="bi bi-file-earmark-arrow-up upload-zone-icon"></i>
-            <div class="upload-zone-text mt-2">PDF-Dokumente hochladen</div>
-            <div class="text-muted small mt-1">Klicken zum Auswählen · Mehrere Dateien möglich</div>
+            <div class="upload-zone-text mt-2">{% trans "PDF-Dokumente hochladen" %}</div>
+            <div class="text-muted small mt-1">{% trans "Klicken zum Auswählen · Mehrere Dateien möglich" %}</div>
             <input type="file" name="documents" class="d-none" accept=".pdf" multiple id="uploadZoneInput">
           </label>
 
@@ -103,7 +104,7 @@
                 <a href="{{ doc.file.url }}" target="_blank" class="text-truncate">{{ doc.file.name|cut:"contract_documents/" }}</a>
                 <small class="text-muted flex-shrink-0">{{ doc.uploaded_at|date:"d.m.Y" }}</small>
               </div>
-              <a href="{% url 'accounts:contract_document_delete' doc.pk %}" class="btn btn-sm btn-outline-danger flex-shrink-0 ms-2">Löschen</a>
+              <a href="{% url 'accounts:contract_document_delete' doc.pk %}" class="btn btn-sm btn-outline-danger flex-shrink-0 ms-2">{% trans "Löschen" %}</a>
             </div>
             {% endfor %}
           </div>
@@ -113,12 +114,12 @@
 
       <div class="d-flex justify-content-between align-items-center">
         <div>
-          <button type="submit" class="btn btn-primary">Speichern</button>
-          <a href="{% url 'accounts:account_detail' contract.account_id %}" class="btn btn-secondary">Abbrechen</a>
+          <button type="submit" class="btn btn-primary">{% trans "Speichern" %}</button>
+          <a href="{% url 'accounts:account_detail' contract.account_id %}" class="btn btn-secondary">{% trans "Abbrechen" %}</a>
         </div>
         <a href="{% url 'accounts:contract_archive' contract.pk %}"
            class="btn btn-outline-{% if contract.is_archived %}success{% else %}warning{% endif %} btn-sm">
-          {% if contract.is_archived %}Wiederherstellen{% else %}Archivieren{% endif %}
+          {% if contract.is_archived %}{% trans "Wiederherstellen" %}{% else %}{% trans "Archivieren" %}{% endif %}
         </a>
       </div>
 
@@ -127,11 +128,11 @@
     <!-- Rechte Spalte: Berechnete Werte -->
     <div class="col-md-4">
       <div class="card">
-        <div class="card-header"><strong>Berechnung</strong></div>
+        <div class="card-header"><strong>{% trans "Berechnung" %}</strong></div>
         <div class="card-body">
-          <div class="text-muted small text-uppercase fw-semibold mb-1" style="letter-spacing:.05em;">Aktuelles Enddatum</div>
+          <div class="text-muted small text-uppercase fw-semibold mb-1" style="letter-spacing:.05em;">{% trans "Aktuelles Enddatum" %}</div>
           <div class="fs-3 fw-bold">{{ contract.current_end_date|date:"d.m.Y" }}</div>
-          <div class="text-muted small mt-1">Inkl. automatischer Verlängerung</div>
+          <div class="text-muted small mt-1">{% trans "Inkl. automatischer Verlängerung" %}</div>
         </div>
       </div>
     </div>

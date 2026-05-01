@@ -1,13 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Benutzer – CRM{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Benutzer" %} – CRM{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h2>Benutzer</h2>
-  <a href="{% url 'settings:user_create' %}" class="btn btn-primary">Neuer Benutzer</a>
+  <h2>{% trans "Benutzer" %}</h2>
+  <a href="{% url 'settings:user_create' %}" class="btn btn-primary">{% trans "Neuer Benutzer" %}</a>
 </div>
 <table class="table">
   <thead>
-    <tr><th>Benutzername</th><th>Name</th><th>Rolle</th><th>Aktiv</th><th>Aktionen</th></tr>
+    <tr><th>{% trans "Benutzername" %}</th><th>{% trans "Name" %}</th><th>{% trans "Rolle" %}</th><th>{% trans "Aktiv" %}</th><th>{% trans "Aktionen" %}</th></tr>
   </thead>
   <tbody>
     {% for u in users %}
@@ -17,19 +18,19 @@
       <td>{{ u.get_role_display }}</td>
       <td>
         {% if u.is_active %}
-        <span class="badge bg-success">Aktiv</span>
+        <span class="badge bg-success">{% trans "Aktiv" %}</span>
         {% else %}
-        <span class="badge bg-secondary">Inaktiv</span>
+        <span class="badge bg-secondary">{% trans "Inaktiv" %}</span>
         {% endif %}
       </td>
       <td>
-        <a href="{% url 'settings:user_edit' u.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+        <a href="{% url 'settings:user_edit' u.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Bearbeiten" %}</a>
       </td>
     </tr>
     {% empty %}
-    <tr><td colspan="5" class="text-muted text-center">Keine Benutzer vorhanden.</td></tr>
+    <tr><td colspan="5" class="text-muted text-center">{% trans "Keine Benutzer vorhanden." %}</td></tr>
     {% endfor %}
   </tbody>
 </table>
-<p class="text-muted small">{{ users|length }} Einträge</p>
+<p class="text-muted small">{% blocktrans with count=users|length %}{{ count }} Einträge{% endblocktrans %}</p>
 {% endblock %}

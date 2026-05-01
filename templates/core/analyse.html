@@ -1,7 +1,8 @@
 {% extends "base.html" %}
-{% block title %}Analyse – CRM{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Analyse" %} – CRM{% endblock %}
 {% block content %}
-<h2 class="mb-4">Analyse</h2>
+<h2 class="mb-4">{% trans "Analyse" %}</h2>
 
 <div class="row mb-4">
   <div class="col-md-4">
@@ -23,7 +24,7 @@
   <div class="col-md-4">
     <div class="card text-bg-info">
       <div class="card-body">
-        <h5 class="card-title">Aktive {{ labels.product_plural }}</h5>
+        <h5 class="card-title">{% blocktrans with product_plural=labels.product_plural %}Aktive {{ product_plural }}{% endblocktrans %}</h5>
         <p class="display-6">{{ total_active_account_products }}</p>
       </div>
     </div>
@@ -41,7 +42,7 @@
           <thead>
             <tr>
               <th>{{ labels.product_singular }}</th>
-              <th>Anzahl</th>
+              <th>{% trans "Anzahl" %}</th>
             </tr>
           </thead>
           <tbody>
@@ -54,7 +55,7 @@
           </tbody>
         </table>
         {% else %}
-        <p class="text-muted mb-0">Noch keine {{ labels.product_plural }} zugeordnet.</p>
+        <p class="text-muted mb-0">{% blocktrans with product_plural=labels.product_plural %}Noch keine {{ product_plural }} zugeordnet.{% endblocktrans %}</p>
         {% endif %}
       </div>
     </div>
@@ -62,14 +63,14 @@
 
   <div class="col-md-6 mb-4">
     <div class="card">
-      <div class="card-header"><strong>Aktivitäten pro Monat (letzte 12 Monate)</strong></div>
+      <div class="card-header"><strong>{% trans "Aktivitäten pro Monat (letzte 12 Monate)" %}</strong></div>
       <div class="card-body">
         {% if activities_per_month %}
         <table class="table table-sm">
           <thead>
             <tr>
-              <th>Monat</th>
-              <th>Anzahl</th>
+              <th>{% trans "Monat" %}</th>
+              <th>{% trans "Anzahl" %}</th>
             </tr>
           </thead>
           <tbody>
@@ -82,7 +83,7 @@
           </tbody>
         </table>
         {% else %}
-        <p class="text-muted mb-0">Noch keine Aktivitäten erfasst.</p>
+        <p class="text-muted mb-0">{% trans "Noch keine Aktivitäten erfasst." %}</p>
         {% endif %}
       </div>
     </div>

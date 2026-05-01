@@ -1,8 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Accounts hinzufügen – {{ campaign.name }} – CRM{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Accounts hinzufügen" %} – {{ campaign.name }} – CRM{% endblock %}
 {% block content %}
-<h2 class="mb-4">Accounts hinzufügen: {{ campaign.name }}</h2>
-<p class="text-muted">Wählen Sie Accounts aus. Alle Hauptansprechpersonen der ausgewählten Accounts werden zur Kampagne hinzugefügt.</p>
+<h2 class="mb-4">{% blocktrans with name=campaign.name %}Accounts hinzufügen: {{ name }}{% endblocktrans %}</h2>
+<p class="text-muted">{% trans "Wählen Sie Accounts aus. Alle Hauptansprechpersonen der ausgewählten Accounts werden zur Kampagne hinzugefügt." %}</p>
 
 <form method="post">
   {% csrf_token %}
@@ -10,13 +11,13 @@
     <div class="card-header">
       <div class="form-check">
         <input class="form-check-input" type="checkbox" id="selectAll">
-        <label class="form-check-label fw-bold" for="selectAll">Alle auswählen</label>
+        <label class="form-check-label fw-bold" for="selectAll">{% trans "Alle auswählen" %}</label>
       </div>
     </div>
     <div class="card-body p-0">
       <table class="table table-sm mb-0">
         <thead>
-          <tr><th style="width:40px"></th><th>Typ</th><th>Account</th><th>Besitzer</th></tr>
+          <tr><th style="width:40px"></th><th>{% trans "Typ" %}</th><th>{% trans "Account" %}</th><th>{% trans "Besitzer" %}</th></tr>
         </thead>
         <tbody>
           {% for account in accounts %}
@@ -31,16 +32,16 @@
             <td>{{ account.owner|default:"-" }}</td>
           </tr>
           {% empty %}
-          <tr><td colspan="5" class="text-center text-muted">Keine Accounts verfügbar.</td></tr>
+          <tr><td colspan="5" class="text-center text-muted">{% trans "Keine Accounts verfügbar." %}</td></tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
   </div>
   {% if accounts %}
-  <button type="submit" class="btn btn-primary">Zur Kampagne hinzufügen</button>
+  <button type="submit" class="btn btn-primary">{% trans "Zur Kampagne hinzufügen" %}</button>
   {% endif %}
-  <a href="{% url 'campaigns:campaign_detail' campaign.pk %}" class="btn btn-secondary">Abbrechen</a>
+  <a href="{% url 'campaigns:campaign_detail' campaign.pk %}" class="btn btn-secondary">{% trans "Abbrechen" %}</a>
 </form>
 {% endblock %}
 

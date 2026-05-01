@@ -1,38 +1,39 @@
 {% extends "base.html" %}
+{% load i18n %}
 {% block title %}{{ campaign.name }} – CRM{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h2>{{ campaign.name }}</h2>
   <div>
-    <a href="{% url 'campaigns:campaign_add_accounts' campaign.pk %}" class="btn btn-primary">Accounts hinzufügen</a>
+    <a href="{% url 'campaigns:campaign_add_accounts' campaign.pk %}" class="btn btn-primary">{% trans "Accounts hinzufügen" %}</a>
     <a href="{% url 'campaigns:campaign_detail' campaign.pk %}?export=csv" class="btn btn-success">
-      <i class="bi bi-download"></i> CSV-Export
+      <i class="bi bi-download"></i> {% trans "CSV-Export" %}
     </a>
-    <a href="{% url 'campaigns:campaign_edit' campaign.pk %}" class="btn btn-outline-primary">Bearbeiten</a>
+    <a href="{% url 'campaigns:campaign_edit' campaign.pk %}" class="btn btn-outline-primary">{% trans "Bearbeiten" %}</a>
   </div>
 </div>
 
 <div class="card mb-4">
   <div class="card-body">
     <dl class="row mb-0">
-      <dt class="col-sm-3">Zeitraum</dt>
+      <dt class="col-sm-3">{% trans "Zeitraum" %}</dt>
       <dd class="col-sm-9">{{ campaign.start_date|date:"d.m.Y" }} – {{ campaign.end_date|date:"d.m.Y" }}</dd>
-      <dt class="col-sm-3">Produkt</dt>
+      <dt class="col-sm-3">{% trans "Produkt" %}</dt>
       <dd class="col-sm-9">{{ campaign.product.name|default:"-" }}</dd>
-      <dt class="col-sm-3">Erstellt von</dt>
+      <dt class="col-sm-3">{% trans "Erstellt von" %}</dt>
       <dd class="col-sm-9">{{ campaign.created_by|default:"-" }}</dd>
-      <dt class="col-sm-3">Kontakte</dt>
+      <dt class="col-sm-3">{% trans "Kontakte" %}</dt>
       <dd class="col-sm-9">{{ campaign_contacts|length }}</dd>
     </dl>
   </div>
 </div>
 
 <div class="card">
-  <div class="card-header"><strong>Kontakte</strong></div>
+  <div class="card-header"><strong>{% trans "Kontakte" %}</strong></div>
   <div class="card-body p-0">
     <table class="table table-sm mb-0">
       <thead>
-        <tr><th>Account</th><th>Anrede</th><th>Name</th><th>E-Mail</th><th>Telefon</th>{% if can_remove_contacts %}<th></th>{% endif %}</tr>
+        <tr><th>{% trans "Account" %}</th><th>{% trans "Anrede" %}</th><th>{% trans "Name" %}</th><th>{% trans "E-Mail" %}</th><th>{% trans "Telefon" %}</th>{% if can_remove_contacts %}<th></th>{% endif %}</tr>
       </thead>
       <tbody>
         {% for cc in campaign_contacts %}
@@ -52,7 +53,7 @@
           <td>
             <form method="post" action="{% url 'campaigns:campaign_remove_contact' campaign.pk cc.pk %}" style="display:inline;">
               {% csrf_token %}
-              <button type="submit" class="btn btn-sm btn-outline-danger" title="Entfernen" onclick="return confirm('Kontakt wirklich aus der Kampagne entfernen?');">
+              <button type="submit" class="btn btn-sm btn-outline-danger" title="{% trans 'Entfernen' %}" onclick="return confirm('{% trans "Kontakt wirklich aus der Kampagne entfernen?" %}');">
                 <i class="bi bi-x-lg"></i>
               </button>
             </form>
@@ -60,7 +61,7 @@
           {% endif %}
         </tr>
         {% empty %}
-        <tr><td colspan="{% if can_remove_contacts %}7{% else %}6{% endif %}" class="text-center text-muted">Keine Kontakte in dieser Kampagne.</td></tr>
+        <tr><td colspan="{% if can_remove_contacts %}7{% else %}6{% endif %}" class="text-center text-muted">{% trans "Keine Kontakte in dieser Kampagne." %}</td></tr>
         {% endfor %}
       </tbody>
     </table>

@@ -1,10 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Produkt-Zuordnung bearbeiten – CRM{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Produkt-Zuordnung bearbeiten" %} – CRM{% endblock %}
 {% block content %}
 
 <div class="d-flex justify-content-between align-items-center mb-4 page-header">
   <h2>{{ account_product.product.name }} – {{ account_product.account.name }}</h2>
-  <a href="{% url 'accounts:account_detail' account_product.account_id %}" class="btn btn-outline-secondary">← Zurück</a>
+  <a href="{% url 'accounts:account_detail' account_product.account_id %}" class="btn btn-outline-secondary">{% trans "← Zurück" %}</a>
 </div>
 
 <div class="row g-4">
@@ -13,16 +14,16 @@
       {% csrf_token %}
 
       <div class="card mb-4" id="phaseCard">
-        <div class="card-header"><strong>Phase & Zuständigkeit</strong></div>
+        <div class="card-header"><strong>{% trans "Phase & Zuständigkeit" %}</strong></div>
         <div class="card-body">
           <div class="row g-3">
 
             <div class="col-md-{% if show_responsible %}4{% else %}12{% endif %}">
-              <label class="form-label">Aktuelle Phase</label>
+              <label class="form-label">{% trans "Aktuelle Phase" %}</label>
               {% if account_product.lead_account_product %}
               <div class="form-control bg-light text-muted">
                 {{ account_product.current_phase.name|default:"—" }}
-                <small class="d-block">Vom Leit-Account übernommen ({{ account_product.lead_account_product.account.name }})</small>
+                <small class="d-block">{% blocktrans with name=account_product.lead_account_product.account.name %}Vom Leit-Account übernommen ({{ name }}){% endblocktrans %}</small>
               </div>
               <input type="hidden" name="current_phase" value="{{ account_product.current_phase_id|default:'' }}">
               {% else %}
@@ -45,19 +46,19 @@
             <div id="beendetFields" class="col-12" style="display:{% if account_product.current_phase.name == 'Beendet' %}block{% else %}none{% endif %}">
               <div class="row g-3 mt-1">
                 <div class="col-md-6">
-                  <label class="form-label">Beendet zum</label>
+                  <label class="form-label">{% trans "Beendet zum" %}</label>
                   <input type="date" name="ended_at" class="form-control"
                          value="{{ account_product.ended_at|date:'Y-m-d'|default:'' }}">
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label">Beendigungsgrund</label>
+                  <label class="form-label">{% trans "Beendigungsgrund" %}</label>
                   <select name="ended_reason" class="form-select">
                     <option value="">---</option>
-                    <option value="price" {% if account_product.ended_reason == 'price' %}selected{% endif %}>Preis</option>
-                    <option value="competitor" {% if account_product.ended_reason == 'competitor' %}selected{% endif %}>Wechsel zu Wettbewerber</option>
-                    <option value="performance" {% if account_product.ended_reason == 'performance' %}selected{% endif %}>Leistung nicht gepasst</option>
-                    <option value="internal" {% if account_product.ended_reason == 'internal' %}selected{% endif %}>Interner Grund beim Partner</option>
-                    <option value="other" {% if account_product.ended_reason == 'other' %}selected{% endif %}>Sonstiges (bitte Notiz schreiben)</option>
+                    <option value="price" {% if account_product.ended_reason == 'price' %}selected{% endif %}>{% trans "Preis" %}</option>
+                    <option value="competitor" {% if account_product.ended_reason == 'competitor' %}selected{% endif %}>{% trans "Wechsel zu Wettbewerber" %}</option>
+                    <option value="performance" {% if account_product.ended_reason == 'performance' %}selected{% endif %}>{% trans "Leistung nicht gepasst" %}</option>
+                    <option value="internal" {% if account_product.ended_reason == 'internal' %}selected{% endif %}>{% trans "Interner Grund beim Partner" %}</option>
+                    <option value="other" {% if account_product.ended_reason == 'other' %}selected{% endif %}>{% trans "Sonstiges (bitte Notiz schreiben)" %}</option>
                   </select>
                 </div>
               </div>
@@ -65,7 +66,7 @@
 
             {% if show_responsible %}
             <div class="col-md-4">
-              <label class="form-label">Verantwortlicher</label>
+              <label class="form-label">{% trans "Verantwortlicher" %}</label>
               <select name="responsible" class="form-select">
                 <option value="">---</option>
                 {% for u in users %}
@@ -74,7 +75,7 @@
                 </option>
                 {% endfor %}
               </select>
-              <div class="form-text">Mehrere Produkte beim Account – bitte Verantwortlichen zuweisen.</div>
+              <div class="form-text">{% trans "Mehrere Produkte beim Account – bitte Verantwortlichen zuweisen." %}</div>
             </div>
             {% endif %}
 
@@ -84,7 +85,7 @@
 
       {% if field_data and not account_product.lead_account_product %}
       <div class="card mb-4">
-        <div class="card-header"><strong>Produktfelder</strong></div>
+        <div class="card-header"><strong>{% trans "Produktfelder" %}</strong></div>
         <div class="card-body">
           <div class="row g-3">
             {% for item in field_data %}
@@ -114,11 +115,11 @@
       {% endif %}
 
       <div class="card mb-4">
-        <div class="card-header"><strong>Produktverbund</strong></div>
+        <div class="card-header"><strong>{% trans "Produktverbund" %}</strong></div>
         <div class="card-body">
           <div class="row g-3">
             <div class="col-md-12">
-              <label class="form-label">Leit-Account (geteilt mit)</label>
+              <label class="form-label">{% trans "Leit-Account (geteilt mit)" %}</label>
               <select name="lead_account_product" class="form-select" id="leadSelect">
                 <option value="">— Kein Verbund —</option>
                 {% for opt in lead_options %}
@@ -128,14 +129,13 @@
                 {% endfor %}
               </select>
               <div class="form-text">
-                Wenn diese Kommune das Produkt gemeinsam mit einer anderen nutzt, hier den Leit-Account auswählen.
-                Phase wird dann vom Leit-Account übernommen.
+                {% trans "Wenn diese Kommune das Produkt gemeinsam mit einer anderen nutzt, hier den Leit-Account auswählen. Phase wird dann vom Leit-Account übernommen." %}
               </div>
             </div>
             {% if partner_products %}
             <div class="col-md-12">
               <div class="alert alert-info mb-0 py-2">
-                <strong>Partner-Kommunen in diesem Verbund:</strong>
+                <strong>{% trans "Partner-Kommunen in diesem Verbund:" %}</strong>
                 {% for p in partner_products %}{{ p.account.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
               </div>
             </div>
@@ -145,8 +145,8 @@
       </div>
 
       <div>
-        <button type="submit" class="btn btn-primary">Speichern</button>
-        <a href="{% url 'accounts:account_detail' account_product.account_id %}" class="btn btn-secondary">Abbrechen</a>
+        <button type="submit" class="btn btn-primary">{% trans "Speichern" %}</button>
+        <a href="{% url 'accounts:account_detail' account_product.account_id %}" class="btn btn-secondary">{% trans "Abbrechen" %}</a>
       </div>
 
     </form>

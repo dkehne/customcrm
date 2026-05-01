@@ -1,18 +1,18 @@
 {% extends "base.html" %}
-{% load email_format %}
+{% load email_format i18n %}
 {% block title %}{{ account.name }} – CRM{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4 page-header">
   <h2>{{ account.name }}</h2>
   <div>
-    {% if back_url %}<a href="{{ back_url }}" class="btn btn-outline-secondary">← Zurück</a>{% endif %}
+    {% if back_url %}<a href="{{ back_url }}" class="btn btn-outline-secondary">{% trans "← Zurück" %}</a>{% endif %}
     <a href="{% url 'accounts:account_archive' account.pk %}" class="btn btn-outline-warning">
-      {% if account.is_archived %}Wiederherstellen{% else %}Archivieren{% endif %}
+      {% if account.is_archived %}{% trans "Wiederherstellen" %}{% else %}{% trans "Archivieren" %}{% endif %}
     </a>
     {% if account.is_archived %}
     <button type="button" class="btn btn-outline-danger btn-delete-archived"
             data-delete-url="{% url 'accounts:account_delete' account.pk %}"
-            data-object-name="{{ account.name }}">Löschen</button>
+            data-object-name="{{ account.name }}">{% trans "Löschen" %}</button>
     {% endif %}
   </div>
 </div>
@@ -20,7 +20,7 @@
 <div class="row mb-4">
   <div class="col-md-6">
     <div class="card h-100">
-      <div class="card-header"><strong>Stammdaten</strong></div>
+      <div class="card-header"><strong>{% trans "Stammdaten" %}</strong></div>
       <div class="card-body">
         <form method="post">
           {% csrf_token %}
@@ -46,7 +46,7 @@
             </div>
           </div>
           <div class="mt-3">
-            <button type="submit" class="btn btn-primary btn-sm">Speichern</button>
+            <button type="submit" class="btn btn-primary btn-sm">{% trans "Speichern" %}</button>
           </div>
         </form>
       </div>
@@ -55,9 +55,9 @@
   <div class="col-md-6">
     <div class="card h-100">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <strong>Aktivitäten</strong>
+        <strong>{% trans "Aktivitäten" %}</strong>
         <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addActivityForm">
-          Aktivität hinzufügen
+          {% trans "Aktivität hinzufügen" %}
         </button>
       </div>
       <div class="collapse" id="addActivityForm">
@@ -66,34 +66,34 @@
             {% csrf_token %}
             <div class="row g-2">
               <div class="col-md-6">
-                <label class="form-label small">Typ</label>
+                <label class="form-label small">{% trans "Typ" %}</label>
                 {{ activity_form.activity_type }}
               </div>
               <div class="col-md-6">
-                <label class="form-label small">Datum</label>
+                <label class="form-label small">{% trans "Datum" %}</label>
                 {{ activity_form.date }}
               </div>
               <div class="col-12">
-                <label class="form-label small">Betreff</label>
+                <label class="form-label small">{% trans "Betreff" %}</label>
                 {{ activity_form.subject }}
               </div>
               <div class="col-md-6">
-                <label class="form-label small">Kontakt</label>
+                <label class="form-label small">{% trans "Kontakt" %}</label>
                 {{ activity_form.contact }}
               </div>
               <div class="col-md-6">
-                <label class="form-label small">Beschreibung</label>
+                <label class="form-label small">{% trans "Beschreibung" %}</label>
                 {{ activity_form.description }}
               </div>
             </div>
-            <button type="submit" class="btn btn-primary btn-sm mt-2">Hinzufügen</button>
+            <button type="submit" class="btn btn-primary btn-sm mt-2">{% trans "Hinzufügen" %}</button>
           </form>
         </div>
       </div>
       <div class="activity-log-scroll">
         <table class="table table-sm mb-0">
           <thead>
-            <tr><th>Datum</th><th>Typ</th><th>Betreff</th><th></th></tr>
+            <tr><th>{% trans "Datum" %}</th><th>{% trans "Typ" %}</th><th>{% trans "Betreff" %}</th><th></th></tr>
           </thead>
           <tbody data-max-rows="10">
             {% for activity in activities %}
@@ -106,11 +106,11 @@
               </td>
               <td>
                 {% if activity.activity_type == 'call' %}
-                  <span class="badge bg-primary">Anruf</span>
+                  <span class="badge bg-primary">{% trans "Anruf" %}</span>
                 {% elif activity.activity_type == 'email' %}
-                  <span class="badge bg-info">E-Mail</span>
+                  <span class="badge bg-info">{% trans "E-Mail" %}</span>
                 {% elif activity.activity_type == 'meeting' %}
-                  <span class="badge bg-warning text-dark">Termin</span>
+                  <span class="badge bg-warning text-dark">{% trans "Termin" %}</span>
                 {% endif %}
               </td>
               <td class="text-truncate" style="max-width:180px;">{{ activity.subject }}</td>
@@ -134,8 +134,8 @@
                       <strong>{{ activity.inbound_email.subject|default:activity.subject }}</strong>
                     </div>
                     <div class="text-muted small">
-                      <span class="me-3"><strong>Von:</strong> {{ activity.inbound_email.sender_email }}</span>
-                      <span><strong>An:</strong> {{ activity.inbound_email.recipient_emails }}</span>
+                      <span class="me-3"><strong>{% trans "Von:" %}</strong> {{ activity.inbound_email.sender_email }}</span>
+                      <span><strong>{% trans "An:" %}</strong> {{ activity.inbound_email.recipient_emails }}</span>
                     </div>
                   </div>
                   <hr class="my-2">
@@ -147,7 +147,7 @@
                   {% if activity.inbound_email.attachments.all %}
                   <hr class="my-2">
                   <div class="d-flex align-items-center flex-wrap gap-1">
-                    <span class="text-muted small me-1"><i class="bi bi-paperclip"></i> Anhänge:</span>
+                    <span class="text-muted small me-1"><i class="bi bi-paperclip"></i> {% trans "Anhänge:" %}</span>
                     {% for att in activity.inbound_email.attachments.all %}
                     <a href="{{ att.file.url }}" class="btn btn-sm btn-outline-secondary" download="{{ att.filename }}">
                       {{ att.filename }}
@@ -158,7 +158,7 @@
                   {% if activity.inbound_email.eml_file %}
                   <div class="mt-2">
                     <a href="{{ activity.inbound_email.eml_file.url }}" class="btn btn-sm btn-outline-dark" download>
-                      <i class="bi bi-download"></i> Original .eml herunterladen
+                      <i class="bi bi-download"></i> {% trans "Original .eml herunterladen" %}
                     </a>
                   </div>
                   {% endif %}
@@ -174,7 +174,7 @@
             </tr>
             {% endif %}
             {% empty %}
-            <tr><td colspan="4" class="text-center text-muted">Keine Aktivitäten.</td></tr>
+            <tr><td colspan="4" class="text-center text-muted">{% trans "Keine Aktivitäten." %}</td></tr>
             {% endfor %}
           </tbody>
         </table>
@@ -186,9 +186,9 @@
 <!-- Kontakte -->
 <div class="card mb-4">
   <div class="card-header d-flex justify-content-between align-items-center">
-    <strong>Kontakte</strong>
+    <strong>{% trans "Kontakte" %}</strong>
     <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addContactForm">
-      Neuer Kontakt
+      {% trans "Neuer Kontakt" %}
     </button>
   </div>
   <div class="collapse" id="addContactForm">
@@ -205,7 +205,7 @@
             </div>
             {% if account_products|length > 1 %}
             <div id="addContactProductSelect" class="mt-2 d-none">
-              <label class="form-label small">Als Hauptansprechperson für Produkte</label>
+              <label class="form-label small">{% trans "Als Hauptansprechperson für Produkte" %}</label>
               <div>
                 {% for ap in account_products %}
                 <div class="form-check form-check-inline">
@@ -214,7 +214,7 @@
                 </div>
                 {% endfor %}
               </div>
-              <div class="form-text text-muted">Keine Auswahl = für alle Produkte.</div>
+              <div class="form-text text-muted">{% trans "Keine Auswahl = für alle Produkte." %}</div>
             </div>
             {% endif %}
             {% elif field.name == 'anrede' %}
@@ -229,14 +229,14 @@
           </div>
           {% endfor %}
         </div>
-        <button type="submit" class="btn btn-primary btn-sm mt-2">Hinzufügen</button>
+        <button type="submit" class="btn btn-primary btn-sm mt-2">{% trans "Hinzufügen" %}</button>
       </form>
     </div>
   </div>
   <div class="card-body">
     <table class="table table-sm mb-0">
       <thead>
-        <tr><th>Name</th><th>E-Mail</th><th>Telefon</th><th>Position</th><th>Haupt</th><th>Anrede</th>{% if account_products|length > 1 %}<th>Produkt-Zuordnung</th>{% endif %}<th>Aktionen</th></tr>
+        <tr><th>{% trans "Name" %}</th><th>{% trans "E-Mail" %}</th><th>{% trans "Telefon" %}</th><th>{% trans "Position" %}</th><th>{% trans "Haupt" %}</th><th>{% trans "Anrede" %}</th>{% if account_products|length > 1 %}<th>{% trans "Produkt-Zuordnung" %}</th>{% endif %}<th>{% trans "Aktionen" %}</th></tr>
       </thead>
       <tbody data-max-rows="10">
         {% for contact in contacts %}
@@ -254,19 +254,19 @@
               {% if assigned_aps %}
                 {% for ap in assigned_aps %}<span class="badge bg-secondary">{{ ap.product.name }}</span> {% endfor %}
               {% else %}
-                <span class="text-muted small">alle</span>
+                <span class="text-muted small">{% trans "alle" %}</span>
               {% endif %}
               {% endwith %}
             {% endif %}
           </td>
           {% endif %}
           <td>
-            <a href="{% url 'accounts:contact_edit' contact.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
-            <a href="{% url 'accounts:contact_archive' contact.pk %}" class="btn btn-sm btn-outline-warning">Archivieren</a>
+            <a href="{% url 'accounts:contact_edit' contact.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Bearbeiten" %}</a>
+            <a href="{% url 'accounts:contact_archive' contact.pk %}" class="btn btn-sm btn-outline-warning">{% trans "Archivieren" %}</a>
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="{% if account_products|length > 1 %}7{% else %}6{% endif %}" class="text-center text-muted">Keine Kontakte.</td></tr>
+        <tr><td colspan="{% if account_products|length > 1 %}7{% else %}6{% endif %}" class="text-center text-muted">{% trans "Keine Kontakte." %}</td></tr>
         {% endfor %}
       </tbody>
     </table>
@@ -274,7 +274,7 @@
   {% if archived_contacts %}
   <div class="card-footer">
     <details>
-      <summary class="text-muted small">Archivierte Kontakte ({{ archived_contacts.count }})</summary>
+      <summary class="text-muted small">{% trans "Archivierte Kontakte" %} ({{ archived_contacts.count }})</summary>
       <table class="table table-sm mt-2 mb-0">
         <tbody>
           {% for contact in archived_contacts %}
@@ -282,10 +282,10 @@
             <td>{{ contact.name }}</td>
             <td>{{ contact.email|default:"-" }}</td>
             <td>
-              <a href="{% url 'accounts:contact_archive' contact.pk %}" class="btn btn-sm btn-outline-success">Wiederherstellen</a>
+              <a href="{% url 'accounts:contact_archive' contact.pk %}" class="btn btn-sm btn-outline-success">{% trans "Wiederherstellen" %}</a>
               <button type="button" class="btn btn-sm btn-outline-danger btn-delete-archived"
                       data-delete-url="{% url 'accounts:contact_delete' contact.pk %}"
-                      data-object-name="{{ contact.name }}">Löschen</button>
+                      data-object-name="{{ contact.name }}">{% trans "Löschen" %}</button>
             </td>
           </tr>
           {% endfor %}
@@ -299,9 +299,9 @@
 <!-- Produkt-Zuordnungen -->
 <div class="card mb-4">
   <div class="card-header d-flex justify-content-between align-items-center">
-    <strong>Produkte</strong>
+    <strong>{% trans "Produkte" %}</strong>
     <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addProductForm">
-      Produkt zuordnen
+      {% trans "Produkt zuordnen" %}
     </button>
   </div>
   <div class="collapse" id="addProductForm">
@@ -310,18 +310,18 @@
         {% csrf_token %}
         <div class="row g-2">
           <div class="col-md-6">
-            <label class="form-label small">Produkt</label>
+            <label class="form-label small">{% trans "Produkt" %}</label>
             {{ account_product_form.product }}
           </div>
         </div>
-        <button type="submit" class="btn btn-primary btn-sm mt-2">Zuordnen</button>
+        <button type="submit" class="btn btn-primary btn-sm mt-2">{% trans "Zuordnen" %}</button>
       </form>
     </div>
   </div>
   <div class="card-body">
     <table class="table table-sm mb-0">
       <thead>
-        <tr><th>Produkt</th><th>Aktuelle Phase</th><th>Produktverbund</th>{% if account_products|length > 1 %}<th>Verantwortlicher</th>{% endif %}<th>Aktionen</th></tr>
+        <tr><th>{% trans "Produkt" %}</th><th>{% trans "Aktuelle Phase" %}</th><th>{% trans "Produktverbund" %}</th>{% if account_products|length > 1 %}<th>{% trans "Verantwortlicher" %}</th>{% endif %}<th>{% trans "Aktionen" %}</th></tr>
       </thead>
       <tbody data-max-rows="10">
         {% for ap in account_products %}
@@ -342,7 +342,7 @@
           </td>
           <td>
             {% if ap.lead_account_product %}
-              <span class="text-muted small"><i class="bi bi-link-45deg"></i> Leit: <a href="{% url 'accounts:account_detail' ap.lead_account_product.account_id %}">{{ ap.lead_account_product.account.name }}</a></span>
+              <span class="text-muted small"><i class="bi bi-link-45deg"></i> {% trans "Leit:" %} <a href="{% url 'accounts:account_detail' ap.lead_account_product.account_id %}">{{ ap.lead_account_product.account.name }}</a></span>
             {% else %}
               {% with partners=ap.partner_products.all %}
               {% if partners %}
@@ -358,17 +358,17 @@
             {% if ap.responsible %}
               {{ ap.responsible.get_full_name|default:ap.responsible.username }}
             {% else %}
-              <span class="text-warning"><i class="bi bi-exclamation-triangle"></i> Nicht zugewiesen</span>
+              <span class="text-warning"><i class="bi bi-exclamation-triangle"></i> {% trans "Nicht zugewiesen" %}</span>
             {% endif %}
           </td>
           {% endif %}
           <td>
-            <a href="{% url 'accounts:account_product_edit' ap.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
-            <a href="{% url 'accounts:account_product_archive' ap.pk %}" class="btn btn-sm btn-outline-warning">Archivieren</a>
+            <a href="{% url 'accounts:account_product_edit' ap.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Bearbeiten" %}</a>
+            <a href="{% url 'accounts:account_product_archive' ap.pk %}" class="btn btn-sm btn-outline-warning">{% trans "Archivieren" %}</a>
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="{% if account_products|length > 1 %}5{% else %}4{% endif %}" class="text-center text-muted">Keine Produkte zugeordnet.</td></tr>
+        <tr><td colspan="{% if account_products|length > 1 %}5{% else %}4{% endif %}" class="text-center text-muted">{% trans "Keine Produkte zugeordnet." %}</td></tr>
         {% endfor %}
       </tbody>
     </table>
@@ -376,7 +376,7 @@
   {% if archived_account_products %}
   <div class="card-footer">
     <details>
-      <summary class="text-muted small">Archivierte Produkte ({{ archived_account_products|length }})</summary>
+      <summary class="text-muted small">{% trans "Archivierte Produkte" %} ({{ archived_account_products|length }})</summary>
       <table class="table table-sm mt-2 mb-0">
         <tbody>
           {% for ap in archived_account_products %}
@@ -384,10 +384,10 @@
             <td>{{ ap.product.name }}</td>
             <td>{{ ap.current_phase.name|default:"-" }}</td>
             <td>
-              <a href="{% url 'accounts:account_product_archive' ap.pk %}" class="btn btn-sm btn-outline-success">Wiederherstellen</a>
+              <a href="{% url 'accounts:account_product_archive' ap.pk %}" class="btn btn-sm btn-outline-success">{% trans "Wiederherstellen" %}</a>
               <button type="button" class="btn btn-sm btn-outline-danger btn-delete-archived"
                       data-delete-url="{% url 'accounts:account_product_delete' ap.pk %}"
-                      data-object-name="{{ ap.product.name }}">Löschen</button>
+                      data-object-name="{{ ap.product.name }}">{% trans "Löschen" %}</button>
             </td>
           </tr>
           {% endfor %}
@@ -401,9 +401,9 @@
 <!-- Verträge -->
 <div class="card mb-4">
   <div class="card-header d-flex justify-content-between align-items-center">
-    <strong>Verträge</strong>
+    <strong>{% trans "Verträge" %}</strong>
     <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addContractForm">
-      Vertrag anlegen
+      {% trans "Vertrag anlegen" %}
     </button>
   </div>
   <div class="collapse" id="addContractForm">
@@ -425,18 +425,18 @@
           </div>
           {% endfor %}
           <div class="col-md-4">
-            <label class="form-label small">PDF-Dokumente</label>
+            <label class="form-label small">{% trans "PDF-Dokumente" %}</label>
             <input type="file" name="documents" class="form-control" accept=".pdf" multiple>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary btn-sm mt-2">Erstellen</button>
+        <button type="submit" class="btn btn-primary btn-sm mt-2">{% trans "Erstellen" %}</button>
       </form>
     </div>
   </div>
   <div class="card-body">
     <table class="table table-sm mb-0">
       <thead>
-        <tr><th>Vertragstyp</th><th>Produkt</th><th>Bruttojahrespreis</th><th>Start</th><th>Ende</th><th>Aktionen</th></tr>
+        <tr><th>{% trans "Vertragstyp" %}</th><th>{% trans "Produkt" %}</th><th>{% trans "Bruttojahrespreis" %}</th><th>{% trans "Start" %}</th><th>{% trans "Ende" %}</th><th>{% trans "Aktionen" %}</th></tr>
       </thead>
       <tbody data-max-rows="10">
         {% for contract in contracts %}
@@ -447,12 +447,12 @@
           <td>{{ contract.start_date|date:"d.m.Y" }}</td>
           <td>{% if contract.is_self_cancelling %}{{ contract.current_end_date|date:"d.m.Y" }}{% else %}-{% endif %}</td>
           <td>
-            <a href="{% url 'accounts:contract_edit' contract.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
-            <a href="{% url 'accounts:contract_archive' contract.pk %}" class="btn btn-sm btn-outline-warning">Archivieren</a>
+            <a href="{% url 'accounts:contract_edit' contract.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Bearbeiten" %}</a>
+            <a href="{% url 'accounts:contract_archive' contract.pk %}" class="btn btn-sm btn-outline-warning">{% trans "Archivieren" %}</a>
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="6" class="text-center text-muted">Keine Verträge.</td></tr>
+        <tr><td colspan="6" class="text-center text-muted">{% trans "Keine Verträge." %}</td></tr>
         {% endfor %}
       </tbody>
     </table>
@@ -462,9 +462,9 @@
 <!-- Aufgaben (Todos) -->
 <div class="card mb-4">
   <div class="card-header d-flex justify-content-between align-items-center">
-    <strong>Aufgaben</strong>
+    <strong>{% trans "Aufgaben" %}</strong>
     <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addTodoForm">
-      Aufgabe hinzufügen
+      {% trans "Aufgabe hinzufügen" %}
     </button>
   </div>
   <div class="collapse" id="addTodoForm">
@@ -473,34 +473,34 @@
         {% csrf_token %}
         <div class="row g-2">
           <div class="col-md-5">
-            <label class="form-label small">Titel</label>
+            <label class="form-label small">{% trans "Titel" %}</label>
             {{ todo_form.title }}
           </div>
           <div class="col-md-3">
-            <label class="form-label small">Fälligkeitsdatum</label>
+            <label class="form-label small">{% trans "Fälligkeitsdatum" %}</label>
             {{ todo_form.due_date }}
           </div>
           <div class="col-md-3">
-            <label class="form-label small">PDF-Anhang</label>
+            <label class="form-label small">{% trans "PDF-Anhang" %}</label>
             {{ todo_form.attachment }}
           </div>
           <div class="col-md-4">
-            <label class="form-label small">Zugewiesen an</label>
+            <label class="form-label small">{% trans "Zugewiesen an" %}</label>
             {{ todo_form.assigned_to }}
           </div>
           <div class="col-md-12">
-            <label class="form-label small">Beschreibung</label>
+            <label class="form-label small">{% trans "Beschreibung" %}</label>
             {{ todo_form.description }}
           </div>
         </div>
-        <button type="submit" class="btn btn-primary btn-sm mt-2">Hinzufügen</button>
+        <button type="submit" class="btn btn-primary btn-sm mt-2">{% trans "Hinzufügen" %}</button>
       </form>
     </div>
   </div>
   <div class="card-body">
     <table class="table table-sm mb-0">
       <thead>
-        <tr><th>Titel</th><th>Fälligkeitsdatum</th><th>Anhang</th><th>Erstellt von</th><th>Zugewiesen an</th><th>Aktionen</th></tr>
+        <tr><th>{% trans "Titel" %}</th><th>{% trans "Fälligkeitsdatum" %}</th><th>{% trans "Anhang" %}</th><th>{% trans "Erstellt von" %}</th><th>{% trans "Zugewiesen an" %}</th><th>{% trans "Aktionen" %}</th></tr>
       </thead>
       <tbody data-max-rows="10">
         {% now "Y-m-d" as today %}
@@ -531,11 +531,11 @@
           <td>{{ todo.created_by|default:"-" }}</td>
           <td>{{ todo.assigned_to|default:"-" }}</td>
           <td>
-            <a href="{% url 'accounts:todo_edit' todo.pk %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+            <a href="{% url 'accounts:todo_edit' todo.pk %}" class="btn btn-sm btn-outline-primary">{% trans "Bearbeiten" %}</a>
             <form method="post" action="{% url 'accounts:todo_complete' todo.pk %}" class="d-inline"
-                  onsubmit="return confirm('Aufgabe als erledigt markieren? Diese Aktion kann nicht rückgängig gemacht werden.');">
+                  onsubmit="return confirm('{% trans "Aufgabe als erledigt markieren? Diese Aktion kann nicht rückgängig gemacht werden." %}');">
               {% csrf_token %}
-              <button type="submit" class="btn btn-sm btn-outline-success">Erledigt</button>
+              <button type="submit" class="btn btn-sm btn-outline-success">{% trans "Erledigt" %}</button>
             </form>
           </td>
         </tr>
@@ -547,7 +547,7 @@
         </tr>
         {% endif %}
         {% empty %}
-        <tr><td colspan="6" class="text-center text-muted">Keine offenen Aufgaben.</td></tr>
+        <tr><td colspan="6" class="text-center text-muted">{% trans "Keine offenen Aufgaben." %}</td></tr>
         {% endfor %}
       </tbody>
     </table>
@@ -555,7 +555,7 @@
   {% if completed_todos %}
   <div class="card-footer">
     <details>
-      <summary class="text-muted small">Erledigte Aufgaben ({{ completed_todos|length }})</summary>
+      <summary class="text-muted small">{% trans "Erledigte Aufgaben" %} ({{ completed_todos|length }})</summary>
       <table class="table table-sm mt-2 mb-0">
         <tbody>
           {% for todo in completed_todos %}
@@ -567,7 +567,7 @@
                 <a href="{{ todo.attachment.url }}" target="_blank" class="text-muted"><i class="bi bi-file-pdf"></i></a>
               {% else %}-{% endif %}
             </td>
-            <td><small>Erledigt am {{ todo.completed_at|date:"d.m.Y" }}</small></td>
+            <td><small>{% trans "Erledigt am" %} {{ todo.completed_at|date:"d.m.Y" }}</small></td>
           </tr>
           {% endfor %}
         </tbody>
@@ -580,9 +580,9 @@
 <!-- Kampagnen -->
 <div class="card mb-4">
   <div class="card-header d-flex justify-content-between align-items-center">
-    <strong>Kampagnen</strong>
+    <strong>{% trans "Kampagnen" %}</strong>
     <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#addCampaignForm">
-      Externe Kampagne hinzufügen
+      {% trans "Externe Kampagne hinzufügen" %}
     </button>
   </div>
   <div class="collapse" id="addCampaignForm">
@@ -591,30 +591,30 @@
         {% csrf_token %}
         <div class="row g-2">
           <div class="col-md-4">
-            <label class="form-label small">Name</label>
+            <label class="form-label small">{% trans "Name" %}</label>
             {{ account_campaign_form.name }}
           </div>
           <div class="col-md-2">
-            <label class="form-label small">Startdatum</label>
+            <label class="form-label small">{% trans "Startdatum" %}</label>
             {{ account_campaign_form.start_date }}
           </div>
           <div class="col-md-2">
-            <label class="form-label small">Enddatum</label>
+            <label class="form-label small">{% trans "Enddatum" %}</label>
             {{ account_campaign_form.end_date }}
           </div>
           <div class="col-md-4">
-            <label class="form-label small">PDF-Anhang</label>
+            <label class="form-label small">{% trans "PDF-Anhang" %}</label>
             {{ account_campaign_form.attachment }}
           </div>
         </div>
-        <button type="submit" class="btn btn-primary btn-sm mt-2">Hinzufügen</button>
+        <button type="submit" class="btn btn-primary btn-sm mt-2">{% trans "Hinzufügen" %}</button>
       </form>
     </div>
   </div>
   <div class="card-body">
     <table class="table table-sm mb-0">
       <thead>
-        <tr><th>Name</th><th>Zeitraum</th><th>Anhang</th><th>Erfolgreich</th><th>Aktionen</th></tr>
+        <tr><th>{% trans "Name" %}</th><th>{% trans "Zeitraum" %}</th><th>{% trans "Anhang" %}</th><th>{% trans "Erfolgreich" %}</th><th>{% trans "Aktionen" %}</th></tr>
       </thead>
       <tbody data-max-rows="10">
         {% for ac in account_campaigns %}
@@ -651,11 +651,11 @@
             {% if ac.is_external %}
             <button class="btn btn-sm btn-outline-primary" type="button"
                     data-bs-toggle="collapse" data-bs-target="#editCampaign{{ ac.pk }}">
-              Bearbeiten
+              {% trans "Bearbeiten" %}
             </button>
             <button type="button" class="btn btn-sm btn-outline-danger btn-delete-archived"
                     data-delete-url="{% url 'accounts:account_campaign_delete' ac.pk %}"
-                    data-object-name="{{ ac.name }}">Löschen</button>
+                    data-object-name="{{ ac.name }}">{% trans "Löschen" %}</button>
             {% else %}-{% endif %}
           </td>
         </tr>
@@ -666,23 +666,23 @@
               {% csrf_token %}
               <div class="row g-2 align-items-end">
                 <div class="col-md-4">
-                  <label class="form-label small">Name</label>
+                  <label class="form-label small">{% trans "Name" %}</label>
                   <input type="text" name="name" value="{{ ac.name }}" class="form-control form-control-sm" required>
                 </div>
                 <div class="col-md-2">
-                  <label class="form-label small">Startdatum</label>
+                  <label class="form-label small">{% trans "Startdatum" %}</label>
                   <input type="date" name="start_date" value="{{ ac.start_date|date:'Y-m-d' }}" class="form-control form-control-sm">
                 </div>
                 <div class="col-md-2">
-                  <label class="form-label small">Enddatum</label>
+                  <label class="form-label small">{% trans "Enddatum" %}</label>
                   <input type="date" name="end_date" value="{{ ac.end_date|date:'Y-m-d' }}" class="form-control form-control-sm">
                 </div>
                 <div class="col-md-3">
-                  <label class="form-label small">PDF-Anhang (ersetzen)</label>
+                  <label class="form-label small">{% trans "PDF-Anhang (ersetzen)" %}</label>
                   <input type="file" name="attachment" accept=".pdf" class="form-control form-control-sm">
                 </div>
                 <div class="col-md-1">
-                  <button type="submit" class="btn btn-primary btn-sm w-100">Speichern</button>
+                  <button type="submit" class="btn btn-primary btn-sm w-100">{% trans "Speichern" %}</button>
                 </div>
               </div>
             </form>
@@ -690,7 +690,7 @@
         </tr>
         {% endif %}
         {% empty %}
-        <tr><td colspan="5" class="text-center text-muted">Keine Kampagnen.</td></tr>
+        <tr><td colspan="5" class="text-center text-muted">{% trans "Keine Kampagnen." %}</td></tr>
         {% endfor %}
       </tbody>
     </table>

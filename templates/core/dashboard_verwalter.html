@@ -96,12 +96,12 @@
 
 {% block content %}
 <div class="dashboard-header d-flex justify-content-between align-items-center">
-  <h2 class="mb-0">Meine Kunden</h2>
+  <h2 class="mb-0">{% trans "Meine Kunden" %}</h2>
 </div>
 
 {% if products %}
 <div class="product-filter-card">
-  <label>Produkt</label>
+  <label>{% trans "Produkt" %}</label>
   <form method="get" class="d-flex align-items-center gap-2 mb-0">
     <select name="product" class="form-select form-select-sm" onchange="this.form.submit()">
       {% for p in products %}
@@ -116,14 +116,14 @@
   <table class="table table-hover mb-0">
     <thead>
       <tr>
-        <th>Typ</th>
-        <th>Account</th>
-        {% if show_ampel %}<th>Regionenzustand</th>{% endif %}
-        <th>Letzte Aktivität</th>
+        <th>{% trans "Typ" %}</th>
+        <th>{% trans "Account" %}</th>
+        {% if show_ampel %}<th>{% trans "Regionenzustand" %}</th>{% endif %}
+        <th>{% trans "Letzte Aktivität" %}</th>
         {% for f in fields %}
         <th>{{ f.name }}</th>
         {% endfor %}
-        <th>Aktionen</th>
+        <th>{% trans "Aktionen" %}</th>
       </tr>
     </thead>
     <tbody>
@@ -137,11 +137,11 @@
         {% if show_ampel %}
         <td>
           {% if row.ampel == 'green' %}
-            <span class="badge bg-success">&#9679; Grün</span>
+            <span class="badge bg-success">&#9679; {% trans "Grün" %}</span>
           {% elif row.ampel == 'yellow' %}
-            <span class="badge bg-warning text-dark">&#9679; Gelb</span>
+            <span class="badge bg-warning text-dark">&#9679; {% trans "Gelb" %}</span>
           {% elif row.ampel == 'red' %}
-            <span class="badge bg-danger">&#9679; Rot</span>
+            <span class="badge bg-danger">&#9679; {% trans "Rot" %}</span>
           {% else %}
             <span class="text-muted">—</span>
           {% endif %}
@@ -174,19 +174,19 @@
         </td>
         {% endfor %}
         <td>
-          <a href="{% url 'accounts:account_detail' row.account_product.account_id %}" class="btn btn-sm btn-outline-primary">Bearbeiten</a>
+          <a href="{% url 'accounts:account_detail' row.account_product.account_id %}" class="btn btn-sm btn-outline-primary">{% trans "Bearbeiten" %}</a>
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="{{ fields|length|add:5 }}" class="text-center text-muted py-4">Keine Zuordnungen für dieses Produkt in Ihren Accounts.</td></tr>
+      <tr><td colspan="{{ fields|length|add:5 }}" class="text-center text-muted py-4">{% trans "Keine Zuordnungen für dieses Produkt in Ihren Accounts." %}</td></tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
-<p class="row-count">{{ rows|length }} Einträge</p>
+<p class="row-count">{% blocktrans with count=rows|length %}{{ count }} Einträge{% endblocktrans %}</p>
 {% endif %}
 
 {% else %}
-<div class="alert alert-info">Es sind noch keine Produkte konfiguriert.</div>
+<div class="alert alert-info">{% trans "Es sind noch keine Produkte konfiguriert." %}</div>
 {% endif %}
 {% endblock %}

@@ -1,20 +1,21 @@
 {% extends "base.html" %}
-{% block title %}Nicht aufgelöste E-Mails – CRM{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Nicht aufgelöste E-Mails" %} – CRM{% endblock %}
 {% block content %}
-<h2 class="mb-4">Nicht aufgelöste E-Mails</h2>
+<h2 class="mb-4">{% trans "Nicht aufgelöste E-Mails" %}</h2>
 
 <div class="card">
   <div class="card-body">
-    <p class="text-muted small mb-3">Diese E-Mails konnten keinem Account automatisch zugeordnet werden. Bitte weisen Sie sie manuell zu.</p>
+    <p class="text-muted small mb-3">{% trans "Diese E-Mails konnten keinem Account automatisch zugeordnet werden. Bitte weisen Sie sie manuell zu." %}</p>
     <div class="table-responsive">
     <table class="table table-sm mb-0">
       <thead>
         <tr>
-          <th>Datum</th>
-          <th>Absender</th>
-          <th>Betreff</th>
-          <th>Empfänger</th>
-          <th>Account zuweisen</th>
+          <th>{% trans "Datum" %}</th>
+          <th>{% trans "Absender" %}</th>
+          <th>{% trans "Betreff" %}</th>
+          <th>{% trans "Empfänger" %}</th>
+          <th>{% trans "Account zuweisen" %}</th>
         </tr>
       </thead>
       <tbody>
@@ -22,27 +23,27 @@
         <tr>
           <td>{{ item.email.received_at|date:"d.m.Y H:i" }}</td>
           <td>{{ item.email.sender_email }}</td>
-          <td>{{ item.email.subject|default:"(Kein Betreff)" }}</td>
+          <td>{% if item.email.subject %}{{ item.email.subject }}{% else %}{% trans "(Kein Betreff)" %}{% endif %}</td>
           <td><small>{{ item.email.recipient_emails|truncatechars:50 }}</small></td>
           <td>
             <div class="d-flex gap-1 align-items-start">
               <form method="post" action="{% url 'emails:assign_email' item.email.pk %}" class="d-flex gap-1">
                 {% csrf_token %}
                 <div class="account-autocomplete" style="min-width:200px">
-                  <input type="text" class="form-control form-control-sm account-search-input" placeholder="Account suchen…" autocomplete="off">
+                  <input type="text" class="form-control form-control-sm account-search-input" placeholder="{% trans 'Account suchen…' %}" autocomplete="off">
                   <input type="hidden" name="account" class="account-id-input">
                 </div>
-                <button type="submit" class="btn btn-sm btn-primary">Zuweisen</button>
+                <button type="submit" class="btn btn-sm btn-primary">{% trans "Zuweisen" %}</button>
               </form>
               <button type="button"
                       class="btn btn-sm btn-outline-danger btn-delete-archived"
                       data-delete-url="{% url 'emails:delete_email' item.email.pk %}"
-                      data-object-name="{{ item.email.subject|default:'(Kein Betreff)' }}">Löschen</button>
+                      data-object-name="{% if item.email.subject %}{{ item.email.subject }}{% else %}{% trans '(Kein Betreff)' %}{% endif %}">{% trans "Löschen" %}</button>
             </div>
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="5" class="text-center text-muted">Keine nicht aufgelösten E-Mails.</td></tr>
+        <tr><td colspan="5" class="text-center text-muted">{% trans "Keine nicht aufgelösten E-Mails." %}</td></tr>
         {% endfor %}
       </tbody>
     </table>

@@ -1,15 +1,16 @@
 {% extends "base.html" %}
-{% block title %}Kontakt bearbeiten – CRM{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Kontakt bearbeiten" %} – CRM{% endblock %}
 {% block content %}
 
 <div class="d-flex justify-content-between align-items-center mb-4 page-header">
   <div>
     <h2>{{ contact.name }}</h2>
     <div class="text-muted small mt-1">
-      Kontakt von <a href="{% url 'accounts:account_detail' contact.account_id %}">{{ contact.account.name }}</a>
+      {% trans "Kontakt von" %} <a href="{% url 'accounts:account_detail' contact.account_id %}">{{ contact.account.name }}</a>
     </div>
   </div>
-  <a href="{% url 'accounts:account_detail' contact.account_id %}" class="btn btn-outline-secondary">← Zurück</a>
+  <a href="{% url 'accounts:account_detail' contact.account_id %}" class="btn btn-outline-secondary">{% trans "← Zurück" %}</a>
 </div>
 
 <div class="row">
@@ -18,7 +19,7 @@
       {% csrf_token %}
 
       <div class="card mb-4">
-        <div class="card-header"><strong>Kontaktdaten</strong></div>
+        <div class="card-header"><strong>{% trans "Kontaktdaten" %}</strong></div>
         <div class="card-body">
           <div class="row g-3">
 
@@ -62,7 +63,7 @@
               </div>
               {% if account_products|length > 1 %}
               <div id="editContactProductSelect" class="mt-2{% if not form.instance.is_primary %} d-none{% endif %}">
-                <label class="form-label small">Als Hauptansprechperson für Produkte</label>
+                <label class="form-label small">{% trans "Als Hauptansprechperson für Produkte" %}</label>
                 <div>
                   {% for ap in account_products %}
                   <div class="form-check form-check-inline">
@@ -72,7 +73,7 @@
                   </div>
                   {% endfor %}
                 </div>
-                <div class="form-text text-muted">Keine Auswahl = für alle Produkte.</div>
+                <div class="form-text text-muted">{% trans "Keine Auswahl = für alle Produkte." %}</div>
               </div>
               {% endif %}
             </div>
@@ -82,8 +83,8 @@
       </div>
 
       <div>
-        <button type="submit" class="btn btn-primary">Speichern</button>
-        <a href="{% url 'accounts:account_detail' contact.account_id %}" class="btn btn-secondary">Abbrechen</a>
+        <button type="submit" class="btn btn-primary">{% trans "Speichern" %}</button>
+        <a href="{% url 'accounts:account_detail' contact.account_id %}" class="btn btn-secondary">{% trans "Abbrechen" %}</a>
       </div>
 
     </form>
