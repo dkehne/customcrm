@@ -1,0 +1,2023 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-03 16:31+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: accounts/forms.py:27
+msgid "Pflichtfeld für Hauptansprechpersonen."
+msgstr ""
+
+#: accounts/forms.py:38 accounts/models.py:80
+msgid "Telefonanruf"
+msgstr ""
+
+#: accounts/forms.py:38 accounts/models.py:59 accounts/models.py:81
+#: campaigns/models.py:50 emails/models.py:94
+#: templates/accounts/account_detail.html:111
+#: templates/accounts/account_detail.html:239
+#: templates/accounts/contact_list.html:96
+#: templates/campaigns/campaign_detail.html:36
+msgid "E-Mail"
+msgstr ""
+
+#: accounts/forms.py:38 accounts/models.py:82
+#: templates/accounts/account_detail.html:113
+msgid "Termin"
+msgstr ""
+
+#: accounts/forms.py:70
+msgid "— Nicht zugewiesen —"
+msgstr ""
+
+#: accounts/models.py:9 accounts/models.py:22 accounts/models.py:58
+#: campaigns/models.py:10 campaigns/models.py:48 campaigns/models.py:74
+#: contracts/models.py:10 products/models.py:8 products/models.py:25
+#: products/models.py:50 templates/accounts/account_detail.html:239
+#: templates/accounts/account_detail.html:594
+#: templates/accounts/account_detail.html:617
+#: templates/accounts/account_detail.html:669
+#: templates/accounts/account_list.html:179
+#: templates/accounts/contact_list.html:95
+#: templates/campaigns/campaign_detail.html:36
+#: templates/campaigns/campaign_list.html:57
+#: templates/settings/account_type_list.html:11
+#: templates/settings/contract_type_list.html:11
+#: templates/settings/product_list.html:34
+#: templates/settings/product_list.html:57 templates/settings/user_list.html:11
+msgid "Name"
+msgstr ""
+
+#: accounts/models.py:10 accounts/models.py:34 accounts/models.py:67
+#: campaigns/models.py:22 contracts/models.py:12 contracts/models.py:51
+#: products/models.py:9 products/models.py:54 products/models.py:106
+#: templates/settings/account_type_list.html:17
+#: templates/settings/contract_type_list.html:19
+#: templates/settings/product_list.html:15
+#: templates/settings/product_list.html:63
+msgid "Archiviert"
+msgstr ""
+
+#: accounts/models.py:13 accounts/models.py:25
+#: templates/accounts/account_list.html:103
+msgid "Account-Typ"
+msgstr ""
+
+#: accounts/models.py:14 templates/base.html:104
+#: templates/settings/account_type_list.html:3
+#: templates/settings/account_type_list.html:6
+msgid "Account-Typen"
+msgstr ""
+
+#: accounts/models.py:30 templates/accounts/account_list.html:112
+#: templates/accounts/account_list.html:180
+#: templates/campaigns/campaign_add_accounts.html:20
+msgid "Besitzer"
+msgstr ""
+
+#: accounts/models.py:33
+msgid "Notizen"
+msgstr ""
+
+#: accounts/models.py:39 accounts/models.py:56 accounts/models.py:88
+#: accounts/models.py:123 campaigns/models.py:45 campaigns/models.py:52
+#: campaigns/models.py:68 contracts/models.py:26 emails/forms.py:16
+#: emails/models.py:59 products/models.py:76
+#: templates/accounts/contact_list.html:94
+#: templates/campaigns/campaign_add_accounts.html:20
+#: templates/campaigns/campaign_detail.html:36
+#: templates/contracts/contract_list.html:113
+#: templates/core/dashboard_superuser.html:64
+#: templates/core/dashboard_superuser.html:124
+#: templates/core/dashboard_verwalter.html:120 templates/core/pipeline.html:16
+#: templates/core/todo_list.html:13 templates/core/todo_list.html:60
+msgid "Account"
+msgstr ""
+
+#: accounts/models.py:40 templates/accounts/account_list.html:3
+msgid "Accounts"
+msgstr ""
+
+#: accounts/models.py:49
+msgid "Männlich"
+msgstr ""
+
+#: accounts/models.py:50
+msgid "Weiblich"
+msgstr ""
+
+#: accounts/models.py:51
+msgid "Divers"
+msgstr ""
+
+#: accounts/models.py:60 campaigns/models.py:51
+#: templates/accounts/account_detail.html:239
+#: templates/accounts/contact_list.html:97
+#: templates/campaigns/campaign_detail.html:36
+msgid "Telefon"
+msgstr ""
+
+#: accounts/models.py:62
+msgid "Geschlecht"
+msgstr ""
+
+#: accounts/models.py:64 templates/accounts/account_detail.html:239
+msgid "Position"
+msgstr ""
+
+#: accounts/models.py:65 campaigns/models.py:49
+#: templates/accounts/account_detail.html:239
+#: templates/campaigns/campaign_detail.html:36
+msgid "Anrede"
+msgstr ""
+
+#: accounts/models.py:66
+msgid "Hauptansprechperson"
+msgstr ""
+
+#: accounts/models.py:70 accounts/models.py:98 campaigns/models.py:41
+#: templates/accounts/account_detail.html:81
+msgid "Kontakt"
+msgstr ""
+
+#: accounts/models.py:71 templates/accounts/account_detail.html:189
+#: templates/accounts/contact_list.html:3
+#: templates/accounts/contact_list.html:72 templates/base.html:59
+#: templates/campaigns/campaign_detail.html:25
+#: templates/campaigns/campaign_detail.html:32
+#: templates/campaigns/campaign_list.html:57
+msgid "Kontakte"
+msgstr ""
+
+#: accounts/models.py:83 accounts/models.py:146
+#: templates/accounts/todo_edit.html:22 templates/core/todo_list.html:13
+#: templates/core/todo_list.html:60
+msgid "Aufgabe"
+msgstr ""
+
+#: accounts/models.py:91 templates/accounts/account_detail.html:69
+#: templates/accounts/account_detail.html:96
+#: templates/accounts/account_list.html:178
+#: templates/campaigns/campaign_add_accounts.html:20
+#: templates/contracts/contract_list.html:112
+#: templates/core/dashboard_verwalter.html:119
+#: templates/settings/product_list.html:57
+msgid "Typ"
+msgstr ""
+
+#: accounts/models.py:93 emails/models.py:72
+#: templates/accounts/account_detail.html:77
+#: templates/accounts/account_detail.html:96
+#: templates/emails/unresolved_emails.html:16
+msgid "Betreff"
+msgstr ""
+
+#: accounts/models.py:94 accounts/models.py:126
+#: templates/accounts/account_detail.html:85
+#: templates/accounts/account_detail.html:492
+msgid "Beschreibung"
+msgstr ""
+
+#: accounts/models.py:95 products/models.py:42
+#: templates/accounts/account_detail.html:73
+#: templates/accounts/account_detail.html:96
+#: templates/emails/unresolved_emails.html:14
+msgid "Datum"
+msgstr ""
+
+#: accounts/models.py:102 accounts/models.py:137 campaigns/models.py:20
+#: templates/accounts/account_detail.html:503
+#: templates/campaigns/campaign_detail.html:23 templates/core/todo_list.html:13
+#: templates/core/todo_list.html:60
+msgid "Erstellt von"
+msgstr ""
+
+#: accounts/models.py:107 emails/models.py:83
+msgid "Eingehende E-Mail"
+msgstr ""
+
+#: accounts/models.py:112
+msgid "Aktivität"
+msgstr ""
+
+#: accounts/models.py:113 templates/accounts/account_detail.html:58
+msgid "Aktivitäten"
+msgstr ""
+
+#: accounts/models.py:125 templates/accounts/account_detail.html:476
+#: templates/accounts/account_detail.html:503
+msgid "Titel"
+msgstr ""
+
+#: accounts/models.py:127 templates/accounts/account_detail.html:480
+#: templates/accounts/account_detail.html:503
+msgid "Fälligkeitsdatum"
+msgstr ""
+
+#: accounts/models.py:131 templates/accounts/account_detail.html:484
+#: templates/accounts/account_detail.html:606
+msgid "PDF-Anhang"
+msgstr ""
+
+#: accounts/models.py:133 templates/accounts/account_detail.html:538
+#: templates/core/todo_list.html:36 templates/core/todo_list.html:82
+msgid "Erledigt"
+msgstr ""
+
+#: accounts/models.py:134 templates/accounts/account_detail.html:570
+msgid "Erledigt am"
+msgstr ""
+
+#: accounts/models.py:141 templates/accounts/account_detail.html:488
+#: templates/accounts/account_detail.html:503
+msgid "Zugewiesen an"
+msgstr ""
+
+#: accounts/models.py:147 templates/accounts/account_detail.html:465
+#: templates/base.html:42 templates/core/todo_list.html:3
+msgid "Aufgaben"
+msgstr ""
+
+#: accounts/views.py:134
+msgid "Bitte eine Kampagne auswählen."
+msgstr ""
+
+#: accounts/views.py:202
+#, python-brace-format
+msgid "{added} Kontakt(e) zur Kampagne „{campaign.name}\" hinzugefügt."
+msgstr ""
+
+#: accounts/views.py:212
+#, python-brace-format
+msgid "Account \"{account.name}\" erstellt."
+msgstr ""
+
+#: accounts/views.py:226
+msgid "Account aktualisiert."
+msgstr ""
+
+#: accounts/views.py:255
+msgid "Stammdaten aktualisiert."
+msgstr ""
+
+#: accounts/views.py:306
+#, python-brace-format
+msgid "Account \"{account.name}\" Ihnen zugewiesen."
+msgstr ""
+
+#: accounts/views.py:339
+#, python-brace-format
+msgid "Kontakt \"{contact.name}\" hinzugefügt."
+msgstr ""
+
+#: accounts/views.py:361
+msgid "Kontakt aktualisiert."
+msgstr ""
+
+#: accounts/views.py:402
+msgid ""
+"Produkt \"{}\" existiert bereits als archivierter Eintrag. <a "
+"href=\"{}\">Jetzt reaktivieren</a>."
+msgstr ""
+
+#: accounts/views.py:410 accounts/views.py:423
+#, python-brace-format
+msgid "Produkt \"{ap.product.name}\" ist bereits diesem Account zugeordnet."
+msgstr ""
+
+#: accounts/views.py:421
+#, python-brace-format
+msgid "Produkt \"{ap.product.name}\" zugeordnet."
+msgstr ""
+
+#: accounts/views.py:472
+msgid "Phase „Beendet\" ist nur aus der Phase „Aktiv\" heraus wählbar."
+msgstr ""
+
+#: accounts/views.py:510
+msgid "Produkt-Zuordnung aktualisiert."
+msgstr ""
+
+#: accounts/views.py:551
+msgid "Vertrag erstellt."
+msgstr ""
+
+#: accounts/views.py:568
+msgid "Vertrag aktualisiert."
+msgstr ""
+
+#: accounts/views.py:595
+msgid "Dokument gelöscht."
+msgstr ""
+
+#: accounts/views.py:610
+msgid "Aktivität hinzugefügt."
+msgstr ""
+
+#: accounts/views.py:633
+msgid "Aufgabe hinzugefügt."
+msgstr ""
+
+#: accounts/views.py:644
+msgid "Aufgabe aktualisiert."
+msgstr ""
+
+#: accounts/views.py:658
+#, python-brace-format
+msgid "Aufgabe \"{todo.title}\" als erledigt markiert."
+msgstr ""
+
+#: accounts/views.py:678
+#, python-brace-format
+msgid "Kampagne \"{ac.name}\" hinzugefügt."
+msgstr ""
+
+#: accounts/views.py:686
+msgid "Nur externe Kampagnen können bearbeitet werden."
+msgstr ""
+
+#: accounts/views.py:692
+#, python-brace-format
+msgid "Kampagne \"{ac.name}\" aktualisiert."
+msgstr ""
+
+#: accounts/views.py:711
+msgid "Kampagne gelöscht."
+msgstr ""
+
+#: campaigns/forms.py:21
+msgid "Kein Produkt"
+msgstr ""
+
+#: campaigns/forms.py:28 campaigns/forms.py:47
+msgid "Enddatum darf nicht vor dem Startdatum liegen."
+msgstr ""
+
+#: campaigns/models.py:11 campaigns/models.py:75 contracts/models.py:40
+#: templates/accounts/account_detail.html:598
+#: templates/accounts/account_detail.html:673
+msgid "Startdatum"
+msgstr ""
+
+#: campaigns/models.py:12 campaigns/models.py:76
+#: templates/accounts/account_detail.html:602
+#: templates/accounts/account_detail.html:677
+#: templates/core/dashboard_superuser.html:64
+msgid "Enddatum"
+msgstr ""
+
+#: campaigns/models.py:15 products/models.py:12 products/models.py:23
+#: products/models.py:48 products/models.py:80
+#: templates/accounts/account_detail.html:313
+#: templates/accounts/account_detail.html:324
+#: templates/accounts/account_detail.html:439
+#: templates/accounts/account_list.html:122
+#: templates/campaigns/campaign_detail.html:21
+#: templates/campaigns/campaign_list.html:28
+#: templates/contracts/contract_list.html:114
+#: templates/core/dashboard_superuser.html:94
+#: templates/core/dashboard_verwalter.html:104 templates/core/pipeline.html:17
+msgid "Produkt"
+msgstr ""
+
+#: campaigns/models.py:26 campaigns/models.py:37 campaigns/models.py:72
+msgid "Kampagne"
+msgstr ""
+
+#: campaigns/models.py:27 templates/accounts/account_detail.html:583
+#: templates/base.html:84 templates/campaigns/campaign_list.html:3
+#: templates/campaigns/campaign_list.html:6
+msgid "Kampagnen"
+msgstr ""
+
+#: campaigns/models.py:56
+msgid "Kampagnen-Kontakt"
+msgstr ""
+
+#: campaigns/models.py:57
+msgid "Kampagnen-Kontakte"
+msgstr ""
+
+#: campaigns/models.py:80 templates/accounts/account_detail.html:503
+#: templates/accounts/account_detail.html:617
+#: templates/accounts/todo_edit.html:55 templates/core/todo_list.html:13
+#: templates/core/todo_list.html:60
+msgid "Anhang"
+msgstr ""
+
+#: campaigns/models.py:82 templates/accounts/account_detail.html:617
+msgid "Erfolgreich"
+msgstr ""
+
+#: campaigns/models.py:86
+msgid "Account-Kampagne"
+msgstr ""
+
+#: campaigns/models.py:87
+msgid "Account-Kampagnen"
+msgstr ""
+
+#: campaigns/views.py:105
+#, python-format
+msgid "Kampagne \"%s\" erstellt."
+msgstr ""
+
+#: campaigns/views.py:122
+msgid "Kampagne aktualisiert."
+msgstr ""
+
+#: campaigns/views.py:204
+#, python-format
+msgid "%d Kontakt(e) zur Kampagne hinzugefügt."
+msgstr ""
+
+#: campaigns/views.py:226
+msgid ""
+"Kontakte können nicht entfernt werden, da das Enddatum der Kampagne erreicht "
+"ist."
+msgstr ""
+
+#: campaigns/views.py:231
+msgid "Kontakt aus der Kampagne entfernt."
+msgstr ""
+
+#: contracts/forms.py:36
+msgid "Laufzeit muss mindestens 1 Monat betragen."
+msgstr ""
+
+#: contracts/forms.py:40
+msgid "Bei festem Enddatum ist kein Verlängerungsintervall möglich."
+msgstr ""
+
+#: contracts/models.py:11 core/forms.py:46
+#: templates/settings/account_type_list.html:17
+#: templates/settings/contract_type_list.html:23
+#: templates/settings/product_list.html:63 templates/settings/user_list.html:11
+#: templates/settings/user_list.html:21
+msgid "Aktiv"
+msgstr ""
+
+#: contracts/models.py:15 contracts/models.py:37
+#: templates/accounts/account_detail.html:439
+#: templates/contracts/contract_list.html:91
+#: templates/contracts/contract_list.html:115
+#: templates/core/dashboard_superuser.html:34
+#: templates/core/dashboard_superuser.html:64
+msgid "Vertragstyp"
+msgstr ""
+
+#: contracts/models.py:16 templates/base.html:114
+#: templates/settings/contract_type_list.html:3
+#: templates/settings/contract_type_list.html:6
+msgid "Vertragstypen"
+msgstr ""
+
+#: contracts/models.py:31 products/models.py:110 products/models.py:154
+msgid "Account-Produkt"
+msgstr ""
+
+#: contracts/models.py:34
+msgid "Bruttojahrespreis (€)"
+msgstr ""
+
+#: contracts/models.py:41
+msgid "Laufzeit (Monate)"
+msgstr ""
+
+#: contracts/models.py:43
+msgid "Festes Enddatum"
+msgstr ""
+
+#: contracts/models.py:46
+msgid "Verlängerungsintervall (Monate)"
+msgstr ""
+
+#: contracts/models.py:49
+msgid "Kündigungsfrist (Monate)"
+msgstr ""
+
+#: contracts/models.py:55 contracts/models.py:84
+msgid "Vertrag"
+msgstr ""
+
+#: contracts/models.py:56 templates/accounts/account_detail.html:404
+#: templates/base.html:76 templates/contracts/contract_list.html:3
+#: templates/contracts/contract_list.html:72
+msgid "Verträge"
+msgstr ""
+
+#: contracts/models.py:89
+msgid "PDF-Datei"
+msgstr ""
+
+#: contracts/models.py:91
+msgid "Hochgeladen am"
+msgstr ""
+
+#: contracts/models.py:94
+msgid "Vertragsdokument"
+msgstr ""
+
+#: contracts/models.py:95
+msgid "Vertragsdokumente"
+msgstr ""
+
+#: core/forms.py:23 templates/core/login.html:24
+msgid "Passwort"
+msgstr ""
+
+#: core/forms.py:39
+msgid "Neues Passwort"
+msgstr ""
+
+#: core/forms.py:40
+msgid "Leer lassen, um das Passwort nicht zu ändern."
+msgstr ""
+
+#: core/models.py:13 templates/settings/site_settings.html:92
+msgid "Systemname"
+msgstr ""
+
+#: core/models.py:14
+msgid "Name des Systems, wird in der Navigation und im Titel angezeigt"
+msgstr ""
+
+#: core/models.py:20 templates/settings/site_settings.html:100
+msgid "Logo"
+msgstr ""
+
+#: core/models.py:21
+msgid "Logo im PNG-Format (rechteckig empfohlen, max. 200px Höhe)"
+msgstr ""
+
+#: core/models.py:26 templates/settings/site_settings.html:114
+msgid "Primärfarbe"
+msgstr ""
+
+#: core/models.py:27
+msgid "Hauptfarbe im Hex-Format (z.B. #CED51E)"
+msgstr ""
+
+#: core/models.py:33
+msgid "Account-Bezeichnung (Einzahl)"
+msgstr ""
+
+#: core/models.py:34
+msgid "z.B. \"Kommune\", \"Organisation\", \"Kunde\""
+msgstr ""
+
+#: core/models.py:38
+msgid "Account-Bezeichnung (Mehrzahl)"
+msgstr ""
+
+#: core/models.py:39
+msgid "z.B. \"Kommunen\", \"Organisationen\", \"Kunden\""
+msgstr ""
+
+#: core/models.py:43
+msgid "Produkt-Bezeichnung (Einzahl)"
+msgstr ""
+
+#: core/models.py:44
+msgid "z.B. \"Produkt\", \"Service\", \"Leistung\""
+msgstr ""
+
+#: core/models.py:48
+msgid "Produkt-Bezeichnung (Mehrzahl)"
+msgstr ""
+
+#: core/models.py:49
+msgid "z.B. \"Produkte\", \"Services\", \"Leistungen\""
+msgstr ""
+
+#: core/models.py:53
+msgid "Kontakt-Bezeichnung (Einzahl)"
+msgstr ""
+
+#: core/models.py:57
+msgid "Kontakt-Bezeichnung (Mehrzahl)"
+msgstr ""
+
+#: core/models.py:63
+msgid "Verträge aktiviert"
+msgstr ""
+
+#: core/models.py:64
+msgid "Wenn deaktiviert, werden Vertrags-Menüpunkte und -Widgets ausgeblendet"
+msgstr ""
+
+#: core/models.py:68
+msgid "Kampagnen aktiviert"
+msgstr ""
+
+#: core/models.py:69
+msgid "Wenn deaktiviert, werden Kampagnen-Menüpunkte ausgeblendet"
+msgstr ""
+
+#: core/models.py:73 core/models.py:74
+msgid "Systemeinstellungen"
+msgstr ""
+
+#: core/models.py:98
+msgid "Superuser"
+msgstr ""
+
+#: core/models.py:99
+msgid "Verwalter"
+msgstr ""
+
+#: core/models.py:104
+msgid "Standard-Dashboard-Produkt"
+msgstr ""
+
+#: core/models.py:109 core/models.py:110 emails/models.py:11
+#: emails/models.py:28 templates/base.html:119
+#: templates/settings/user_list.html:3 templates/settings/user_list.html:6
+msgid "Benutzer"
+msgstr ""
+
+#: core/settings.py:114
+msgid "Deutsch"
+msgstr ""
+
+#: core/settings.py:115
+msgid "English"
+msgstr ""
+
+#: core/settings.py:116
+msgid "Français"
+msgstr ""
+
+#: core/settings.py:117
+msgid "Español"
+msgstr ""
+
+#: core/settings_views.py:22
+msgid "Zugriff verweigert."
+msgstr ""
+
+#: core/settings_views.py:37
+msgid "aktualisiert"
+msgstr ""
+
+#: core/settings_views.py:37
+msgid "erstellt"
+msgstr ""
+
+#: core/settings_views.py:38
+#, python-brace-format
+msgid "{name} {action}."
+msgstr ""
+
+#: core/settings_views.py:123
+msgid "Phase gelöscht."
+msgstr ""
+
+#: core/settings_views.py:216
+msgid "Systemeinstellungen gespeichert."
+msgstr ""
+
+#: core/views.py:232
+msgid "Passwort erfolgreich geändert."
+msgstr ""
+
+#: emails/models.py:13 templates/emails/profile_overview.html:62
+#: templates/emails/profile_overview.html:76
+msgid "E-Mail-Adresse"
+msgstr ""
+
+#: emails/models.py:17
+msgid "Benutzer-E-Mail-Adresse"
+msgstr ""
+
+#: emails/models.py:18
+msgid "Benutzer-E-Mail-Adressen"
+msgstr ""
+
+#: emails/models.py:34
+msgid "Eingangs-Adresse"
+msgstr ""
+
+#: emails/models.py:35
+msgid "Eingangs-Adressen"
+msgstr ""
+
+#: emails/models.py:48
+msgid "Aufgelöst"
+msgstr ""
+
+#: emails/models.py:49
+msgid "Nicht aufgelöst"
+msgstr ""
+
+#: emails/models.py:54
+msgid "CRM-Benutzer"
+msgstr ""
+
+#: emails/models.py:63 templates/settings/account_type_list.html:11
+#: templates/settings/contract_type_list.html:11
+#: templates/settings/product_list.html:57
+msgid "Status"
+msgstr ""
+
+#: emails/models.py:66
+msgid "Message-ID"
+msgstr ""
+
+#: emails/models.py:68 templates/emails/unresolved_emails.html:15
+msgid "Absender"
+msgstr ""
+
+#: emails/models.py:70 templates/emails/unresolved_emails.html:17
+msgid "Empfänger"
+msgstr ""
+
+#: emails/models.py:73
+msgid "Text-Body"
+msgstr ""
+
+#: emails/models.py:74
+msgid "HTML-Body"
+msgstr ""
+
+#: emails/models.py:77
+msgid "Original .eml"
+msgstr ""
+
+#: emails/models.py:79
+msgid "Empfangen am"
+msgstr ""
+
+#: emails/models.py:84
+msgid "Eingehende E-Mails"
+msgstr ""
+
+#: emails/models.py:97
+msgid "Datei"
+msgstr ""
+
+#: emails/models.py:99
+msgid "Dateiname"
+msgstr ""
+
+#: emails/models.py:100
+msgid "MIME-Typ"
+msgstr ""
+
+#: emails/models.py:104
+msgid "E-Mail-Anhang"
+msgstr ""
+
+#: emails/models.py:105
+msgid "E-Mail-Anhänge"
+msgstr ""
+
+#: emails/views.py:36
+#, python-brace-format
+msgid "Standard-Produkt auf \"{product.name}\" gesetzt."
+msgstr ""
+
+#: emails/views.py:38
+msgid "Ungültiges Produkt."
+msgstr ""
+
+#: emails/views.py:42
+msgid "Standard-Produkt entfernt."
+msgstr ""
+
+#: emails/views.py:55
+#, python-brace-format
+msgid "E-Mail-Adresse \"{obj.email}\" hinzugefügt."
+msgstr ""
+
+#: emails/views.py:57
+msgid "Diese E-Mail-Adresse ist bereits registriert."
+msgstr ""
+
+#: emails/views.py:67
+#, python-brace-format
+msgid "E-Mail-Adresse \"{email}\" entfernt."
+msgstr ""
+
+#: emails/views.py:90
+msgid "Benutzername stimmt nicht überein."
+msgstr ""
+
+#: emails/views.py:92 emails/views.py:111
+#: templates/emails/unresolved_emails.html:26
+#: templates/emails/unresolved_emails.html:41
+msgid "(Kein Betreff)"
+msgstr ""
+
+#: emails/views.py:94
+#, python-brace-format
+msgid "E-Mail \"{subject}\" gelöscht."
+msgstr ""
+
+#: emails/views.py:117
+#, python-brace-format
+msgid ""
+"E-Mail \"{email_obj.subject}\" dem Account \"{account.name}\" zugewiesen."
+msgstr ""
+
+#: products/models.py:13 templates/accounts/account_detail.html:302
+#: templates/base.html:109 templates/settings/product_list.html:3
+#: templates/settings/product_list.html:6
+msgid "Produkte"
+msgstr ""
+
+#: products/models.py:26
+msgid "Reihenfolge"
+msgstr ""
+
+#: products/models.py:28
+msgid "Endphase (Aktiv/Verloren/Beendet)"
+msgstr ""
+
+#: products/models.py:32
+msgid "Produktphase"
+msgstr ""
+
+#: products/models.py:33
+msgid "Produktphasen"
+msgstr ""
+
+#: products/models.py:43
+msgid "Ganzzahl"
+msgstr ""
+
+#: products/models.py:44
+msgid "Ja/Nein"
+msgstr ""
+
+#: products/models.py:52
+msgid "Feldtyp"
+msgstr ""
+
+#: products/models.py:55
+msgid "Im Dashboard anzeigen"
+msgstr ""
+
+#: products/models.py:58
+msgid "Produktfeld"
+msgstr ""
+
+#: products/models.py:59 templates/accounts/account_product_edit.html:88
+msgid "Produktfelder"
+msgstr ""
+
+#: products/models.py:68 templates/accounts/account_product_edit.html:57
+msgid "Preis"
+msgstr ""
+
+#: products/models.py:69 templates/accounts/account_product_edit.html:58
+msgid "Wechsel zu Wettbewerber"
+msgstr ""
+
+#: products/models.py:70 templates/accounts/account_product_edit.html:59
+msgid "Leistung nicht gepasst"
+msgstr ""
+
+#: products/models.py:71 templates/accounts/account_product_edit.html:60
+msgid "Interner Grund beim Partner"
+msgstr ""
+
+#: products/models.py:72 templates/accounts/account_product_edit.html:61
+msgid "Sonstiges (bitte Notiz schreiben)"
+msgstr ""
+
+#: products/models.py:84 templates/accounts/account_detail.html:324
+#: templates/accounts/account_product_edit.html:22
+msgid "Aktuelle Phase"
+msgstr ""
+
+#: products/models.py:88 templates/accounts/account_detail.html:324
+#: templates/accounts/account_product_edit.html:69
+msgid "Verantwortlicher"
+msgstr ""
+
+#: products/models.py:94
+msgid "Leit-Account-Produkt (Produktverbund)"
+msgstr ""
+
+#: products/models.py:98
+msgid "Hauptansprechpersonen"
+msgstr ""
+
+#: products/models.py:101 templates/accounts/account_product_edit.html:49
+msgid "Beendet zum"
+msgstr ""
+
+#: products/models.py:104 templates/accounts/account_product_edit.html:54
+msgid "Beendigungsgrund"
+msgstr ""
+
+#: products/models.py:111
+msgid "Account-Produkte"
+msgstr ""
+
+#: products/models.py:120
+msgid "Ein Produkt kann nicht sich selbst als Leit-Produkt haben."
+msgstr ""
+
+#: products/models.py:128
+msgid "Kreisreferenz im Produktverbund nicht erlaubt."
+msgstr ""
+
+#: products/models.py:157
+msgid "Feld"
+msgstr ""
+
+#: products/models.py:165
+msgid "Feldwert"
+msgstr ""
+
+#: products/models.py:166
+msgid "Feldwerte"
+msgstr ""
+
+#: templates/accounts/account_detail.html:8
+#: templates/accounts/account_form.html:9
+#: templates/accounts/account_form.html:11
+#: templates/accounts/account_product_edit.html:8
+#: templates/accounts/contact_edit.html:13
+#: templates/accounts/contract_edit.html:8 templates/accounts/todo_edit.html:13
+msgid "← Zurück"
+msgstr ""
+
+#: templates/accounts/account_detail.html:10
+#: templates/accounts/account_detail.html:285
+#: templates/accounts/account_detail.html:387
+#: templates/accounts/account_form.html:65
+#: templates/accounts/account_list.html:194
+#: templates/accounts/contract_edit.html:122
+#: templates/campaigns/campaign_list.html:68
+#: templates/contracts/contract_list.html:144
+#: templates/settings/account_type_list.html:21
+#: templates/settings/contract_type_list.html:37
+#: templates/settings/product_list.html:18
+#: templates/settings/product_list.html:68
+msgid "Wiederherstellen"
+msgstr ""
+
+#: templates/accounts/account_detail.html:10
+#: templates/accounts/account_detail.html:265
+#: templates/accounts/account_detail.html:367
+#: templates/accounts/account_detail.html:451
+#: templates/accounts/account_form.html:65
+#: templates/accounts/contract_edit.html:122
+#: templates/campaigns/campaign_list.html:68
+#: templates/settings/account_type_list.html:21
+#: templates/settings/contract_type_list.html:37
+#: templates/settings/product_list.html:18
+#: templates/settings/product_list.html:68
+msgid "Archivieren"
+msgstr ""
+
+#: templates/accounts/account_detail.html:15
+#: templates/accounts/account_detail.html:288
+#: templates/accounts/account_detail.html:390
+#: templates/accounts/account_detail.html:658
+#: templates/accounts/account_list.html:197
+#: templates/accounts/contract_edit.html:107
+#: templates/accounts/todo_edit.html:83
+#: templates/campaigns/campaign_list.html:73
+#: templates/contracts/contract_list.html:147
+#: templates/emails/unresolved_emails.html:41
+#: templates/settings/account_type_list.html:26
+#: templates/settings/contract_type_list.html:42
+#: templates/settings/product_list.html:23
+#: templates/settings/product_list.html:43
+#: templates/settings/product_list.html:73
+msgid "Löschen"
+msgstr ""
+
+#: templates/accounts/account_detail.html:23
+msgid "Stammdaten"
+msgstr ""
+
+#: templates/accounts/account_detail.html:49
+#: templates/accounts/account_detail.html:685
+#: templates/accounts/account_form.html:55
+#: templates/accounts/account_product_edit.html:148
+#: templates/accounts/contact_edit.html:86
+#: templates/accounts/contract_edit.html:117
+#: templates/accounts/todo_edit.html:78
+#: templates/campaigns/campaign_form.html:19
+#: templates/emails/profile_overview.html:26
+#: templates/settings/generic_form.html:29
+#: templates/settings/site_settings.html:179
+msgid "Speichern"
+msgstr ""
+
+#: templates/accounts/account_detail.html:60
+msgid "Aktivität hinzufügen"
+msgstr ""
+
+#: templates/accounts/account_detail.html:89
+#: templates/accounts/account_detail.html:232
+#: templates/accounts/account_detail.html:496
+#: templates/accounts/account_detail.html:610
+#: templates/accounts/account_list.html:227
+#: templates/emails/profile_overview.html:66
+msgid "Hinzufügen"
+msgstr ""
+
+#: templates/accounts/account_detail.html:109
+msgid "Anruf"
+msgstr ""
+
+#: templates/accounts/account_detail.html:137
+msgid "Von:"
+msgstr ""
+
+#: templates/accounts/account_detail.html:138
+msgid "An:"
+msgstr ""
+
+#: templates/accounts/account_detail.html:150
+msgid "Anhänge:"
+msgstr ""
+
+#: templates/accounts/account_detail.html:161
+msgid "Original .eml herunterladen"
+msgstr ""
+
+#: templates/accounts/account_detail.html:177
+msgid "Keine Aktivitäten."
+msgstr ""
+
+#: templates/accounts/account_detail.html:191
+msgid "Neuer Kontakt"
+msgstr ""
+
+#: templates/accounts/account_detail.html:208
+#: templates/accounts/contact_edit.html:66
+msgid "Als Hauptansprechperson für Produkte"
+msgstr ""
+
+#: templates/accounts/account_detail.html:217
+#: templates/accounts/contact_edit.html:76
+msgid "Keine Auswahl = für alle Produkte."
+msgstr ""
+
+#: templates/accounts/account_detail.html:239
+msgid "Haupt"
+msgstr ""
+
+#: templates/accounts/account_detail.html:239
+msgid "Produkt-Zuordnung"
+msgstr ""
+
+#: templates/accounts/account_detail.html:239
+#: templates/accounts/account_detail.html:324
+#: templates/accounts/account_detail.html:439
+#: templates/accounts/account_detail.html:503
+#: templates/accounts/account_detail.html:617
+#: templates/accounts/account_list.html:181
+#: templates/campaigns/campaign_list.html:57
+#: templates/contracts/contract_list.html:120
+#: templates/core/dashboard_verwalter.html:126 templates/core/todo_list.html:13
+#: templates/core/todo_list.html:60 templates/emails/profile_overview.html:76
+#: templates/settings/account_type_list.html:11
+#: templates/settings/contract_type_list.html:11
+#: templates/settings/product_list.html:34
+#: templates/settings/product_list.html:57 templates/settings/user_list.html:11
+msgid "Aktionen"
+msgstr ""
+
+#: templates/accounts/account_detail.html:257
+msgid "alle"
+msgstr ""
+
+#: templates/accounts/account_detail.html:264
+#: templates/accounts/account_detail.html:366
+#: templates/accounts/account_detail.html:450
+#: templates/accounts/account_detail.html:534
+#: templates/accounts/account_detail.html:654
+#: templates/accounts/account_list.html:192
+#: templates/campaigns/campaign_detail.html:12
+#: templates/campaigns/campaign_list.html:66
+#: templates/contracts/contract_list.html:142
+#: templates/core/dashboard_verwalter.html:177 templates/core/todo_list.html:32
+#: templates/core/todo_list.html:78
+#: templates/settings/account_type_list.html:19
+#: templates/settings/contract_type_list.html:27
+#: templates/settings/product_list.html:16
+#: templates/settings/product_list.html:42
+#: templates/settings/product_list.html:66 templates/settings/user_list.html:27
+msgid "Bearbeiten"
+msgstr ""
+
+#: templates/accounts/account_detail.html:269
+msgid "Keine Kontakte."
+msgstr ""
+
+#: templates/accounts/account_detail.html:277
+msgid "Archivierte Kontakte"
+msgstr ""
+
+#: templates/accounts/account_detail.html:304
+msgid "Produkt zuordnen"
+msgstr ""
+
+#: templates/accounts/account_detail.html:317
+msgid "Zuordnen"
+msgstr ""
+
+#: templates/accounts/account_detail.html:324
+#: templates/accounts/account_product_edit.html:118
+msgid "Produktverbund"
+msgstr ""
+
+#: templates/accounts/account_detail.html:345
+msgid "Leit:"
+msgstr ""
+
+#: templates/accounts/account_detail.html:361
+msgid "Nicht zugewiesen"
+msgstr ""
+
+#: templates/accounts/account_detail.html:371
+msgid "Keine Produkte zugeordnet."
+msgstr ""
+
+#: templates/accounts/account_detail.html:379
+msgid "Archivierte Produkte"
+msgstr ""
+
+#: templates/accounts/account_detail.html:406
+msgid "Vertrag anlegen"
+msgstr ""
+
+#: templates/accounts/account_detail.html:428
+msgid "PDF-Dokumente"
+msgstr ""
+
+#: templates/accounts/account_detail.html:432
+msgid "Erstellen"
+msgstr ""
+
+#: templates/accounts/account_detail.html:439
+#: templates/contracts/contract_list.html:116
+msgid "Bruttojahrespreis"
+msgstr ""
+
+#: templates/accounts/account_detail.html:439
+#: templates/contracts/contract_list.html:117
+msgid "Start"
+msgstr ""
+
+#: templates/accounts/account_detail.html:439
+#: templates/contracts/contract_list.html:119
+msgid "Ende"
+msgstr ""
+
+#: templates/accounts/account_detail.html:455
+msgid "Keine Verträge."
+msgstr ""
+
+#: templates/accounts/account_detail.html:467
+msgid "Aufgabe hinzufügen"
+msgstr ""
+
+#: templates/accounts/account_detail.html:536
+msgid ""
+"Aufgabe als erledigt markieren? Diese Aktion kann nicht rückgängig gemacht "
+"werden."
+msgstr ""
+
+#: templates/accounts/account_detail.html:550
+msgid "Keine offenen Aufgaben."
+msgstr ""
+
+#: templates/accounts/account_detail.html:558
+msgid "Erledigte Aufgaben"
+msgstr ""
+
+#: templates/accounts/account_detail.html:585
+msgid "Externe Kampagne hinzufügen"
+msgstr ""
+
+#: templates/accounts/account_detail.html:617
+#: templates/campaigns/campaign_detail.html:19
+#: templates/campaigns/campaign_list.html:57
+msgid "Zeitraum"
+msgstr ""
+
+#: templates/accounts/account_detail.html:681
+msgid "PDF-Anhang (ersetzen)"
+msgstr ""
+
+#: templates/accounts/account_detail.html:693
+msgid "Keine Kampagnen."
+msgstr ""
+
+#: templates/accounts/account_form.html:21
+msgid "Account-Daten"
+msgstr ""
+
+#: templates/accounts/account_form.html:57
+#: templates/accounts/account_form.html:59
+#: templates/accounts/account_product_edit.html:149
+#: templates/accounts/contact_edit.html:87
+#: templates/accounts/contract_edit.html:118
+#: templates/accounts/todo_edit.html:79 templates/base.html:184
+#: templates/campaigns/campaign_add_accounts.html:44
+#: templates/campaigns/campaign_form.html:20
+#: templates/core/password_change.html:26
+#: templates/settings/generic_form.html:30
+msgid "Abbrechen"
+msgstr ""
+
+#: templates/accounts/account_list.html:83
+#: templates/campaigns/campaign_list.html:6
+#: templates/contracts/contract_list.html:72
+msgid "Archiv"
+msgstr ""
+
+#: templates/accounts/account_list.html:86
+#: templates/campaigns/campaign_list.html:9
+#: templates/contracts/contract_list.html:75
+msgid "Aktive anzeigen"
+msgstr ""
+
+#: templates/accounts/account_list.html:88
+#: templates/campaigns/campaign_list.html:11
+#: templates/contracts/contract_list.html:77
+msgid "Archiv anzeigen"
+msgstr ""
+
+#: templates/accounts/account_list.html:90
+msgid "Neuer Account"
+msgstr ""
+
+#: templates/accounts/account_list.html:99
+#: templates/accounts/contact_list.html:79
+msgid "Suche"
+msgstr ""
+
+#: templates/accounts/account_list.html:100
+msgid "Name..."
+msgstr ""
+
+#: templates/accounts/account_list.html:105
+#: templates/accounts/account_list.html:114
+#: templates/accounts/account_list.html:124
+#: templates/accounts/account_list.html:152
+#: templates/accounts/account_list.html:162
+#: templates/campaigns/campaign_list.html:30
+#: templates/campaigns/campaign_list.html:39
+#: templates/contracts/contract_list.html:93
+msgid "Alle"
+msgstr ""
+
+#: templates/accounts/account_list.html:115
+msgid "Ohne Besitzer"
+msgstr ""
+
+#: templates/accounts/account_list.html:132
+#: templates/campaigns/campaign_list.html:37
+#: templates/core/dashboard_superuser.html:94 templates/core/pipeline.html:18
+msgid "Phase"
+msgstr ""
+
+#: templates/accounts/account_list.html:134
+msgid "Alle Phasen"
+msgstr ""
+
+#: templates/accounts/account_list.html:142
+#: templates/accounts/contact_list.html:83
+#: templates/contracts/contract_list.html:100
+msgid "Filtern"
+msgstr ""
+
+#: templates/accounts/account_list.html:143
+#: templates/accounts/contact_list.html:84
+#: templates/contracts/contract_list.html:101
+msgid "Zurücksetzen"
+msgstr ""
+
+#: templates/accounts/account_list.html:153
+msgid "Ja"
+msgstr ""
+
+#: templates/accounts/account_list.html:154
+msgid "Nein"
+msgstr ""
+
+#: templates/accounts/account_list.html:163
+msgid "Eingetragen"
+msgstr ""
+
+#: templates/accounts/account_list.html:164
+msgid "Nicht eingetragen"
+msgstr ""
+
+#: templates/accounts/account_list.html:202
+msgid "Keine Accounts gefunden."
+msgstr ""
+
+#: templates/accounts/account_list.html:207
+#: templates/accounts/contact_list.html:114
+#: templates/contracts/contract_list.html:157
+#: templates/core/dashboard_verwalter.html:186
+#: templates/settings/account_type_list.html:35
+#: templates/settings/contract_type_list.html:51
+#: templates/settings/product_list.html:89 templates/settings/user_list.html:35
+#, python-format
+msgid "%(count)s Einträge"
+msgstr ""
+
+#: templates/accounts/account_list.html:220
+msgid "Gefilterte Accounts zur Kampagne hinzufügen:"
+msgstr ""
+
+#: templates/accounts/account_list.html:222
+msgid "Kampagne wählen…"
+msgstr ""
+
+#: templates/accounts/account_product_edit.html:3
+msgid "Produkt-Zuordnung bearbeiten"
+msgstr ""
+
+#: templates/accounts/account_product_edit.html:17
+msgid "Phase & Zuständigkeit"
+msgstr ""
+
+#: templates/accounts/account_product_edit.html:26
+#, python-format
+msgid "Vom Leit-Account übernommen (%(name)s)"
+msgstr ""
+
+#: templates/accounts/account_product_edit.html:78
+msgid "Mehrere Produkte beim Account – bitte Verantwortlichen zuweisen."
+msgstr ""
+
+#: templates/accounts/account_product_edit.html:122
+msgid "Leit-Account (geteilt mit)"
+msgstr ""
+
+#: templates/accounts/account_product_edit.html:132
+msgid ""
+"Wenn diese Kommune das Produkt gemeinsam mit einer anderen nutzt, hier den "
+"Leit-Account auswählen. Phase wird dann vom Leit-Account übernommen."
+msgstr ""
+
+#: templates/accounts/account_product_edit.html:138
+msgid "Partner-Kommunen in diesem Verbund:"
+msgstr ""
+
+#: templates/accounts/contact_edit.html:3
+msgid "Kontakt bearbeiten"
+msgstr ""
+
+#: templates/accounts/contact_edit.html:10
+msgid "Kontakt von"
+msgstr ""
+
+#: templates/accounts/contact_edit.html:22
+msgid "Kontaktdaten"
+msgstr ""
+
+#: templates/accounts/contact_list.html:80
+msgid "Name, E-Mail oder Telefon …"
+msgstr ""
+
+#: templates/accounts/contact_list.html:109
+#, python-format
+msgid "Keine Kontakte gefunden für „%(q)s\"."
+msgstr ""
+
+#: templates/accounts/contact_list.html:109
+msgid "Keine Kontakte vorhanden."
+msgstr ""
+
+#: templates/accounts/contract_edit.html:3
+msgid "Vertrag bearbeiten"
+msgstr ""
+
+#: templates/accounts/contract_edit.html:7
+#, python-format
+msgid "Vertrag bearbeiten: %(contract)s"
+msgstr ""
+
+#: templates/accounts/contract_edit.html:19
+msgid "Vertragsdaten"
+msgstr ""
+
+#: templates/accounts/contract_edit.html:89
+msgid "Dokumente"
+msgstr ""
+
+#: templates/accounts/contract_edit.html:93
+msgid "PDF-Dokumente hochladen"
+msgstr ""
+
+#: templates/accounts/contract_edit.html:94
+msgid "Klicken zum Auswählen · Mehrere Dateien möglich"
+msgstr ""
+
+#: templates/accounts/contract_edit.html:131
+msgid "Berechnung"
+msgstr ""
+
+#: templates/accounts/contract_edit.html:133
+msgid "Aktuelles Enddatum"
+msgstr ""
+
+#: templates/accounts/contract_edit.html:135
+msgid "Inkl. automatischer Verlängerung"
+msgstr ""
+
+#: templates/accounts/todo_edit.html:3
+msgid "Aufgabe bearbeiten"
+msgstr ""
+
+#: templates/accounts/todo_edit.html:10
+msgid "Aufgabe bei"
+msgstr ""
+
+#: templates/accounts/todo_edit.html:60
+msgid "Neue PDF hochladen (ersetzt aktuelle Datei)"
+msgstr ""
+
+#: templates/accounts/todo_edit.html:60
+msgid "PDF hochladen"
+msgstr ""
+
+#: templates/accounts/todo_edit.html:62
+msgid "Klicken zum Auswählen"
+msgstr ""
+
+#: templates/accounts/todo_edit.html:69
+msgid "Aktuelle Datei:"
+msgstr ""
+
+#: templates/base.html:65 templates/core/dashboard_verwalter.html:99
+msgid "Meine Kunden"
+msgstr ""
+
+#: templates/base.html:90 templates/core/analyse.html:3
+#: templates/core/analyse.html:5
+msgid "Analyse"
+msgstr ""
+
+#: templates/base.html:95
+msgid "Einstellungen"
+msgstr ""
+
+#: templates/base.html:124
+msgid "Profil"
+msgstr ""
+
+#: templates/base.html:128 templates/emails/profile_overview.html:3
+#: templates/emails/profile_overview.html:5
+msgid "Mein Profil"
+msgstr ""
+
+#: templates/base.html:133 templates/core/password_change.html:3
+#: templates/core/password_change.html:5 templates/core/password_change.html:25
+msgid "Passwort ändern"
+msgstr ""
+
+#: templates/base.html:138 templates/emails/unresolved_emails.html:3
+#: templates/emails/unresolved_emails.html:5
+msgid "Nicht aufgelöste E-Mails"
+msgstr ""
+
+#: templates/base.html:145
+msgid "Abmelden"
+msgstr ""
+
+#: templates/base.html:174 templates/base.html:185
+msgid "Endgültig löschen"
+msgstr ""
+
+#: templates/base.html:175
+msgid "Schließen"
+msgstr ""
+
+#: templates/base.html:178
+msgid "Sie sind dabei,"
+msgstr ""
+
+#: templates/base.html:178
+msgid "endgültig zu löschen."
+msgstr ""
+
+#: templates/base.html:179
+msgid "Diese Aktion kann nicht rückgängig gemacht werden."
+msgstr ""
+
+#: templates/base.html:180
+msgid "Bitte geben Sie Ihren Benutzernamen ein, um die Löschung zu bestätigen:"
+msgstr ""
+
+#: templates/campaigns/campaign_add_accounts.html:3
+#: templates/campaigns/campaign_detail.html:8
+msgid "Accounts hinzufügen"
+msgstr ""
+
+#: templates/campaigns/campaign_add_accounts.html:5
+#, python-format
+msgid "Accounts hinzufügen: %(name)s"
+msgstr ""
+
+#: templates/campaigns/campaign_add_accounts.html:6
+msgid ""
+"Wählen Sie Accounts aus. Alle Hauptansprechpersonen der ausgewählten "
+"Accounts werden zur Kampagne hinzugefügt."
+msgstr ""
+
+#: templates/campaigns/campaign_add_accounts.html:14
+msgid "Alle auswählen"
+msgstr ""
+
+#: templates/campaigns/campaign_add_accounts.html:35
+msgid "Keine Accounts verfügbar."
+msgstr ""
+
+#: templates/campaigns/campaign_add_accounts.html:42
+msgid "Zur Kampagne hinzufügen"
+msgstr ""
+
+#: templates/campaigns/campaign_detail.html:10
+#: templates/campaigns/campaign_list.html:47
+msgid "CSV-Export"
+msgstr ""
+
+#: templates/campaigns/campaign_detail.html:56
+#: templates/emails/profile_overview.html:87
+msgid "Entfernen"
+msgstr ""
+
+#: templates/campaigns/campaign_detail.html:56
+msgid "Kontakt wirklich aus der Kampagne entfernen?"
+msgstr ""
+
+#: templates/campaigns/campaign_detail.html:64
+msgid "Keine Kontakte in dieser Kampagne."
+msgstr ""
+
+#: templates/campaigns/campaign_list.html:14
+msgid "Neue Kampagne"
+msgstr ""
+
+#: templates/campaigns/campaign_list.html:22
+msgid "Kontakt-Export"
+msgstr ""
+
+#: templates/campaigns/campaign_list.html:78
+msgid "Keine Kampagnen vorhanden."
+msgstr ""
+
+#: templates/contracts/contract_list.html:87
+msgid "Account-Name"
+msgstr ""
+
+#: templates/contracts/contract_list.html:88
+msgid "Account suchen..."
+msgstr ""
+
+#: templates/contracts/contract_list.html:118
+msgid "Laufzeit"
+msgstr ""
+
+#: templates/contracts/contract_list.html:138
+msgid "Abgelaufen"
+msgstr ""
+
+#: templates/contracts/contract_list.html:147
+#, python-format
+msgid "Vertrag #%(pk)s"
+msgstr ""
+
+#: templates/contracts/contract_list.html:152
+msgid "Keine Verträge gefunden."
+msgstr ""
+
+#: templates/core/analyse.html:27
+#, python-format
+msgid "Aktive %(product_plural)s"
+msgstr ""
+
+#: templates/core/analyse.html:45 templates/core/analyse.html:73
+#: templates/core/dashboard_superuser.html:34
+#: templates/core/dashboard_superuser.html:94
+msgid "Anzahl"
+msgstr ""
+
+#: templates/core/analyse.html:58
+#, python-format
+msgid "Noch keine %(product_plural)s zugeordnet."
+msgstr ""
+
+#: templates/core/analyse.html:66
+msgid "Aktivitäten pro Monat (letzte 12 Monate)"
+msgstr ""
+
+#: templates/core/analyse.html:72
+msgid "Monat"
+msgstr ""
+
+#: templates/core/analyse.html:86
+msgid "Noch keine Aktivitäten erfasst."
+msgstr ""
+
+#: templates/core/dashboard_superuser.html:5
+msgid "Superadmin Dashboard"
+msgstr ""
+
+#: templates/core/dashboard_superuser.html:11
+msgid "Accounts gesamt"
+msgstr ""
+
+#: templates/core/dashboard_superuser.html:19
+msgid "Verträge gesamt"
+msgstr ""
+
+#: templates/core/dashboard_superuser.html:30
+msgid "Verträge nach Typ"
+msgstr ""
+
+#: templates/core/dashboard_superuser.html:34
+#, python-format
+msgid "Neu in %(year)s"
+msgstr ""
+
+#: templates/core/dashboard_superuser.html:38
+msgid "Ohne Typ"
+msgstr ""
+
+#: templates/core/dashboard_superuser.html:46
+#: templates/core/dashboard_superuser.html:106
+msgid "Keine Daten vorhanden."
+msgstr ""
+
+#: templates/core/dashboard_superuser.html:55
+msgid "Auslaufende Verträge"
+msgstr ""
+
+#: templates/core/dashboard_superuser.html:56
+msgid "festes Enddatum, nächste 90 Tage"
+msgstr ""
+
+#: templates/core/dashboard_superuser.html:64
+#: templates/core/dashboard_superuser.html:124
+msgid "Verantwortlich"
+msgstr ""
+
+#: templates/core/dashboard_superuser.html:82
+msgid "Keine Verträge laufen in den nächsten 90 Tagen aus."
+msgstr ""
+
+#: templates/core/dashboard_superuser.html:90
+msgid "Produkte nach Phase"
+msgstr ""
+
+#: templates/core/dashboard_superuser.html:99
+msgid "Keine Phase"
+msgstr ""
+
+#: templates/core/dashboard_superuser.html:115
+msgid "Inaktive Partner"
+msgstr ""
+
+#: templates/core/dashboard_superuser.html:116
+msgid "aktiver Vertrag, keine Aktivität seit > 90 Tagen"
+msgstr ""
+
+#: templates/core/dashboard_superuser.html:124
+#: templates/core/dashboard_verwalter.html:122 templates/core/pipeline.html:19
+msgid "Letzte Aktivität"
+msgstr ""
+
+#: templates/core/dashboard_superuser.html:133 templates/core/pipeline.html:49
+msgid "Nie kontaktiert"
+msgstr ""
+
+#: templates/core/dashboard_superuser.html:142
+msgid "Alle Partner wurden in den letzten 90 Tagen kontaktiert."
+msgstr ""
+
+#: templates/core/dashboard_verwalter.html:121
+msgid "Regionenzustand"
+msgstr ""
+
+#: templates/core/dashboard_verwalter.html:140
+msgid "Grün"
+msgstr ""
+
+#: templates/core/dashboard_verwalter.html:142
+msgid "Gelb"
+msgstr ""
+
+#: templates/core/dashboard_verwalter.html:144
+msgid "Rot"
+msgstr ""
+
+#: templates/core/dashboard_verwalter.html:181
+msgid "Keine Zuordnungen für dieses Produkt in Ihren Accounts."
+msgstr ""
+
+#: templates/core/dashboard_verwalter.html:190
+msgid "Es sind noch keine Produkte konfiguriert."
+msgstr ""
+
+#: templates/core/login.html:3 templates/core/login.html:11
+msgid "Anmeldung"
+msgstr ""
+
+#: templates/core/login.html:15
+msgid "Benutzername oder Passwort ungültig."
+msgstr ""
+
+#: templates/core/login.html:20 templates/settings/user_list.html:11
+msgid "Benutzername"
+msgstr ""
+
+#: templates/core/login.html:27
+msgid "Anmelden"
+msgstr ""
+
+#: templates/core/login.html:32
+msgid "Mit Keycloak anmelden"
+msgstr ""
+
+#: templates/core/pipeline.html:7
+#, python-format
+msgid "%(count)s Account in Bearbeitung"
+msgid_plural "%(count)s Accounts in Bearbeitung"
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/core/pipeline.html:20
+msgid "Letzter Kontakt"
+msgstr ""
+
+#: templates/core/pipeline.html:44
+msgid "Noch keine"
+msgstr ""
+
+#: templates/core/pipeline.html:51 templates/core/pipeline.html:53
+#: templates/core/pipeline.html:55
+#, python-format
+msgid "%(days)s Tage"
+msgstr ""
+
+#: templates/core/pipeline.html:69
+msgid "Keine Accounts in aktiver Pipeline."
+msgstr ""
+
+#: templates/core/todo_list.html:5
+msgid "Meine Aufgaben"
+msgstr ""
+
+#: templates/core/todo_list.html:9
+msgid "Fällig in den nächsten 2 Wochen"
+msgstr ""
+
+#: templates/core/todo_list.html:13 templates/core/todo_list.html:60
+msgid "Fälligkeit"
+msgstr ""
+
+#: templates/core/todo_list.html:26 templates/core/todo_list.html:72
+msgid "PDF öffnen"
+msgstr ""
+
+#: templates/core/todo_list.html:34 templates/core/todo_list.html:80
+msgid "Aufgabe als erledigt markieren?"
+msgstr ""
+
+#: templates/core/todo_list.html:56
+msgid "Weitere Aufgaben"
+msgstr ""
+
+#: templates/core/todo_list.html:101
+msgid "Keine offenen Aufgaben vorhanden."
+msgstr ""
+
+#: templates/emails/profile_overview.html:9
+msgid "Dashboard-Einstellungen"
+msgstr ""
+
+#: templates/emails/profile_overview.html:15
+msgid "Standard-Produkt unter \"Meine Kunden\""
+msgstr ""
+
+#: templates/emails/profile_overview.html:17
+msgid "Erstes verfügbares Produkt"
+msgstr ""
+
+#: templates/emails/profile_overview.html:29
+msgid "Dieses Produkt wird standardmäßig unter \"Meine Kunden\" angezeigt."
+msgstr ""
+
+#: templates/emails/profile_overview.html:36
+msgid "BCC-Adresse für E-Mail-Erfassung"
+msgstr ""
+
+#: templates/emails/profile_overview.html:38
+msgid ""
+"Fügen Sie diese Adresse als BCC hinzu, damit Ihre E-Mails automatisch im CRM "
+"erfasst werden."
+msgstr ""
+
+#: templates/emails/profile_overview.html:51
+msgid "Meine E-Mail-Adressen"
+msgstr ""
+
+#: templates/emails/profile_overview.html:53
+msgid "Adresse hinzufügen"
+msgstr ""
+
+#: templates/emails/profile_overview.html:73
+msgid ""
+"Diese Adressen werden verwendet, um eingehende E-Mails Ihrem Konto "
+"zuzuordnen."
+msgstr ""
+
+#: templates/emails/profile_overview.html:76
+msgid "Hinzugefügt am"
+msgstr ""
+
+#: templates/emails/profile_overview.html:85
+msgid "E-Mail-Adresse entfernen?"
+msgstr ""
+
+#: templates/emails/profile_overview.html:92
+msgid "Keine E-Mail-Adressen registriert."
+msgstr ""
+
+#: templates/emails/unresolved_emails.html:9
+msgid ""
+"Diese E-Mails konnten keinem Account automatisch zugeordnet werden. Bitte "
+"weisen Sie sie manuell zu."
+msgstr ""
+
+#: templates/emails/unresolved_emails.html:18
+msgid "Account zuweisen"
+msgstr ""
+
+#: templates/emails/unresolved_emails.html:33
+msgid "Account suchen…"
+msgstr ""
+
+#: templates/emails/unresolved_emails.html:36
+msgid "Zuweisen"
+msgstr ""
+
+#: templates/emails/unresolved_emails.html:46
+msgid "Keine nicht aufgelösten E-Mails."
+msgstr ""
+
+#: templates/settings/account_type_list.html:7
+msgid "Neuer Account-Typ"
+msgstr ""
+
+#: templates/settings/account_type_list.html:31
+msgid "Keine Account-Typen vorhanden."
+msgstr ""
+
+#: templates/settings/contract_type_list.html:7
+msgid "Neuer Vertragstyp"
+msgstr ""
+
+#: templates/settings/contract_type_list.html:21
+msgid "Deaktiviert"
+msgstr ""
+
+#: templates/settings/contract_type_list.html:32
+msgid "Deaktivieren"
+msgstr ""
+
+#: templates/settings/contract_type_list.html:32
+msgid "Aktivieren"
+msgstr ""
+
+#: templates/settings/contract_type_list.html:47
+msgid "Keine Vertragstypen vorhanden."
+msgstr ""
+
+#: templates/settings/product_list.html:7
+msgid "Neues Produkt"
+msgstr ""
+
+#: templates/settings/product_list.html:30
+msgid "Phasen"
+msgstr ""
+
+#: templates/settings/product_list.html:31
+#: templates/settings/product_list.html:54
+msgid "Neu"
+msgstr ""
+
+#: templates/settings/product_list.html:34
+msgid "Endphase"
+msgstr ""
+
+#: templates/settings/product_list.html:47
+msgid "Keine Phasen."
+msgstr ""
+
+#: templates/settings/product_list.html:53
+msgid "Felder"
+msgstr ""
+
+#: templates/settings/product_list.html:57
+msgid "Dashboard"
+msgstr ""
+
+#: templates/settings/product_list.html:78
+msgid "Keine Felder."
+msgstr ""
+
+#: templates/settings/product_list.html:87
+msgid "Keine Produkte vorhanden."
+msgstr ""
+
+#: templates/settings/site_settings.html:3
+#: templates/settings/site_settings.html:81
+msgid "Branding"
+msgstr ""
+
+#: templates/settings/site_settings.html:96
+msgid "Wird in der Navigation und im Seitentitel angezeigt."
+msgstr ""
+
+#: templates/settings/site_settings.html:103
+msgid "Aktuelles Logo"
+msgstr ""
+
+#: templates/settings/site_settings.html:105
+msgid "Kein Logo hochgeladen"
+msgstr ""
+
+#: templates/settings/site_settings.html:106
+msgid "Logo-Vorschau"
+msgstr ""
+
+#: templates/settings/site_settings.html:110
+msgid "PNG, JPG oder SVG. Empfohlen: rechteckiges Format, max. 200px Höhe."
+msgstr ""
+
+#: templates/settings/site_settings.html:120
+msgid "Akzentfarbe für Buttons, aktive Elemente und Hervorhebungen."
+msgstr ""
+
+#: templates/settings/site_settings.html:125
+msgid "Bezeichnungen"
+msgstr ""
+
+#: templates/settings/site_settings.html:126
+msgid ""
+"Passen Sie die Begriffe an Ihre Organisation an (z.B. \"Kommune\" statt "
+"\"Konto\")."
+msgstr ""
+
+#: templates/settings/site_settings.html:161
+msgid "Module"
+msgstr ""
+
+#: templates/settings/site_settings.html:182
+msgid "Auf Standard zurücksetzen"
+msgstr ""
+
+#: templates/settings/site_settings.html:193
+msgid "Vorschau"
+msgstr ""
+
+#: templates/settings/site_settings.html:209
+msgid "So sieht die Sidebar-Navigation aus:"
+msgstr ""
+
+#: templates/settings/user_list.html:7
+msgid "Neuer Benutzer"
+msgstr ""
+
+#: templates/settings/user_list.html:11
+msgid "Rolle"
+msgstr ""
+
+#: templates/settings/user_list.html:23
+msgid "Inaktiv"
+msgstr ""
+
+#: templates/settings/user_list.html:31
+msgid "Keine Benutzer vorhanden."
+msgstr ""
